@@ -1,0 +1,32 @@
+{
+  "name": "@sparked/outfit-composer",
+  "version": "1.0.0",
+  "description": "AI-powered outfit composition service for Sparked Edit Engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "tsx test/test-composer.ts",
+    "compose:recipe": "tsx src/cli.ts"
+  },
+  "keywords": [
+    "outfit",
+    "composition",
+    "ai",
+    "personalization",
+    "sparked"
+  ],
+  "author": "Nordstrom",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@sanity/client": "^6.25.2",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
