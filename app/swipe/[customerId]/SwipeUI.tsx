@@ -1,11 +1,12 @@
 'use client';
 
 /**
- * Swipe UI Component
+ * Swipe UI Component (rebuilt with framer-motion)
  * Interactive Tinder-style card interface
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import type { SwipeStack, SwipeCard } from '@/lib/types';
 import { supabase } from '@/lib/supabase-client';
 import Link from 'next/link';
@@ -25,11 +26,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
   }>>([]);
   const [isComplete, setIsComplete] = useState(false);
   const [cardStartTime, setCardStartTime] = useState<number>(Date.now());
-
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [exitDirection, setExitDirection] = useState<'left' | 'right' | null>(null);
 
   useEffect(() => {
     setCardStartTime(Date.now());
@@ -43,7 +40,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
     setCardStartTime(Date.now());
   };
 
-  const handleSwipe = useCallback((verdict: 'yes' | 'no') => {
+  const handleSwipe = (verdict: 'yes' | 'no') => {
     if (!selectedStack) return;
 
     const currentCard = selectedStack.cards[currentCardIndex];
@@ -58,27 +55,23 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       },
     ];
 
+    // Set exit animation direction
+    setExitDirection(verdict === 'yes' ? 'right' : 'left');
+
     // Move to next card or complete
     if (currentCardIndex >= selectedStack.cards.length - 1) {
-      completeSession(verdict, dwellMs);
+      completeSession(newHistory);
     } else {
-      setSwipeHistory(newHistory);
-      setCurrentCardIndex(currentCardIndex + 1);
+      setTimeout(() => {
+        setSwipeHistory(newHistory);
+        setCurrentCardIndex(currentCardIndex + 1);
+        setExitDirection(null);
+      }, 300);
     }
-  }, [selectedStack, currentCardIndex, swipeHistory, cardStartTime]);
+  };
 
-  const completeSession = async (lastVerdict: 'yes' | 'no', lastDwellMs: number) => {
+  const completeSession = async (finalHistory: typeof swipeHistory) => {
     if (!selectedStack) return;
-
-    const currentCard = selectedStack.cards[currentCardIndex];
-    const finalHistory = [
-      ...swipeHistory,
-      {
-        cardId: currentCard.cardId,
-        verdict: lastVerdict,
-        dwellMs: lastDwellMs,
-      },
-    ];
 
     // Save session to Supabase
     const sessionData = {
@@ -115,7 +108,10 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       console.error('Failed to save session:', error);
     }
 
-    setIsComplete(true);
+    setTimeout(() => {
+      setIsComplete(true);
+      setExitDirection(null);
+    }, 300);
   };
 
   const backToSelector = () => {
@@ -123,85 +119,10 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
     setIsComplete(false);
   };
 
-  // Mouse drag handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    setDragStart({ x: e.clientX, y: e.clientY });
-  };
-
-  useEffect(() => {
-    if (!isDragging) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setDragOffset({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
-      });
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-
-      // Determine swipe direction
-      if (Math.abs(dragOffset.x) > 100) {
-        if (dragOffset.x > 0) {
-          handleSwipe('yes');
-        } else {
-          handleSwipe('no');
-        }
-      }
-
-      setDragOffset({ x: 0, y: 0 });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, dragStart, dragOffset, handleSwipe]);
-
-  // Touch handlers
-  const handleTouchStart = (e: React.TouchEvent) => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    setIsDragging(true);
-    setDragStart({ x: touch.clientX, y: touch.clientY });
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    setDragOffset({
-      x: touch.clientX - dragStart.x,
-      y: touch.clientY - dragStart.y,
-    });
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    setIsDragging(false);
-
-    if (Math.abs(dragOffset.x) > 100) {
-      if (dragOffset.x > 0) {
-        handleSwipe('yes');
-      } else {
-        handleSwipe('no');
-      }
-    }
-
-    setDragOffset({ x: 0, y: 0 });
-  };
-
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!selectedStack || isComplete) return;
+      if (!selectedStack || isComplete || exitDirection) return;
 
       if (e.key === 'ArrowLeft') {
         handleSwipe('no');
@@ -212,7 +133,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedStack, isComplete, handleSwipe]);
+  }, [selectedStack, isComplete, currentCardIndex, swipeHistory, exitDirection]);
 
   if (stacks.length === 0) {
     return (
@@ -333,16 +254,6 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
   const currentCard = selectedStack.cards[currentCardIndex];
   const progress = ((currentCardIndex + 1) / selectedStack.card_count) * 100;
 
-  const cardStyle = isDragging
-    ? {
-        transform: `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.1}deg)`,
-        transition: 'none',
-      }
-    : {
-        transform: 'translate(0, 0) rotate(0deg)',
-        transition: 'transform 0.3s ease',
-      };
-
   return (
     <div className="min-h-screen bg-[#FAF9F5] flex flex-col">
       {/* Header */}
@@ -365,71 +276,31 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       </div>
 
       {/* Card Area */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div
-          ref={cardRef}
-          className="relative w-full max-w-md h-[70vh] max-h-[600px] bg-white rounded-2xl shadow-2xl cursor-grab active:cursor-grabbing select-none"
-          style={cardStyle}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {/* Card Image */}
-          <div className="w-full h-full rounded-2xl overflow-hidden">
-            <img
-              src={currentCard.imageUrl}
-              alt={currentCard.displayData.title}
-              className="w-full h-full object-cover"
+      <div className="flex-1 flex items-center justify-center p-6 relative">
+        <AnimatePresence mode="wait">
+          {!exitDirection && (
+            <SwipeCard
+              key={currentCard.cardId}
+              card={currentCard}
+              onSwipe={handleSwipe}
             />
-
-            {/* Overlay Info */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-              <h3 className="text-white text-2xl font-semibold mb-2">
-                {currentCard.displayData.title}
-              </h3>
-              <div className="flex gap-2 flex-wrap">
-                {currentCard.tags.pillars.map((pillar) => (
-                  <span
-                    key={pillar}
-                    className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full"
-                  >
-                    {pillar}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Swipe Indicators */}
-            {isDragging && (
-              <>
-                {dragOffset.x > 50 && (
-                  <div className="absolute top-12 right-12 text-6xl transform rotate-12">
-                    ❤️
-                  </div>
-                )}
-                {dragOffset.x < -50 && (
-                  <div className="absolute top-12 left-12 text-6xl transform -rotate-12">
-                    👎
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Action Buttons */}
       <div className="p-6 flex justify-center gap-6">
         <button
           onClick={() => handleSwipe('no')}
-          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-red-500 hover:text-red-500 transition-colors"
+          disabled={!!exitDirection}
+          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-red-500 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           ✕
         </button>
         <button
           onClick={() => handleSwipe('yes')}
-          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-green-500 hover:text-green-500 transition-colors"
+          disabled={!!exitDirection}
+          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-green-500 hover:text-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           ❤️
         </button>
@@ -440,5 +311,89 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
         Swipe or use arrow keys • {currentCardIndex + 1} of {selectedStack.card_count}
       </div>
     </div>
+  );
+}
+
+// Individual card component with framer-motion
+function SwipeCard({
+  card,
+  onSwipe,
+}: {
+  card: SwipeCard;
+  onSwipe: (verdict: 'yes' | 'no') => void;
+}) {
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-25, 25]);
+  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
+
+  return (
+    <motion.div
+      className="absolute w-full max-w-md h-[70vh] max-h-[600px] bg-white rounded-2xl shadow-2xl cursor-grab active:cursor-grabbing"
+      style={{ x, rotate, opacity }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={1}
+      onDragEnd={(_, info) => {
+        // Swipe threshold: 100px or velocity > 500
+        if (Math.abs(info.offset.x) > 100 || Math.abs(info.velocity.x) > 500) {
+          if (info.offset.x > 0) {
+            onSwipe('yes');
+          } else {
+            onSwipe('no');
+          }
+        }
+      }}
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.9, opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      {/* Card Image */}
+      <div className="w-full h-full rounded-2xl overflow-hidden relative">
+        <img
+          src={card.imageUrl}
+          alt={card.displayData.title}
+          className="w-full h-full object-cover"
+          draggable={false}
+        />
+
+        {/* Overlay Info */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+          <h3 className="text-white text-2xl font-semibold mb-2">
+            {card.displayData.title}
+          </h3>
+          <div className="flex gap-2 flex-wrap">
+            {card.tags.pillars.map((pillar) => (
+              <span
+                key={pillar}
+                className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full"
+              >
+                {pillar}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Swipe Indicators */}
+        <motion.div
+          className="absolute top-12 right-12 text-6xl"
+          style={{
+            opacity: useTransform(x, [0, 100], [0, 1]),
+            rotate: 12,
+          }}
+        >
+          ❤️
+        </motion.div>
+        <motion.div
+          className="absolute top-12 left-12 text-6xl"
+          style={{
+            opacity: useTransform(x, [-100, 0], [1, 0]),
+            rotate: -12,
+          }}
+        >
+          👎
+        </motion.div>
+      </div>
+    </motion.div>
   );
 }
