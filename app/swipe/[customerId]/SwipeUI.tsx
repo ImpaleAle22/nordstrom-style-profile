@@ -1,12 +1,12 @@
 'use client';
 
 /**
- * Swipe UI Component (rebuilt with framer-motion)
+ * Swipe UI Component (framer-motion implementation - done properly)
  * Interactive Tinder-style card interface
  */
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import type { SwipeStack, SwipeCard } from '@/lib/types';
 import { supabase } from '@/lib/supabase-client';
 import Link from 'next/link';
@@ -26,7 +26,6 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
   }>>([]);
   const [isComplete, setIsComplete] = useState(false);
   const [cardStartTime, setCardStartTime] = useState<number>(Date.now());
-  const [exitDirection, setExitDirection] = useState<'left' | 'right' | null>(null);
 
   useEffect(() => {
     setCardStartTime(Date.now());
@@ -55,18 +54,12 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       },
     ];
 
-    // Set exit animation direction
-    setExitDirection(verdict === 'yes' ? 'right' : 'left');
-
     // Move to next card or complete
     if (currentCardIndex >= selectedStack.cards.length - 1) {
       completeSession(newHistory);
     } else {
-      setTimeout(() => {
-        setSwipeHistory(newHistory);
-        setCurrentCardIndex(currentCardIndex + 1);
-        setExitDirection(null);
-      }, 300);
+      setSwipeHistory(newHistory);
+      setCurrentCardIndex(currentCardIndex + 1);
     }
   };
 
@@ -108,10 +101,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       console.error('Failed to save session:', error);
     }
 
-    setTimeout(() => {
-      setIsComplete(true);
-      setExitDirection(null);
-    }, 300);
+    setIsComplete(true);
   };
 
   const backToSelector = () => {
@@ -122,7 +112,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!selectedStack || isComplete || exitDirection) return;
+      if (!selectedStack || isComplete) return;
 
       if (e.key === 'ArrowLeft') {
         handleSwipe('no');
@@ -133,7 +123,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedStack, isComplete, currentCardIndex, swipeHistory, exitDirection]);
+  }, [selectedStack, isComplete, currentCardIndex, swipeHistory]);
 
   if (stacks.length === 0) {
     return (
@@ -276,31 +266,43 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       </div>
 
       {/* Card Area */}
-      <div className="flex-1 flex items-center justify-center p-6 relative">
-        <AnimatePresence mode="wait">
-          {!exitDirection && (
-            <SwipeCard
-              key={currentCard.cardId}
-              card={currentCard}
-              onSwipe={handleSwipe}
-            />
+      <div className="flex-1 flex items-center justify-center p-6">
+        <div className="relative w-full max-w-md h-[70vh] max-h-[600px]">
+          {/* Next card (underneath) */}
+          {currentCardIndex < selectedStack.cards.length - 1 && (
+            <div className="absolute inset-0 w-full h-full">
+              <div className="w-full h-full bg-white rounded-2xl shadow-lg transform scale-95 opacity-50">
+                <div className="w-full h-full rounded-2xl overflow-hidden">
+                  <img
+                    src={selectedStack.cards[currentCardIndex + 1].imageUrl}
+                    alt="Next"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
           )}
-        </AnimatePresence>
+
+          {/* Current card */}
+          <SwipeCard
+            key={currentCard.cardId}
+            card={currentCard}
+            onSwipe={handleSwipe}
+          />
+        </div>
       </div>
 
       {/* Action Buttons */}
       <div className="p-6 flex justify-center gap-6">
         <button
           onClick={() => handleSwipe('no')}
-          disabled={!!exitDirection}
-          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-red-500 hover:text-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-red-500 hover:text-red-500 hover:scale-110 transition-all"
         >
           ✕
         </button>
         <button
           onClick={() => handleSwipe('yes')}
-          disabled={!!exitDirection}
-          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-green-500 hover:text-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-green-500 hover:text-green-500 hover:scale-110 transition-all"
         >
           ❤️
         </button>
@@ -314,7 +316,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
   );
 }
 
-// Individual card component with framer-motion
+// Individual draggable card component
 function SwipeCard({
   card,
   onSwipe,
@@ -323,76 +325,89 @@ function SwipeCard({
   onSwipe: (verdict: 'yes' | 'no') => void;
 }) {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-25, 25]);
+  const rotate = useTransform(x, [-200, 200], [-20, 20]);
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
+
+  const handleDragEnd = (_event: any, info: any) => {
+    const swipeThreshold = 100;
+    const velocityThreshold = 500;
+
+    // Check if swipe is strong enough
+    if (
+      Math.abs(info.offset.x) > swipeThreshold ||
+      Math.abs(info.velocity.x) > velocityThreshold
+    ) {
+      // Determine direction
+      const direction = info.offset.x > 0 ? 'yes' : 'no';
+      const exitX = direction === 'yes' ? 1000 : -1000;
+
+      // Animate off screen
+      animate(x, exitX, {
+        duration: 0.3,
+        ease: 'easeOut',
+        onComplete: () => {
+          onSwipe(direction);
+        },
+      });
+    }
+  };
 
   return (
     <motion.div
-      className="absolute w-full max-w-md h-[70vh] max-h-[600px] bg-white rounded-2xl shadow-2xl cursor-grab active:cursor-grabbing"
+      className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
       style={{ x, rotate, opacity }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={1}
-      onDragEnd={(_, info) => {
-        // Swipe threshold: 100px or velocity > 500
-        if (Math.abs(info.offset.x) > 100 || Math.abs(info.velocity.x) > 500) {
-          if (info.offset.x > 0) {
-            onSwipe('yes');
-          } else {
-            onSwipe('no');
-          }
-        }
-      }}
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.9, opacity: 0 }}
-      transition={{ duration: 0.2 }}
+      dragElastic={0.7}
+      onDragEnd={handleDragEnd}
     >
-      {/* Card Image */}
-      <div className="w-full h-full rounded-2xl overflow-hidden relative">
-        <img
-          src={card.imageUrl}
-          alt={card.displayData.title}
-          className="w-full h-full object-cover pointer-events-none select-none"
-          draggable={false}
-        />
+      <div className="w-full h-full bg-white rounded-2xl shadow-2xl overflow-hidden select-none">
+        {/* Card Image */}
+        <div className="relative w-full h-full">
+          <img
+            src={card.imageUrl}
+            alt={card.displayData.title}
+            className="w-full h-full object-cover pointer-events-none"
+            draggable={false}
+          />
 
-        {/* Overlay Info */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-          <h3 className="text-white text-2xl font-semibold mb-2">
-            {card.displayData.title}
-          </h3>
-          <div className="flex gap-2 flex-wrap">
-            {card.tags.pillars.map((pillar) => (
-              <span
-                key={pillar}
-                className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full"
-              >
-                {pillar}
-              </span>
-            ))}
+          {/* Overlay Info */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 pointer-events-none">
+            <h3 className="text-white text-2xl font-semibold mb-2">
+              {card.displayData.title}
+            </h3>
+            <div className="flex gap-2 flex-wrap">
+              {card.tags.pillars.map((pillar) => (
+                <span
+                  key={pillar}
+                  className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full"
+                >
+                  {pillar}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Swipe Indicators */}
-        <motion.div
-          className="absolute top-12 right-12 text-6xl"
-          style={{
-            opacity: useTransform(x, [0, 100], [0, 1]),
-            rotate: 12,
-          }}
-        >
-          ❤️
-        </motion.div>
-        <motion.div
-          className="absolute top-12 left-12 text-6xl"
-          style={{
-            opacity: useTransform(x, [-100, 0], [1, 0]),
-            rotate: -12,
-          }}
-        >
-          👎
-        </motion.div>
+          {/* Like Indicator */}
+          <motion.div
+            className="absolute top-12 right-12 text-6xl pointer-events-none"
+            style={{
+              opacity: useTransform(x, [0, 100], [0, 1]),
+            }}
+          >
+            ❤️
+          </motion.div>
+
+          {/* Dislike Indicator */}
+          <motion.div
+            className="absolute top-12 left-12 text-6xl pointer-events-none"
+            style={{
+              opacity: useTransform(x, [-100, 0], [1, 0]),
+            }}
+          >
+            👎
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );
