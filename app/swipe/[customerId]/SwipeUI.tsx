@@ -354,25 +354,33 @@ function SwipeCard({
 
   return (
     <motion.div
-      className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
-      style={{ x, rotate, opacity }}
+      className="absolute inset-0 w-full h-full"
+      style={{ x, rotate, opacity, touchAction: 'none' }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
       onDragEnd={handleDragEnd}
+      whileDrag={{ cursor: 'grabbing' }}
     >
-      <div className="w-full h-full bg-white rounded-2xl shadow-2xl overflow-hidden select-none">
+      <div
+        className="w-full h-full bg-white rounded-2xl shadow-2xl overflow-hidden cursor-grab"
+        style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+      >
         {/* Card Image */}
         <div className="relative w-full h-full">
           <img
             src={card.imageUrl}
             alt={card.displayData.title}
-            className="w-full h-full object-cover pointer-events-none"
+            className="w-full h-full object-cover"
             draggable={false}
+            style={{ pointerEvents: 'none', userSelect: 'none' }}
           />
 
           {/* Overlay Info */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 pointer-events-none">
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6"
+            style={{ pointerEvents: 'none' }}
+          >
             <h3 className="text-white text-2xl font-semibold mb-2">
               {card.displayData.title}
             </h3>
@@ -390,9 +398,10 @@ function SwipeCard({
 
           {/* Like Indicator */}
           <motion.div
-            className="absolute top-12 right-12 text-6xl pointer-events-none"
+            className="absolute top-12 right-12 text-6xl"
             style={{
               opacity: useTransform(x, [0, 100], [0, 1]),
+              pointerEvents: 'none',
             }}
           >
             ❤️
@@ -400,9 +409,10 @@ function SwipeCard({
 
           {/* Dislike Indicator */}
           <motion.div
-            className="absolute top-12 left-12 text-6xl pointer-events-none"
+            className="absolute top-12 left-12 text-6xl"
             style={{
               opacity: useTransform(x, [-100, 0], [1, 0]),
+              pointerEvents: 'none',
             }}
           >
             👎
