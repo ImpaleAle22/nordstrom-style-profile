@@ -1929,11 +1929,7 @@ export default function OutfitIngredientEditor({
                       >
                         {product.images && product.images.length > 0 ? (
                           <img
-                            src={
-                              product.images[0].localImagePath
-                                ? `/api/product-image?path=${encodeURIComponent(product.images[0].localImagePath)}`
-                                : product.images[0].url
-                            }
+                            src={product.images[0].url}
                             alt={product.title}
                             style={{
                               width: "100%",
