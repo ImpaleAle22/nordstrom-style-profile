@@ -1,0 +1,687 @@
+/**
+ * Outfit Attribute Tagger
+ *
+ * Hybrid AI + Rules approach to tag outfits with Style Pillar, Vibes, and Occasions.
+ * - Rules layer: Fast, deterministic hints from product composition
+ * - AI layer: Semantic understanding for nuanced cases
+ */
+
+import type { StoredOutfit } from './outfit-storage';
+import type {
+  OutfitAttributes,
+  AttributeHints,
+  StylePillar,
+  Vibe,
+  Occasion
+} from './outfit-attributes';
+import {
+  STYLE_PILLARS,
+  STYLE_PILLAR_METADATA,
+  VIBES,
+  ALL_OCCASIONS,
+  isValidStylePillar,
+  isValidVibe,
+  isValidOccasion
+} from './outfit-attributes';
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+const AI_CONFIDENCE_THRESHOLD = 0.6; // Below this, use AI layer
+const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = 'gemini-2.5-flash-lite'; // Even faster and more cost-effective
+
+// ============================================================================
+// MAIN TAGGING FUNCTION
+// ============================================================================
+
+/**
+ * Tag an outfit with Style Pillar, Vibes, and Occasions
+ * Uses hybrid approach: rules first, AI if needed
+ */
+export async function tagOutfit(outfit: StoredOutfit): Promise<OutfitAttributes> {
+  // Layer 1: Generate rules-based hints
+  const hints = generateRulesBasedHints(outfit);
+
+  // Layer 2: If low confidence, use AI
+  if (hints.maxConfidence < AI_CONFIDENCE_THRESHOLD) {
+    try {
+      const aiTags = await getAITags(outfit, hints);
+      return mergeTagsWithHints(aiTags, hints, 'hybrid');
+    } catch (error) {
+      console.error('AI tagging failed, falling back to rules:', error);
+      return hintsToAttributes(hints, 'rules');
+    }
+  }
+
+  // High confidence from rules alone
+  return hintsToAttributes(hints, 'rules');
+}
+
+// ============================================================================
+// RULES-BASED LAYER
+// ============================================================================
+
+/**
+ * Generate rules-based hints from outfit composition
+ * Fast and deterministic
+ */
+function generateRulesBasedHints(outfit: StoredOutfit): AttributeHints {
+  // Normalize formality from 0-100 scale to 1-6 scale
+  const rawFormality = outfit.scoreBreakdown.occasionAlignment || 50;
+  const normalizedFormality = Math.max(1, Math.min(6, (rawFormality / 100) * 5 + 1));
+
+  const hints: AttributeHints = {
+    stylePillarHints: [],
+    vibeHints: [],
+    occasionHints: [],
+    formality: Math.round(normalizedFormality * 10) / 10,
+    maxConfidence: 0
+  };
+
+  // Extract product types and metadata
+  const productTypes = outfit.items.map(item => {
+    const title = item.product.title.toLowerCase();
+    const department = item.product.department.toLowerCase();
+    return { title, department, role: item.role };
+  });
+
+  // ===== STYLE PILLAR HINTS =====
+
+  // Athletic: All items have sport/active keywords
+  const athleticKeywords = ['athletic', 'sport', 'gym', 'running', 'yoga', 'workout', 'sweat', 'jogger', 'track', 'tennis', 'bra', 'legging', 'tight', 'seamless', 'performance'];
+  const athleticCount = productTypes.filter(p =>
+    athleticKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (athleticCount === outfit.items.length) {
+    hints.stylePillarHints.push({
+      pillar: 'Athletic',
+      confidence: 0.9,
+      reason: 'All items have athletic/sport keywords'
+    });
+  } else if (athleticCount >= outfit.items.length * 0.75) {
+    hints.stylePillarHints.push({
+      pillar: 'Athletic',
+      confidence: 0.7,
+      reason: 'Most items have athletic/sport keywords'
+    });
+  }
+
+  // Utility: Workwear, military, outdoor keywords
+  const utilityKeywords = ['cargo', 'utility', 'work', 'military', 'tactical', 'hiking', 'outdoor', 'field', 'safari'];
+  const utilityCount = productTypes.filter(p =>
+    utilityKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (utilityCount >= outfit.items.length * 0.5) {
+    hints.stylePillarHints.push({
+      pillar: 'Utility',
+      confidence: 0.75,
+      reason: 'Multiple items have utility/workwear keywords'
+    });
+  }
+
+  // Minimal: Sleek, monochromatic, modern keywords
+  const minimalKeywords = ['minimal', 'sleek', 'modern', 'clean', 'simple', 'monochrome'];
+  const minimalCount = productTypes.filter(p =>
+    minimalKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (minimalCount >= outfit.items.length * 0.5) {
+    hints.stylePillarHints.push({
+      pillar: 'Minimal',
+      confidence: 0.65,
+      reason: 'Multiple items have minimal/modern keywords'
+    });
+  }
+
+  // Classic: Tailored, polished, timeless keywords
+  const classicKeywords = ['blazer', 'tailored', 'classic', 'trench', 'oxford', 'loafer', 'pump', 'suit'];
+  const classicCount = productTypes.filter(p =>
+    classicKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (classicCount >= outfit.items.length * 0.5) {
+    hints.stylePillarHints.push({
+      pillar: 'Classic',
+      confidence: 0.7,
+      reason: 'Multiple items have classic/tailored keywords'
+    });
+  }
+
+  // Romantic: Feminine, delicate, soft keywords
+  const romanticKeywords = ['romantic', 'feminine', 'lace', 'floral', 'ruffle', 'delicate', 'soft', 'flowing'];
+  const romanticCount = productTypes.filter(p =>
+    romanticKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (romanticCount >= outfit.items.length * 0.5) {
+    hints.stylePillarHints.push({
+      pillar: 'Romantic',
+      confidence: 0.7,
+      reason: 'Multiple items have romantic/feminine keywords'
+    });
+  }
+
+  // Bohemian: Earthy, textural, vintage keywords
+  const bohemianKeywords = ['boho', 'bohemian', 'vintage', 'crochet', 'embroidered', 'fringe', 'tie-dye'];
+  const bohemianCount = productTypes.filter(p =>
+    bohemianKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (bohemianCount >= outfit.items.length * 0.5) {
+    hints.stylePillarHints.push({
+      pillar: 'Bohemian',
+      confidence: 0.7,
+      reason: 'Multiple items have bohemian/vintage keywords'
+    });
+  }
+
+  // Maximal: Bold, statement pieces, high visual impact
+  const maximalKeywords = ['statement', 'bold', 'tropical', 'glam', 'sequin', 'metallic', 'dramatic', 'embellished'];
+  const maximalCount = productTypes.filter(p =>
+    maximalKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (maximalCount >= outfit.items.length * 0.5) {
+    hints.stylePillarHints.push({
+      pillar: 'Maximal',
+      confidence: 0.7,
+      reason: 'Multiple items have bold/statement keywords'
+    });
+  }
+
+  // Casual: Default for everyday items
+  if (hints.stylePillarHints.length === 0) {
+    hints.stylePillarHints.push({
+      pillar: 'Casual',
+      confidence: 0.5,
+      reason: 'Default for everyday/relaxed items'
+    });
+  }
+
+  // ===== VIBE HINTS =====
+
+  // Energetic: Athletic items OR combination of multiple signals
+  // IMPORTANT: Not all athletic outfits are energetic - check for actual energetic qualities
+  const energeticReasons: string[] = [];
+  let signalCount = 0;
+
+  // Signal 1: Athletic items with energetic context (not just any athletic wear)
+  const hasAthletic = athleticCount > 0;
+  const energeticAthleticKeywords = ['running', 'gym', 'workout', 'sport', 'performance', 'training'];
+  const hasEnergeticAthletic = productTypes.some(p =>
+    energeticAthleticKeywords.some(kw => p.title.includes(kw))
+  );
+  if (hasAthletic && hasEnergeticAthletic) {
+    signalCount++;
+    energeticReasons.push('energetic athletic items');
+  }
+
+  // Signal 2: Bright/vibrant colors (multiple bright colors, not just one)
+  const brightColors = ['red', 'orange', 'yellow', 'hot pink', 'neon', 'electric blue', 'bright blue', 'vibrant', 'pink', 'turquoise'];
+  const allColors = outfit.items.flatMap(item => item.product.colors || []);
+  const brightColorMatches = allColors.filter(color =>
+    brightColors.some(bright => color.toLowerCase().includes(bright))
+  );
+  const hasBrightColors = brightColorMatches.length >= 2;
+  if (hasBrightColors) {
+    signalCount++;
+    energeticReasons.push('multiple bright colors');
+  }
+
+  // Signal 3: Maximal style indicators
+  const hasMaximalStyle = maximalCount > 0;
+  if (hasMaximalStyle) {
+    signalCount++;
+    energeticReasons.push('bold/maximal style');
+  }
+
+  // Signal 4: High-contrast combinations (4+ distinct colors)
+  const uniqueColors = new Set(allColors.map(c => c.toLowerCase()));
+  const hasHighContrast = uniqueColors.size >= 4;
+  if (hasHighContrast) {
+    signalCount++;
+    energeticReasons.push('high-contrast colors');
+  }
+
+  // Tagging logic:
+  // - Energetic athletic alone: medium confidence (0.65) - not all athletic is energetic
+  // - 2+ other signals: medium confidence (0.65)
+  // - 3+ signals total: high confidence (0.8)
+  let energeticConfidence = 0;
+  if (hasAthletic && hasEnergeticAthletic && signalCount >= 2) {
+    energeticConfidence = 0.75;
+  } else if (signalCount >= 3) {
+    energeticConfidence = 0.8;
+  } else if (signalCount >= 2) {
+    energeticConfidence = 0.65;
+  }
+
+  if (energeticConfidence > 0) {
+    hints.vibeHints.push({
+      vibe: 'Energetic',
+      confidence: energeticConfidence,
+      reason: `Energetic vibe from ${energeticReasons.join(', ')}`
+    });
+  }
+
+  // Relaxed/Cozy: Loungewear, casual items
+  const relaxedKeywords = ['lounge', 'cozy', 'comfort', 'relaxed', 'casual', 'sweat', 'hoodie'];
+  const relaxedCount = productTypes.filter(p =>
+    relaxedKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (relaxedCount > 0) {
+    hints.vibeHints.push({
+      vibe: 'Relaxed',
+      confidence: 0.75,
+      reason: 'Loungewear/casual items suggest relaxed vibe'
+    });
+    if (relaxedKeywords.some(kw => productTypes.some(p => p.title.includes(kw) && ['cozy', 'comfort'].includes(kw)))) {
+      hints.vibeHints.push({
+        vibe: 'Cozy',
+        confidence: 0.75,
+        reason: 'Cozy/comfort items'
+      });
+    }
+  }
+
+  // Effortless: Common in casual outfits with simple, everyday pieces
+  const effortlessKeywords = ['tank', 'tee', 't-shirt', 'jeans', 'denim', 'sneaker', 'loafer', 'sandal', 'slip-on'];
+  const effortlessCount = productTypes.filter(p =>
+    effortlessKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (effortlessCount >= 2 && hints.formality <= 3) {
+    hints.vibeHints.push({
+      vibe: 'Effortless',
+      confidence: 0.7,
+      reason: 'Simple, everyday pieces suggest effortless vibe'
+    });
+  }
+
+  // Approachable: Casual, comfortable items
+  if (hints.formality <= 2.5 && effortlessCount >= 2) {
+    hints.vibeHints.push({
+      vibe: 'Approachable',
+      confidence: 0.65,
+      reason: 'Casual, comfortable items suggest approachable vibe'
+    });
+  }
+
+  // Professional/Polished: Business items
+  const professionalKeywords = ['blazer', 'suit', 'dress shirt', 'oxford', 'trouser', 'pump'];
+  const professionalCount = productTypes.filter(p =>
+    professionalKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (professionalCount >= 2) {
+    hints.vibeHints.push({
+      vibe: 'Professional',
+      confidence: 0.8,
+      reason: 'Business/tailored items suggest professional vibe'
+    });
+    hints.vibeHints.push({
+      vibe: 'Polished',
+      confidence: 0.75,
+      reason: 'Tailored items suggest polished vibe'
+    });
+  }
+
+  // Confident: Bold, statement items OR high formality
+  const confidentKeywords = ['bold', 'statement', 'power', 'strong', 'leather', 'biker'];
+  const confidentCount = productTypes.filter(p =>
+    confidentKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  if (confidentCount > 0 || hints.formality >= 4.5) {
+    hints.vibeHints.push({
+      vibe: 'Confident',
+      confidence: 0.65,
+      reason: 'Bold items or high formality suggest confident vibe'
+    });
+  }
+
+  // Elegant: Formal, dressy items
+  if (hints.formality >= 5) {
+    hints.vibeHints.push({
+      vibe: 'Elegant',
+      confidence: 0.75,
+      reason: 'High formality suggests elegant vibe'
+    });
+  }
+
+  // Fresh: Light colors, casual summer items
+  const freshKeywords = ['linen', 'cotton', 'light', 'summer', 'sandal', 'espadrille'];
+  const freshCount = productTypes.filter(p =>
+    freshKeywords.some(kw => p.title.includes(kw))
+  ).length;
+  const lightColors = ['white', 'light blue', 'light pink', 'beige', 'off white', 'light beige'];
+  const lightColorMatches = allColors.filter(color =>
+    lightColors.some(light => color.toLowerCase().includes(light))
+  );
+  if (freshCount >= 2 || lightColorMatches.length >= 2) {
+    hints.vibeHints.push({
+      vibe: 'Fresh',
+      confidence: 0.65,
+      reason: 'Light colors or summer items suggest fresh vibe'
+    });
+  }
+
+  // ===== OCCASION HINTS =====
+
+  // Workout: Athletic items
+  if (athleticCount === outfit.items.length) {
+    hints.occasionHints.push({
+      occasion: 'Workout',
+      confidence: 0.9,
+      reason: 'All items are athletic/sportswear'
+    });
+  }
+
+  // Work: Professional items
+  if (professionalCount >= 2 && hints.formality >= 3.5) {
+    hints.occasionHints.push({
+      occasion: 'Working in the Office',
+      confidence: 0.8,
+      reason: 'Professional items with appropriate formality'
+    });
+  }
+
+  // Casual occasions: Low formality
+  if (hints.formality <= 2.5) {
+    hints.occasionHints.push({
+      occasion: 'Weekend',
+      confidence: 0.7,
+      reason: 'Low formality suggests casual/weekend wear'
+    });
+    hints.occasionHints.push({
+      occasion: 'Running Errands',
+      confidence: 0.65,
+      reason: 'Casual formality'
+    });
+  }
+
+  // Coffee Date / Lunch with Friends: Mid-low formality, casual social
+  if (hints.formality >= 2 && hints.formality <= 3.5 && effortlessCount >= 2) {
+    hints.occasionHints.push({
+      occasion: 'Coffee Date',
+      confidence: 0.7,
+      reason: 'Casual, comfortable items for social outings'
+    });
+    hints.occasionHints.push({
+      occasion: 'Lunch with Friends',
+      confidence: 0.65,
+      reason: 'Relaxed social formality'
+    });
+  }
+
+  // Brunch: Similar to coffee date but slightly more put-together
+  if (hints.formality >= 2.5 && hints.formality <= 3.5 && effortlessCount >= 1) {
+    hints.occasionHints.push({
+      occasion: 'Brunch',
+      confidence: 0.65,
+      reason: 'Casual social formality'
+    });
+  }
+
+  // Date Night / Night Out: Mid-high formality, dressy
+  if (hints.formality >= 3.5 && hints.formality <= 5) {
+    const dressyKeywords = ['dress', 'heel', 'cocktail', 'dressy'];
+    const dressyCount = productTypes.filter(p =>
+      dressyKeywords.some(kw => p.title.includes(kw))
+    ).length;
+    if (dressyCount > 0) {
+      hints.occasionHints.push({
+        occasion: 'Date Night',
+        confidence: 0.65,
+        reason: 'Dressy items with evening-appropriate formality'
+      });
+    }
+  }
+
+  // Formal events: High formality
+  if (hints.formality >= 5.5) {
+    hints.occasionHints.push({
+      occasion: 'Black Tie / Gala',
+      confidence: 0.8,
+      reason: 'Very high formality'
+    });
+  }
+
+  // Calculate max confidence
+  hints.maxConfidence = Math.max(
+    ...hints.stylePillarHints.map(h => h.confidence),
+    ...hints.vibeHints.map(h => h.confidence),
+    ...hints.occasionHints.map(h => h.confidence),
+    0
+  );
+
+  return hints;
+}
+
+/**
+ * Convert hints to OutfitAttributes (rules-only path)
+ */
+function hintsToAttributes(hints: AttributeHints, taggedBy: 'rules' | 'hybrid'): OutfitAttributes {
+  // Pick top Style Pillar
+  const topStylePillar = hints.stylePillarHints.sort((a, b) => b.confidence - a.confidence)[0];
+
+  // Pick top vibes (up to 3)
+  const topVibes = hints.vibeHints
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, 3)
+    .filter(v => v.confidence >= 0.5);
+
+  // Pick top occasions (up to 3)
+  const topOccasions = hints.occasionHints
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, 3)
+    .filter(o => o.confidence >= 0.5);
+
+  return {
+    stylePillar: topStylePillar?.pillar || null,
+    vibes: topVibes.map(v => v.vibe),
+    occasions: topOccasions.map(o => o.occasion),
+    formality: hints.formality,
+    confidence: {
+      stylePillar: topStylePillar?.confidence || 0,
+      vibes: topVibes.length > 0 ? topVibes[0].confidence : 0,
+      occasions: topOccasions.length > 0 ? topOccasions[0].confidence : 0
+    },
+    taggedAt: new Date().toISOString(),
+    taggedBy,
+    reasoning: `Rules-based: ${topStylePillar?.reason || 'No strong pillar signal'}`
+  };
+}
+
+// ============================================================================
+// AI LAYER
+// ============================================================================
+
+/**
+ * Get AI-based tags using Gemini (with retry logic)
+ */
+async function getAITags(outfit: StoredOutfit, hints: AttributeHints): Promise<OutfitAttributes> {
+  const prompt = buildTaggingPrompt(outfit, hints);
+  const maxRetries = 5;
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      // Use server-side proxy to avoid SSL issues in browser
+      const response = await fetch('/api/gemini-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: GEMINI_MODEL,
+          prompt: prompt,
+          generationConfig: {
+            temperature: 0.3, // Low temperature for consistency
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024
+          }
+        })
+      });
+
+      if (!response.ok) {
+        // Check if it's a rate limit or server error
+        if (response.status === 429 || response.status === 503 || response.status === 500) {
+          // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+          const delayMs = Math.min(1000 * Math.pow(2, attempt), 16000);
+          console.log(`⏳ Rate limited (${response.status}), retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+          lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
+          continue;
+        }
+        throw new Error(`Gemini API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (!text) {
+        throw new Error('Empty response from Gemini');
+      }
+
+      return parseAIResponse(text, hints);
+
+    } catch (error: any) {
+      lastError = error;
+
+      // If it's a network error, retry
+      if (attempt < maxRetries - 1 && (error.message.includes('fetch') || error.message.includes('network'))) {
+        const delayMs = Math.min(1000 * Math.pow(2, attempt), 16000);
+        console.log(`⏳ Network error, retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+        continue;
+      }
+
+      // If it's the last attempt or non-retryable error, throw
+      if (attempt === maxRetries - 1) {
+        throw lastError;
+      }
+    }
+  }
+
+  throw lastError || new Error('Failed after retries');
+}
+
+/**
+ * Build tagging prompt for AI
+ */
+function buildTaggingPrompt(outfit: StoredOutfit, hints: AttributeHints): string {
+  const itemsDesc = outfit.items.map(item => {
+    const parts = [
+      `- ${item.role}: ${item.product.title}`,
+      `  Brand: ${item.product.brand}`,
+      `  Department: ${item.product.department}`
+    ];
+
+    // Add colors if available
+    if (item.product.colors && item.product.colors.length > 0) {
+      parts.push(`  Colors: ${item.product.colors.join(', ')}`);
+    }
+
+    return parts.join('\n');
+  }).join('\n\n');
+
+  const hintsSummary = `
+Rules-based hints:
+- Style Pillar hints: ${hints.stylePillarHints.map(h => `${h.pillar} (${h.confidence.toFixed(2)})`).join(', ') || 'None'}
+- Vibe hints: ${hints.vibeHints.map(h => `${h.vibe} (${h.confidence.toFixed(2)})`).join(', ') || 'None'}
+- Occasion hints: ${hints.occasionHints.map(h => `${h.occasion} (${h.confidence.toFixed(2)})`).join(', ') || 'None'}
+- Formality: ${hints.formality.toFixed(1)} (1=very casual, 6=black tie)
+`;
+
+  return `You are a fashion expert analyzing outfits. Assign semantic attributes to this outfit.
+
+OUTFIT:
+${itemsDesc}
+
+${hintsSummary}
+
+INSTRUCTIONS:
+1. Style Pillar (pick EXACTLY ONE):
+   Options: ${STYLE_PILLARS.join(', ')}
+
+2. Vibes (pick 1-3 that best describe the emotional feel):
+   Options: ${VIBES.join(', ')}
+
+3. Occasions (pick 1-3 suitable occasions):
+   Options: ${ALL_OCCASIONS.join(', ')}
+
+4. Confidence scores (0-1) for each category
+
+5. Brief reasoning (1-2 sentences)
+
+Respond in JSON format:
+{
+  "stylePillar": "Classic",
+  "vibes": ["Confident", "Polished"],
+  "occasions": ["Working in the Office", "Interview"],
+  "confidence": {
+    "stylePillar": 0.85,
+    "vibes": 0.80,
+    "occasions": 0.75
+  },
+  "reasoning": "Classic tailored pieces in professional setting."
+}`;
+}
+
+/**
+ * Parse AI response into OutfitAttributes
+ */
+function parseAIResponse(text: string, hints: AttributeHints): OutfitAttributes {
+  // Extract JSON from response (handle markdown code blocks)
+  let jsonStr = text.trim();
+  if (jsonStr.startsWith('```')) {
+    jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+  }
+
+  try {
+    const parsed = JSON.parse(jsonStr);
+
+    // Validate and sanitize
+    const stylePillar = isValidStylePillar(parsed.stylePillar) ? parsed.stylePillar : null;
+    const vibes = Array.isArray(parsed.vibes)
+      ? parsed.vibes.filter(isValidVibe).slice(0, 3)
+      : [];
+    const occasions = Array.isArray(parsed.occasions)
+      ? parsed.occasions.filter(isValidOccasion).slice(0, 3)
+      : [];
+
+    return {
+      stylePillar,
+      vibes,
+      occasions,
+      formality: hints.formality,
+      confidence: {
+        stylePillar: parsed.confidence?.stylePillar || 0.7,
+        vibes: parsed.confidence?.vibes || 0.7,
+        occasions: parsed.confidence?.occasions || 0.7
+      },
+      taggedAt: new Date().toISOString(),
+      taggedBy: 'ai',
+      reasoning: parsed.reasoning || 'AI-generated tags'
+    };
+  } catch (error) {
+    console.error('Failed to parse AI response:', error);
+    // Fallback to rules
+    return hintsToAttributes(hints, 'hybrid');
+  }
+}
+
+/**
+ * Merge AI tags with rules-based hints
+ */
+function mergeTagsWithHints(
+  aiTags: OutfitAttributes,
+  hints: AttributeHints,
+  taggedBy: 'hybrid'
+): OutfitAttributes {
+  // Use AI tags but boost confidence if rules agree
+  const topStyleHint = hints.stylePillarHints[0];
+  if (topStyleHint && topStyleHint.pillar === aiTags.stylePillar) {
+    aiTags.confidence.stylePillar = Math.min(
+      1,
+      aiTags.confidence.stylePillar + 0.1
+    );
+  }
+
+  aiTags.taggedBy = taggedBy;
+  return aiTags;
+}

@@ -1,0 +1,206 @@
+{
+  "timestamp": "2026-04-16T00:00:00.000Z",
+  "totalProducts": 49768,
+  "analysis": [
+    {
+      "pillar": "Athletic",
+      "productCount": 6220,
+      "percent": 12.5,
+      "status": "strong",
+      "canBuildOutfits": true,
+      "priority": "HIGH",
+      "recommendation": "Create 5-10 Athletic outfit recipes",
+      "categories": {
+        "Tops": 4835,
+        "Bottoms": 835,
+        "Shoes": 219,
+        "Accessories": 124,
+        "Underwear": 93,
+        "Clothing": 48,
+        "Outerwear": 39,
+        "Dresses": 12
+      },
+      "currentOutfitPercent": 1,
+      "gap": "HUGE - 6,220 products but only 1% of outfits"
+    },
+    {
+      "pillar": "Casual",
+      "productCount": 5730,
+      "percent": 11.5,
+      "status": "strong",
+      "canBuildOutfits": true,
+      "priority": "LOW",
+      "recommendation": "Well covered - 68% of current outfits",
+      "categories": {
+        "Tops": 5246,
+        "Bottoms": 280,
+        "Dresses": 77,
+        "Outerwear": 43,
+        "Shoes": 20
+      },
+      "currentOutfitPercent": 68,
+      "gap": "None - well represented"
+    },
+    {
+      "pillar": "Romantic",
+      "productCount": 4248,
+      "percent": 8.5,
+      "status": "strong",
+      "canBuildOutfits": true,
+      "priority": "HIGH",
+      "recommendation": "Create 5-10 Romantic outfit recipes",
+      "categories": {
+        "Tops": 1249,
+        "Dresses": 1007,
+        "Jewelry": 543,
+        "Shoes": 468,
+        "Bottoms": 405,
+        "Accessories": 373,
+        "Outerwear": 106
+      },
+      "currentOutfitPercent": 0,
+      "gap": "HUGE - 4,248 products but 0% of outfits"
+    },
+    {
+      "pillar": "Classic",
+      "productCount": 2473,
+      "percent": 5.0,
+      "status": "strong",
+      "canBuildOutfits": true,
+      "priority": "LOW",
+      "recommendation": "Well covered - 30% of current outfits",
+      "categories": {
+        "Outerwear": 1015,
+        "Tops": 411,
+        "Shoes": 309,
+        "Bottoms": 300,
+        "Jumpsuits/Coveralls": 196,
+        "Swimwear": 75,
+        "Accessories": 75,
+        "Dresses": 35
+      },
+      "currentOutfitPercent": 30,
+      "gap": "None - well represented"
+    },
+    {
+      "pillar": "Utility",
+      "productCount": 380,
+      "percent": 0.8,
+      "status": "moderate",
+      "canBuildOutfits": true,
+      "priority": "MEDIUM",
+      "recommendation": "Create 5-10 Utility outfit recipes",
+      "categories": {
+        "Bottoms": 256,
+        "Outerwear": 65,
+        "Tops": 35,
+        "Shoes": 10,
+        "Accessories": 8
+      },
+      "currentOutfitPercent": 1,
+      "gap": "Moderate - 380 products, minimal current outfits"
+    },
+    {
+      "pillar": "Fashion Forward",
+      "productCount": 260,
+      "percent": 0.5,
+      "status": "moderate",
+      "canBuildOutfits": false,
+      "priority": "LOW",
+      "recommendation": "Cannot build - need more bottoms and shoes",
+      "categories": {
+        "Tops": 188,
+        "Outerwear": 48,
+        "Accessories": 6,
+        "Dresses": 6,
+        "Bottoms": 4,
+        "Shoes": 0
+      },
+      "currentOutfitPercent": 0,
+      "gap": "Insufficient products in key categories"
+    },
+    {
+      "pillar": "Maximal",
+      "productCount": 204,
+      "percent": 0.4,
+      "status": "moderate",
+      "canBuildOutfits": false,
+      "priority": "LOW",
+      "recommendation": "Cannot build - need more shoes",
+      "categories": {
+        "Dresses": 71,
+        "Bottoms": 52,
+        "Tops": 36,
+        "Jewelry": 14,
+        "Accessories": 12,
+        "Outerwear": 7,
+        "Shoes": 4
+      },
+      "currentOutfitPercent": 0,
+      "gap": "Insufficient products in key categories"
+    },
+    {
+      "pillar": "Bohemian",
+      "productCount": 157,
+      "percent": 0.3,
+      "status": "low",
+      "canBuildOutfits": true,
+      "priority": "MEDIUM",
+      "recommendation": "Create 3-5 Bohemian outfit recipes",
+      "categories": {
+        "Bottoms": 44,
+        "Dresses": 42,
+        "Tops": 36,
+        "Accessories": 18,
+        "Outerwear": 5,
+        "Shoes": 5
+      },
+      "currentOutfitPercent": 0,
+      "gap": "Moderate - 157 products, 0% current outfits"
+    },
+    {
+      "pillar": "Minimal",
+      "productCount": 38,
+      "percent": 0.1,
+      "status": "critical",
+      "canBuildOutfits": false,
+      "priority": "LOW",
+      "recommendation": "Cannot build - critical gap in bottoms, shoes, dresses",
+      "categories": {
+        "Tops": 25,
+        "Accessories": 4,
+        "Bottoms": 3,
+        "Jewelry": 2,
+        "Swimwear": 1,
+        "Outerwear": 1,
+        "Dresses": 1,
+        "Shoes": 1
+      },
+      "currentOutfitPercent": 0,
+      "gap": "Critical - only 38 products total"
+    }
+  ],
+  "summary": {
+    "readyToBuild": ["Athletic", "Romantic", "Utility", "Bohemian"],
+    "wellCovered": ["Casual", "Classic"],
+    "insufficientProducts": ["Minimal", "Fashion Forward", "Maximal"],
+    "biggestOpportunities": [
+      {
+        "pillar": "Athletic",
+        "reason": "6,220 products available but only 1% of outfits"
+      },
+      {
+        "pillar": "Romantic",
+        "reason": "4,248 products available but 0% of outfits"
+      },
+      {
+        "pillar": "Utility",
+        "reason": "380 products available but only 1% of outfits"
+      },
+      {
+        "pillar": "Bohemian",
+        "reason": "157 products available but 0% of outfits"
+      }
+    ]
+  }
+}

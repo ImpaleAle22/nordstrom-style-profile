@@ -1,0 +1,102 @@
+{
+  "patterns": [
+    {
+      "id": "modern-minimalist",
+      "name": "Modern Minimalist",
+      "description": "Tailored/dress pants + casual top + sneakers (tech executive, European streetwear)",
+      "enabled": true,
+      "rules": {
+        "bottoms": {
+          "minFormality": 4,
+          "keywords": ["tailored", "dress pant", "dress trouser"]
+        },
+        "tops": {
+          "maxFormality": 2,
+          "keywords": ["t-shirt", "tee", "crewneck", "v-neck"]
+        },
+        "shoes": {
+          "keywords": ["sneaker"]
+        }
+      }
+    },
+    {
+      "id": "classic-smart-casual",
+      "name": "Classic Smart Casual",
+      "description": "Blazer + jeans + anything",
+      "enabled": true,
+      "rules": {
+        "anyItem": {
+          "keywords": ["blazer"]
+        },
+        "bottoms": {
+          "keywords": ["jean", "denim"]
+        }
+      }
+    },
+    {
+      "id": "edgy-feminine",
+      "name": "Edgy Feminine",
+      "description": "Dress + leather/moto/bomber jacket",
+      "enabled": true,
+      "rules": {
+        "one-piece": {
+          "required": true
+        },
+        "outerwear": {
+          "keywords": ["leather", "moto", "bomber"]
+        }
+      }
+    },
+    {
+      "id": "casual-dress-down",
+      "name": "Casual Dress-Down",
+      "description": "Midi/maxi/slip dress + sneakers",
+      "enabled": true,
+      "rules": {
+        "one-piece": {
+          "keywords": ["midi", "maxi", "slip dress"]
+        },
+        "shoes": {
+          "keywords": ["sneaker"]
+        }
+      }
+    },
+    {
+      "id": "tech-executive",
+      "name": "Tech Executive",
+      "description": "Suit/blazer + t-shirt + sneakers",
+      "enabled": true,
+      "rules": {
+        "anyItem": {
+          "keywords": ["suit", "blazer"]
+        },
+        "tops": {
+          "maxFormality": 2,
+          "keywords": ["t-shirt", "tee"]
+        },
+        "shoes": {
+          "keywords": ["sneaker"]
+        }
+      }
+    },
+    {
+      "id": "athleisure-elevated",
+      "name": "Athleisure Elevated",
+      "description": "Athletic wear with elevated pieces (joggers + blazer, hoodie + dress pants)",
+      "enabled": false,
+      "rules": {
+        "anyItem": {
+          "keywords": ["jogger", "sweatpant", "hoodie", "sweatshirt"]
+        },
+        "anyItem2": {
+          "keywords": ["blazer", "coat", "dress pant", "tailored"]
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2026-04-14",
+    "notes": "Add new patterns here as we discover valid smart casual combinations. Set 'enabled: false' to temporarily disable a pattern without deleting it."
+  }
+}
