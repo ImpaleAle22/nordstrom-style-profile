@@ -270,15 +270,12 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
         <div className="relative w-full max-w-md h-[70vh] max-h-[600px]">
           {/* Next card (underneath) */}
           {currentCardIndex < selectedStack.cards.length - 1 && (
-            <div className="absolute inset-0 w-full h-full">
+            <div className="absolute inset-0 w-full h-full pointer-events-none">
               <div className="w-full h-full bg-white rounded-2xl shadow-lg transform scale-95 opacity-50">
-                <div className="w-full h-full rounded-2xl overflow-hidden">
-                  <img
-                    src={selectedStack.cards[currentCardIndex + 1].imageUrl}
-                    alt="Next"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <div
+                  className="w-full h-full rounded-2xl overflow-hidden bg-cover bg-center"
+                  style={{ backgroundImage: `url(${selectedStack.cards[currentCardIndex + 1].imageUrl})` }}
+                />
               </div>
             </div>
           )}
@@ -366,15 +363,11 @@ function SwipeCard({
         className="w-full h-full bg-white rounded-2xl shadow-2xl overflow-hidden cursor-grab"
         style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
       >
-        {/* Card Image */}
-        <div className="relative w-full h-full">
-          <img
-            src={card.imageUrl}
-            alt={card.displayData.title}
-            className="w-full h-full object-cover"
-            draggable={false}
-            style={{ pointerEvents: 'none', userSelect: 'none' }}
-          />
+        {/* Card Image - using background-image to prevent native drag */}
+        <div
+          className="relative w-full h-full bg-cover bg-center"
+          style={{ backgroundImage: `url(${card.imageUrl})` }}
+        >
 
           {/* Overlay Info */}
           <div
