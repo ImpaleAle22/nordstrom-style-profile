@@ -48,6 +48,14 @@ export interface UnifiedRecipe {
       outputTokens: number;
       totalTokens: number;
     };
+    // Lifestyle image specific data (only for ai-lifestyle-vision source)
+    lifestyleImageData?: {
+      stylePillar: string;
+      subTerm: string;
+      vibes: string[];
+      occasions: string[];
+      brandAdherence: any; // TODO: type this properly
+    };
   };
 }
 
