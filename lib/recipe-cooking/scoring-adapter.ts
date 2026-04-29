@@ -7,11 +7,11 @@ import type { ClipProduct, OutfitCombination, ScoredOutfit, IngredientWithProduc
 import {
   evaluateOutfitTwoScore,
   type RecipeContext,
-} from '../../../services/outfit-composer/src/scoring';
+} from '../../services/outfit-composer/src/scoring';
 import type {
   Product,
   CustomerSignals,
-} from '../../../services/outfit-composer/src/types';
+} from '../../services/outfit-composer/src/types';
 
 /**
  * Convert ClipProduct to scoring engine Product format

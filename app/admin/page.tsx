@@ -6,7 +6,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import CategoryIcon from '@mui/icons-material/Category';
 import WarningIcon from '@mui/icons-material/Warning';
 import { useState, useEffect } from 'react';
-import { getProductGapCount } from '../lib/indexeddb-storage';
+import { getProductGapCount } from '../../lib/indexeddb-storage';
 
 export default function Home() {
   const [gapCount, setGapCount] = useState<number>(0);
