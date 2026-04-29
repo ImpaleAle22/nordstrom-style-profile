@@ -18,7 +18,7 @@ function loadProducts(): any[] {
   try {
     const data = fs.readFileSync(PRODUCTS_FILE, 'utf8');
     cachedProducts = JSON.parse(data);
-    return cachedProducts;
+    return cachedProducts || [];
   } catch (error) {
     console.error('Error loading products:', error);
     return [];
