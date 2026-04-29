@@ -12,7 +12,7 @@ import path from 'path';
 const PRODUCTS_FILE = path.join(process.cwd(), '../scripts/products-MASTER-SOURCE-OF-TRUTH.json');
 let cachedProducts: any[] | null = null;
 
-function loadProducts() {
+function loadProducts(): any[] {
   if (cachedProducts) return cachedProducts;
 
   try {
