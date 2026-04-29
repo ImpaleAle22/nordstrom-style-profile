@@ -257,10 +257,11 @@ export interface OutfitAttributes {
     socialRegister: number;
     stylePillar: number;
     vibes: number;
+    occasions: number;
   };
 
   taggedAt: string; // ISO timestamp
-  taggedBy: 'rules' | 'hybrid'; // Overall tagging mode
+  taggedBy: 'rules' | 'ai' | 'hybrid'; // Overall tagging mode
 
   axisTaggedBy: {
     formality: 'rules' | 'ai';
@@ -293,7 +294,7 @@ export interface AttributeHints {
  */
 export function getOccasionCategory(occasion: Occasion): OccasionCategory | null {
   for (const [category, occasions] of Object.entries(OCCASIONS)) {
-    if (occasions.includes(occasion as any)) {
+    if ((occasions as readonly string[]).includes(occasion)) {
       return category as OccasionCategory;
     }
   }

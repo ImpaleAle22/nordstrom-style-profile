@@ -110,6 +110,7 @@ export interface OutfitAttributes {
     socialRegister: number;
     stylePillar: number;
     vibes: number;
+    occasions: number;
   };
 
   taggedAt: string;  // ISO timestamp

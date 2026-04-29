@@ -6,63 +6,13 @@
 import type { ScoredOutfit } from './recipe-cooking/types';
 import type { OutfitAttributes } from './outfit-attributes';
 import * as IDB from './indexeddb-storage';
+import type { StoredOutfit } from './indexeddb-storage';
 
 const LEGACY_STORAGE_KEY = 'cooked-outfits';
 const MIGRATION_FLAG_KEY = 'outfits-migrated-to-indexeddb';
 
-export interface StoredOutfit {
-  outfitId: string;
-  recipeId: string;
-  recipeTitle: string;
-  department: string;
-  generatedAt: string;
-  strategy: string;
-  confidenceScore: number; // Legacy - same as qualityScore
-  qualityScore: number; // New two-score system
-  alignmentScore: number; // New two-score system
-  poolTier: 'primary' | 'secondary' | 'suppressed' | 'happy-accident';
-  scoreBreakdown: {
-    styleRegisterCoherence: number;
-    colorHarmony: number;
-    silhouetteBalance: number;
-    occasionAlignment: number;
-    seasonFabricWeight: number;
-  };
-  items: Array<{
-    role: string;
-    ingredientTitle: string;
-    product: {
-      id: string;
-      title: string;
-      brand: string;
-      price: number;
-      imageUrl: string;
-      department: string;
-      colors?: string[];
-
-      // Rich metadata (NEW - for attribute tagging)
-      description?: string;
-      materials?: string[];
-      patterns?: string | string[];
-      silhouette?: string;
-      garmentLength?: string;
-      neckline?: string;
-      sleeveStyle?: string;
-      fitDetails?: string;
-      details?: string[];
-      productType2?: string;
-      productType3?: string;
-      productType4?: string;
-      weatherContext?: string[];
-      productFeatures?: string[];
-      visualAttributes?: string[];
-      visionReasoning?: string;
-    };
-  }>;
-  reasoning?: string;
-  linkedToRecipe?: boolean;
-  attributes?: OutfitAttributes; // Semantic tags: Style Pillar, Vibes, Occasions
-}
+// Re-export StoredOutfit from indexeddb-storage to avoid type conflicts
+export type { StoredOutfit } from './indexeddb-storage';
 
 /**
  * Migrate localStorage outfits to IndexedDB (runs once automatically)

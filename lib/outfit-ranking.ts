@@ -240,7 +240,7 @@ function calculateDiversityScore(outfit: StoredOutfit): number {
   // - Style mixing creativity (intentional contrast)
 
   // For now, use style mixing as a proxy
-  const styleRegisters = outfit.items.map((item) => item.product.productType1 || 'Unknown');
+  const styleRegisters = outfit.items.map((item) => item.product.productType2 || 'Unknown');
   const uniqueStyles = new Set(styleRegisters).size;
 
   // More diverse items = higher score

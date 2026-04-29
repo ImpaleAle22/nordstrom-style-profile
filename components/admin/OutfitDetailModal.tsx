@@ -26,7 +26,7 @@ import {
   TableCell,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import type { StoredOutfit } from '../lib/outfit-storage';
+import type { StoredOutfit } from '../../lib/outfit-storage';
 
 interface OutfitDetailModalProps {
   outfit: StoredOutfit | null;

@@ -135,13 +135,13 @@ export async function tagOutfit(outfit: StoredOutfit): Promise<OutfitAttributes>
   }
 
   // PHASE 3: Derive Occasions (deterministic from axes)
-  const occasions = deriveOccasions(refinedAxes, hasBoldSignal);
+  const occasions = deriveOccasions(refinedAxes, hasBoldSignal) as Occasion[];
 
   // PHASE 4: Tag Style Pillar + Vibes (preserved from old system)
   const hints = generateRulesBasedHints(outfit);
-  let stylePillar: string | null = null;
+  let stylePillar: StylePillar | null = null;
   let subStyle: string | null = null;
-  let vibes: string[] = [];
+  let vibes: Vibe[] = [];
   let styleConfidence = 0;
   let vibeConfidence = 0;
   let styleTaggedBy: 'rules' | 'ai' = 'rules';
@@ -150,24 +150,24 @@ export async function tagOutfit(outfit: StoredOutfit): Promise<OutfitAttributes>
   if (hints.maxConfidence < STYLE_VIBE_CONFIDENCE_THRESHOLD) {
     try {
       const styleVibeTags = await getStyleVibeTags(outfit, hints);
-      stylePillar = styleVibeTags.stylePillar;
+      stylePillar = styleVibeTags.stylePillar as StylePillar | null;
       subStyle = styleVibeTags.subStyle;
-      vibes = styleVibeTags.vibes;
+      vibes = styleVibeTags.vibes as Vibe[];
       styleConfidence = styleVibeTags.confidence.stylePillar;
       vibeConfidence = styleVibeTags.confidence.vibes;
       styleTaggedBy = 'ai';
     } catch (error) {
       console.error('Style/vibe AI tagging failed, falling back to rules:', error);
       const fallback = hintsToStyleVibes(hints);
-      stylePillar = fallback.stylePillar;
-      vibes = fallback.vibes;
+      stylePillar = fallback.stylePillar as StylePillar | null;
+      vibes = fallback.vibes as Vibe[];
       styleConfidence = fallback.confidence.stylePillar;
       vibeConfidence = fallback.confidence.vibes;
     }
   } else {
     const rulesStyleVibes = hintsToStyleVibes(hints);
-    stylePillar = rulesStyleVibes.stylePillar;
-    vibes = rulesStyleVibes.vibes;
+    stylePillar = rulesStyleVibes.stylePillar as StylePillar | null;
+    vibes = rulesStyleVibes.vibes as Vibe[];
     styleConfidence = rulesStyleVibes.confidence.stylePillar;
     vibeConfidence = rulesStyleVibes.confidence.vibes;
   }
@@ -209,6 +209,7 @@ export async function tagOutfit(outfit: StoredOutfit): Promise<OutfitAttributes>
       socialRegister: refinedAxes.socialRegister.confidence,
       stylePillar: styleConfidence,
       vibes: vibeConfidence,
+      occasions: 1.0, // Derived mechanically from axes, always 100% confident
     },
     taggedAt: new Date().toISOString(),
     taggedBy,
@@ -223,7 +224,7 @@ export async function tagOutfit(outfit: StoredOutfit): Promise<OutfitAttributes>
  */
 function convertToOutfitInput(outfit: StoredOutfit): OutfitInput {
   return {
-    outfitId: outfit.id,
+    outfitId: outfit.outfitId,
     recipeTitle: outfit.recipeTitle,
     items: outfit.items.map(item => ({
       role: item.role,
@@ -234,12 +235,9 @@ function convertToOutfitInput(outfit: StoredOutfit): OutfitInput {
         brand: item.product.brand || '',
         colors: item.product.colors || [],
         department: item.product.department || 'womens',
-        visionScan: item.product.visionScan,
 
-        // Phase 4: Pass through rich metadata from CLIP API (Phase 2)
+        // Phase 4: Pass through rich metadata (only what exists)
         description: item.product.description,
-        comprehensiveDescription: item.product.comprehensiveDescription,
-        stylistDescription: item.product.stylistDescription,
         materials: item.product.materials,
         patterns: item.product.patterns,
         silhouette: item.product.silhouette,
@@ -252,14 +250,6 @@ function convertToOutfitInput(outfit: StoredOutfit): OutfitInput {
         productFeatures: item.product.productFeatures,
         visualAttributes: item.product.visualAttributes,
         visionReasoning: item.product.visionReasoning,
-
-        // Product-level tags
-        occasions: item.product.occasions,
-        seasons: item.product.seasons,
-        formalityTier: item.product.formalityTier,
-        versatilityScore: item.product.versatilityScore,
-        trendTags: item.product.trendTags,
-        lifestyleOccasions: item.product.lifestyleOccasions,
       },
     })),
     scoreBreakdown: {
@@ -782,7 +772,7 @@ function generateRulesBasedHints(outfit: StoredOutfit): AttributeHints {
   // Movie Date: Comfortable evening (TIGHTENED: 3-4)
   if (hints.formality >= 3 && hints.formality <= 4 && relaxedCount === 0) {
     hints.occasionHints.push({
-      occasion: 'Movie Date',
+      occasion: 'Date Night',
       confidence: 0.45,
       reason: 'Comfortable yet stylish evening'
     });
@@ -1049,15 +1039,8 @@ function buildStyleVibePrompt(outfit: StoredOutfit, hints: AttributeHints): stri
         parts.push(`Visual: ${p.visualAttributes.slice(0, 3).join(', ')}`);
       }
 
-      // Phase 2: Comprehensive AI-generated description (rich metadata)
-      if (p.comprehensiveDescription && p.comprehensiveDescription.length > 20) {
-        const cleanDesc = p.comprehensiveDescription
-          .replace(/<[^>]*>/g, '')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 150);
-        parts.push(`AI Description: "${cleanDesc}"`);
-      } else if (p.description && p.description.length > 10) {
+      // Phase 2: Basic description fallback (comprehensiveDescription removed)
+      if (p.description && p.description.length > 10) {
         // Fallback to basic description
         const cleanDesc = p.description
           .replace(/<[^>]*>/g, '')
@@ -1078,15 +1061,7 @@ function buildStyleVibePrompt(outfit: StoredOutfit, hints: AttributeHints): stri
         parts.push(`Vision Analysis: "${reasoning}"`);
       }
 
-      // Phase 2: Product-level formality tier
-      if (p.formalityTier) {
-        parts.push(`Formality: ${p.formalityTier}`);
-      }
-
-      // Phase 2: Trend tags (style hints)
-      if (p.trendTags && p.trendTags.length > 0) {
-        parts.push(`Style Tags: ${p.trendTags.slice(0, 4).join(', ')}`);
-      }
+      // Note: Product-level tags (formalityTier, trendTags) removed - not in StoredOutfit type
 
       return parts.join(' | ');
     })

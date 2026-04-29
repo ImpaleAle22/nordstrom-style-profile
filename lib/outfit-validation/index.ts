@@ -7,7 +7,6 @@
  */
 
 export {
-  scanOutfitForMisalignment,
   scanAllOutfitsForMisalignment,
   getOutfitsToDelete,
   formatMisalignmentReport,

@@ -43,22 +43,60 @@ export interface StoredOutfit {
       imageUrl: string;
       department: string;
       colors?: string[];
+
+      // Rich metadata (for attribute tagging)
+      description?: string;
+      materials?: string[];
+      patterns?: string | string[];
+      silhouette?: string;
+      garmentLength?: string;
+      neckline?: string;
+      sleeveStyle?: string;
+      fitDetails?: string;
+      details?: string[];
+      productType2?: string;
+      productType3?: string;
+      productType4?: string;
+      weatherContext?: string[];
+      productFeatures?: string[];
+      visualAttributes?: string[];
+      visionReasoning?: string;
     };
   }>;
   reasoning?: string;
   linkedToRecipe?: boolean;
   attributes?: {
-    stylePillar: string | null;
-    vibes: string[];
-    occasions: string[];
+    // Four axes
     formality: number;
+    activityContext: string;
+    activityContextSecondary?: string;
+    season: string[];
+    socialRegister: string;
+
+    // Derived + style
+    occasions: string[];
+    stylePillar: string | null;
+    subStyle: string | null;
+    vibes: string[];
+
+    // Metadata
     confidence: {
+      formality: number;
+      activityContext: number;
+      season: number;
+      socialRegister: number;
       stylePillar: number;
       vibes: number;
       occasions: number;
     };
     taggedAt: string;
     taggedBy: 'ai' | 'rules' | 'hybrid';
+    axisTaggedBy: {
+      formality: 'rules' | 'ai';
+      activityContext: 'rules' | 'ai';
+      season: 'rules' | 'ai';
+      socialRegister: 'rules' | 'ai';
+    };
     reasoning?: string;
   };
 }

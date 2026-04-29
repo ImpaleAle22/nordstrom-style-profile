@@ -38,12 +38,13 @@ import PsychologyIcon from "@mui/icons-material/Psychology";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState, useEffect } from "react";
-import { getPT2Options } from "../lib/product-type-mappings";
+import { getPT2Options } from "../../lib/product-type-mappings";
 
 interface ProductImage {
   url: string;
   isPrimary: boolean;
   type: string;
+  localImagePath?: string;
 }
 
 interface ProductResult {

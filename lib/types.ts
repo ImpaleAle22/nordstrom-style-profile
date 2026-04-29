@@ -229,3 +229,53 @@ export interface SwipeSession {
   // Timestamps
   created_at: string;
 }
+
+// ============================================================================
+// ADMIN/RECIPE BUILDER TYPES
+// ============================================================================
+
+export interface Product {
+  _id: string;
+  title: string;
+  brand: string;
+  price: number;
+  productId: string;
+  primaryImageUrl?: string;
+  department: string;
+  productType1?: string;
+  productType2?: string;
+  productType3?: string;
+  productType4?: string;
+  materials?: string[];
+  dominantColors?: string[];
+  simplifiedColors?: string[];
+  vanityColor?: string;
+  patterns?: string[];
+  occasions?: string[];
+  seasons?: string[];
+  weatherContext?: string[];
+  activityContext?: string[];
+  silhouette?: string;
+  sleeveStyle?: string;
+  neckline?: string;
+  heelStyle?: string;
+  isOutfitEligible?: boolean;
+}
+
+export interface IngredientSet {
+  _id: string;
+  setId: string;
+  displayTitle: string;
+  query: string;
+  theme?: string;
+  department: string;
+  productType1?: string;
+  productType2?: string;
+  brands?: string[];
+  tags?: string[];
+  season?: string;
+  signal?: string;
+  products: Product[];
+  usedInRecipes?: number;
+  basedOn?: string; // Reference to parent ingredient set (for variants)
+}
