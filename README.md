@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nordstrom Style Profile - Customer App
 
-## Getting Started
+Customer-facing Next.js application for personalized style intelligence.
 
-First, run the development server:
+## Running the App
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs on: **http://localhost:3002** (port 3000 is used by website)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+✅ **Style Profile Dashboard** - View personalized style breakdown
+✅ **Style Swipes** - Tinder-style card interface  
+✅ **Customer Selection** - 9 demo personas
+✅ **Supabase Integration** - Real-time data
 
-## Learn More
+## Routes
 
-To learn more about Next.js, take a look at the following resources:
+- `/` - Customer selection
+- `/profile/[customerId]` - Style profile page
+- `/swipe/[customerId]` - Style swipes interface
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Data in Supabase
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **192 lifestyle images** (tagged with pillars, vibes, occasions)
+- **9 customer profiles** (with style intelligence)
+- **5 swipe stacks** (pre-built card decks)
+- **Swipe sessions** (saved automatically)
 
-## Deploy on Vercel
+## Swipe Controls
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Mouse:** Drag cards left/right
+- **Touch:** Swipe gestures on mobile
+- **Keyboard:** Arrow keys (← no, → yes)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment Variables
+
+Create a `.env.local` file with:
+
+```bash
+# Supabase (Required)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# AI APIs (Optional - for future features)
+GEMINI_API_KEY=your_gemini_api_key
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+```
+
+## Vercel Deployment
+
+### One-Click Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/customer-app)
+
+### Manual Deployment
+
+1. **Push to GitHub:**
+   ```bash
+   git add .
+   git commit -m "Deploy to Vercel"
+   git push origin main
+   ```
+
+2. **Import to Vercel:**
+   - Go to [vercel.com/new](https://vercel.com/new)
+   - Import your GitHub repository
+   - Framework: Next.js (auto-detected)
+   - Root Directory: `./` (or leave default)
+
+3. **Configure Environment Variables:**
+   In Vercel dashboard → Settings → Environment Variables, add:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `GEMINI_API_KEY` (optional)
+   - `NEXT_PUBLIC_GEMINI_API_KEY` (optional)
+
+4. **Deploy:**
+   - Click "Deploy"
+   - Wait ~2 minutes for build
+   - Visit your live URL
+
+### Vercel CLI Deployment
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Deploy to production
+vercel --prod
+```
+
+## Build Verification
+
+Test the production build locally:
+
+```bash
+npm run build
+npm run start
+```
+
+Visit http://localhost:3000 to verify all pages work correctly.
