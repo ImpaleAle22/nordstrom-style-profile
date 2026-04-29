@@ -179,7 +179,6 @@ async function generateRecipeFromImage(
   // auto-filling missing slots, and validation
   const { variations, filtered } = visionToRecipeSlots(
     detectedItems,
-    image.outfitAnalysis.gender === 'womenswear' ? 'Womenswear' : 'Menswear',
     parsed.recipeName,
     suggestedItems
   );
