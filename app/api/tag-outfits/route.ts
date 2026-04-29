@@ -185,8 +185,11 @@ async function processOutfitsInBackground(
         // await updateOutfitAttributes(outfit.outfitId, attributes);
 
         // Track tagging method
-        if (attributes.taggedBy === 'rules') rulesCount++;
-        else if (attributes.taggedBy === 'ai' || attributes.taggedBy === 'hybrid') aiCount++;
+        if (attributes.taggedBy === 'rules') {
+          rulesCount++;
+        } else {
+          aiCount++; // 'ai' or 'hybrid'
+        }
 
         processedIds.add(outfit.outfitId);
 
