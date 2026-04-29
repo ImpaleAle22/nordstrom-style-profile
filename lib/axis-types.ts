@@ -113,7 +113,8 @@ export interface OutfitAttributes {
   };
 
   taggedAt: string;  // ISO timestamp
-  taggedBy: 'rules' | 'ai' | 'hybrid';  // Overall tagging mode ('rules' if all axes rules-only, 'ai' if pure AI, 'hybrid' if mixed)
+  // Overall tagging mode: 'rules' (all axes rules-only), 'ai' (pure AI), 'hybrid' (mixed rules+AI)
+  taggedBy: 'rules' | 'ai' | 'hybrid';
 
   axisTaggedBy: {
     formality: 'rules' | 'ai';
