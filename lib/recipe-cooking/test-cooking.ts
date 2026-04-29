@@ -71,7 +71,7 @@ async function runTest() {
       strategy: 'random-sampling',
       targetCount: 10,
       productsPerIngredient: 15,
-      minConfidence: 50,
+      minQuality: 50,
       saveToSanity: false,
     });
 
@@ -95,7 +95,7 @@ async function runTest() {
         strategy: 'gemini-flash-lite',
         targetCount: 10,
         productsPerIngredient: 15,
-        minConfidence: 50,
+        minQuality: 50,
         saveToSanity: false,
       });
 

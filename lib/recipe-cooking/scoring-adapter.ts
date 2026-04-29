@@ -31,7 +31,7 @@ function convertToProduct(clipProduct: ClipProduct): Product {
     productType4: clipProduct.productType4,
     materials: clipProduct.materials,
     dominantColors: clipProduct.colors,
-    patterns: clipProduct.patterns,
+    patterns: Array.isArray(clipProduct.patterns) ? clipProduct.patterns : (clipProduct.patterns ? [clipProduct.patterns] : undefined),
     occasions: clipProduct.occasions,
     seasons: clipProduct.season ? [clipProduct.season] : undefined,
     isOutfitEligible: true,

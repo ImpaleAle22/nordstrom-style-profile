@@ -73,6 +73,8 @@ const DEFAULT_OPTIONS: Required<CookingOptions> = {
   minAlignment: 9,  // Link Primary AND Secondary tiers (medium threshold)
   generative: false,
   saveToSanity: false,
+  pipeline: DEFAULT_PIPELINE,
+  discoveryMode: false,
 };
 
 /**
