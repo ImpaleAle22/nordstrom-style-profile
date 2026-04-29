@@ -25,7 +25,7 @@ export interface UnifiedRecipe {
   slots: RecipeSlot[];
 
   // Source tracking
-  source: 'manual' | 'ai-vision';
+  source: 'manual' | 'ai-vision' | 'ai-lifestyle-vision';
   batchId?: string; // Links recipe to batch session (e.g., "batch-2026-04-20-001")
   updatedAt?: string; // ISO 8601 timestamp for last update
 
