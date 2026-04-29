@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     // Convert Node stream to Web stream
     const readableStream = new ReadableStream({
       start(controller) {
-        fileStream.on('data', (chunk: Buffer) => {
+        fileStream.on('data', (chunk) => {
           controller.enqueue(chunk);
         });
         fileStream.on('end', () => {
