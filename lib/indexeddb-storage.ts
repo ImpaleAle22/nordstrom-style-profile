@@ -121,7 +121,7 @@ export interface PatternCandidate {
 export interface Batch {
   batchId: string;              // Unique ID (e.g., "batch-2026-04-20-001")
   createdAt: string;            // ISO timestamp
-  source: 'ai-vision' | 'manual' | 'import' | 'api';
+  source: 'ai-vision' | 'ai-lifestyle-vision' | 'manual' | 'import' | 'api';
   recipeCount: number;          // How many recipes in this batch
   label?: string;               // User-friendly label (e.g., "Spring Collection Import")
   description?: string;         // Optional description
