@@ -3,7 +3,6 @@
  */
 
 import { NextResponse } from 'next/server';
-import { IDBFactory } from 'fake-indexeddb';
 
 export async function GET() {
   // Note: This won't work server-side, but kept for reference
