@@ -1,12 +1,12 @@
 'use client';
 
 /**
- * Swipe UI Component (framer-motion implementation - done properly)
- * Interactive Tinder-style card interface
+ * Swipe UI Component (rebuilt following framer-motion swipe-to-dismiss pattern)
+ * Based on framer-motion's best practices for card stacking and gesture handling
  */
 
 import { useState, useEffect } from 'react';
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { motion, PanInfo } from 'framer-motion';
 import type { SwipeStack, SwipeCard } from '@/lib/types';
 import { supabase } from '@/lib/supabase-client';
 import Link from 'next/link';
@@ -268,19 +268,36 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       {/* Card Area */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="relative w-full max-w-md h-[70vh] max-h-[600px]">
-          {/* Next card (underneath) */}
-          {currentCardIndex < selectedStack.cards.length - 1 && (
-            <div className="absolute inset-0 w-full h-full pointer-events-none">
-              <div className="w-full h-full bg-white rounded-2xl shadow-lg transform scale-95 opacity-50">
-                <div
-                  className="w-full h-full rounded-2xl overflow-hidden bg-cover bg-center"
-                  style={{ backgroundImage: `url(${selectedStack.cards[currentCardIndex + 1].imageUrl})` }}
-                />
-              </div>
-            </div>
-          )}
+          {/* Card stack - show next 2 cards underneath */}
+          {[2, 1].map((offset) => {
+            const nextIndex = currentCardIndex + offset;
+            if (nextIndex >= selectedStack.cards.length) return null;
 
-          {/* Current card */}
+            return (
+              <div
+                key={selectedStack.cards[nextIndex].cardId}
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                style={{
+                  zIndex: -offset,
+                }}
+              >
+                <div
+                  className="w-full h-full bg-white rounded-2xl shadow-lg transition-transform duration-200"
+                  style={{
+                    transform: `scale(${1 - offset * 0.03}) translateY(${offset * 10}px)`,
+                    opacity: 1 - offset * 0.2,
+                  }}
+                >
+                  <div
+                    className="w-full h-full rounded-2xl bg-cover bg-center"
+                    style={{ backgroundImage: `url(${selectedStack.cards[nextIndex].imageUrl})` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Current draggable card */}
           <SwipeCard
             key={currentCard.cardId}
             card={currentCard}
@@ -293,13 +310,13 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       <div className="p-6 flex justify-center gap-6">
         <button
           onClick={() => handleSwipe('no')}
-          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-red-500 hover:text-red-500 hover:scale-110 transition-all"
+          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-red-500 hover:text-red-500 hover:scale-110 transition-all active:scale-95"
         >
           ✕
         </button>
         <button
           onClick={() => handleSwipe('yes')}
-          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-green-500 hover:text-green-500 hover:scale-110 transition-all"
+          className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-2xl hover:border-green-500 hover:text-green-500 hover:scale-110 transition-all active:scale-95"
         >
           ❤️
         </button>
@@ -313,7 +330,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
   );
 }
 
-// Individual draggable card component
+// Draggable card following framer-motion swipe-to-dismiss pattern
 function SwipeCard({
   card,
   onSwipe,
@@ -321,67 +338,96 @@ function SwipeCard({
   card: SwipeCard;
   onSwipe: (verdict: 'yes' | 'no') => void;
 }) {
-  const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-20, 20]);
-  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
+  const [exitX, setExitX] = useState(0);
 
-  const handleDragEnd = (_event: any, info: any) => {
-    const swipeThreshold = 100;
-    const velocityThreshold = 500;
+  const onDragEnd = (_event: any, info: PanInfo) => {
+    // Swipe threshold: absolute distance > 150 OR velocity > 300
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
 
-    // Check if swipe is strong enough
-    if (
-      Math.abs(info.offset.x) > swipeThreshold ||
-      Math.abs(info.velocity.x) > velocityThreshold
-    ) {
-      // Determine direction
-      const direction = info.offset.x > 0 ? 'yes' : 'no';
-      const exitX = direction === 'yes' ? 1000 : -1000;
-
-      // Animate off screen
-      animate(x, exitX, {
-        duration: 0.3,
-        ease: 'easeOut',
-        onComplete: () => {
-          onSwipe(direction);
-        },
-      });
+    if (Math.abs(offset) > 150 || Math.abs(velocity) > 300) {
+      // Set exit animation direction
+      setExitX(offset > 0 ? 1000 : -1000);
+      // Trigger swipe after animation starts
+      const verdict = offset > 0 ? 'yes' : 'no';
+      setTimeout(() => onSwipe(verdict), 100);
     }
+  };
+
+  // Calculate rotation and opacity from drag
+  const cardVariants = {
+    enter: {
+      x: 0,
+      opacity: 0,
+      scale: 0.9,
+      transition: { duration: 0.3 }
+    },
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.3 }
+    },
+    exit: (exitX: number) => ({
+      x: exitX,
+      opacity: 0,
+      scale: 0.8,
+      transition: { duration: 0.3, ease: 'easeOut' }
+    })
   };
 
   return (
     <motion.div
       className="absolute inset-0 w-full h-full"
-      style={{ x, rotate, opacity, touchAction: 'none' }}
+      style={{
+        zIndex: 1,
+      }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.7}
-      onDragEnd={handleDragEnd}
-      whileDrag={{ cursor: 'grabbing' }}
+      dragElastic={1}
+      onDragEnd={onDragEnd}
+      variants={cardVariants}
+      initial="enter"
+      animate={exitX !== 0 ? 'exit' : 'center'}
+      custom={exitX}
     >
-      <div
-        className="w-full h-full bg-white rounded-2xl shadow-2xl overflow-hidden cursor-grab"
-        style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+      <motion.div
+        className="w-full h-full bg-white rounded-2xl shadow-2xl overflow-hidden"
+        style={{
+          cursor: 'grab',
+        }}
+        whileDrag={{
+          cursor: 'grabbing',
+          scale: 1.05,
+        }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={1}
+        onDragEnd={onDragEnd}
       >
-        {/* Card Image - using background-image to prevent native drag */}
-        <div
-          className="relative w-full h-full bg-cover bg-center"
-          style={{ backgroundImage: `url(${card.imageUrl})` }}
-        >
-
-          {/* Overlay Info */}
+        {/* Card Content */}
+        <div className="relative w-full h-full">
+          {/* Background Image */}
           <div
-            className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6"
-            style={{ pointerEvents: 'none' }}
-          >
-            <h3 className="text-white text-2xl font-semibold mb-2">
+            className="absolute inset-0 w-full h-full bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${card.imageUrl})`,
+            }}
+          />
+
+          {/* Gradient Overlay for Text */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+          {/* Card Info */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+            <h3 className="text-white text-2xl font-semibold mb-2 drop-shadow-lg">
               {card.displayData.title}
             </h3>
             <div className="flex gap-2 flex-wrap">
               {card.tags.pillars.map((pillar) => (
                 <span
                   key={pillar}
-                  className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full"
+                  className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full border border-white/30"
                 >
                   {pillar}
                 </span>
@@ -389,29 +435,30 @@ function SwipeCard({
             </div>
           </div>
 
-          {/* Like Indicator */}
+          {/* Like/Nope Overlays */}
           <motion.div
-            className="absolute top-12 right-12 text-6xl"
-            style={{
-              opacity: useTransform(x, [0, 100], [0, 1]),
-              pointerEvents: 'none',
-            }}
+            className="absolute top-16 right-12 px-6 py-3 border-4 border-green-500 bg-white/90 rounded-lg transform rotate-12"
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileDrag={(_, info) => ({
+              opacity: info.offset.x > 50 ? Math.min((info.offset.x - 50) / 100, 1) : 0,
+              scale: info.offset.x > 50 ? 1 : 0.5,
+            })}
           >
-            ❤️
+            <span className="text-green-500 text-3xl font-bold">LIKE</span>
           </motion.div>
 
-          {/* Dislike Indicator */}
           <motion.div
-            className="absolute top-12 left-12 text-6xl"
-            style={{
-              opacity: useTransform(x, [-100, 0], [1, 0]),
-              pointerEvents: 'none',
-            }}
+            className="absolute top-16 left-12 px-6 py-3 border-4 border-red-500 bg-white/90 rounded-lg transform -rotate-12"
+            initial={{ opacity: 0, scale: 0.5 }}
+            whileDrag={(_, info) => ({
+              opacity: info.offset.x < -50 ? Math.min((Math.abs(info.offset.x) - 50) / 100, 1) : 0,
+              scale: info.offset.x < -50 ? 1 : 0.5,
+            })}
           >
-            👎
+            <span className="text-red-500 text-3xl font-bold">NOPE</span>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
