@@ -72,8 +72,8 @@ const VANITY_COLOR_MAPPINGS: Record<string, string> = {
   // Orange variations
   'rust': 'Orange',
   'terracotta': 'Orange',
-  'copper': 'Orange',
-  'bronze': 'Orange',
+  // 'copper': 'Orange', // Moved to Metallic section below
+  // 'bronze': 'Orange', // Moved to Metallic section below
 
   // Yellow variations
   'lemon': 'Yellow',

@@ -117,8 +117,8 @@ function scoreRecipeCookability(recipe: any): RecipeCookability {
 /**
  * Analyze all recipes and return top cookable ones
  */
-export function analyzeCookableRecipes(limit: number = 10): RecipeCookability[] {
-  const recipes = getAllRecipes();
+export async function analyzeCookableRecipes(limit: number = 10): Promise<RecipeCookability[]> {
+  const recipes = await getAllRecipes();
 
   const analyzed = recipes
     .filter(r => r.slots && r.slots.length >= 4) // Must have at least 4 slots
@@ -131,8 +131,8 @@ export function analyzeCookableRecipes(limit: number = 10): RecipeCookability[] 
 /**
  * Get recipes above a certain cookability threshold
  */
-export function getCookableRecipes(minScore: number = 70): RecipeCookability[] {
-  const recipes = getAllRecipes();
+export async function getCookableRecipes(minScore: number = 70): Promise<RecipeCookability[]> {
+  const recipes = await getAllRecipes();
 
   const analyzed = recipes
     .filter(r => r.slots && r.slots.length >= 4)
@@ -146,16 +146,17 @@ export function getCookableRecipes(minScore: number = 70): RecipeCookability[] {
 /**
  * Print analysis report
  */
-export function printCookabilityReport() {
-  const top10 = analyzeCookableRecipes(10);
-  const cookable = getCookableRecipes(70);
+export async function printCookabilityReport() {
+  const top10 = await analyzeCookableRecipes(10);
+  const cookable = await getCookableRecipes(70);
+  const allRecipes = await getAllRecipes();
 
   console.log('\n========================================');
   console.log('📊 Recipe Cookability Analysis');
   console.log('========================================\n');
 
-  console.log(`Total recipes: ${getAllRecipes().length}`);
-  console.log(`Recipes with 4+ slots: ${getAllRecipes().filter(r => r.slots && r.slots.length >= 4).length}`);
+  console.log(`Total recipes: ${allRecipes.length}`);
+  console.log(`Recipes with 4+ slots: ${allRecipes.filter(r => r.slots && r.slots.length >= 4).length}`);
   console.log(`Likely cookable (score ≥70): ${cookable.length}`);
   console.log('\n');
 

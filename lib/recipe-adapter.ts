@@ -40,8 +40,8 @@ export interface RecipeBuilderRecipe {
   slots?: RecipeBuilderSlot[]; // New format
   ingredients?: RecipeBuilderIngredient[]; // Old format (backward compatibility)
   createdAt: string;
-  status: 'published';
-  source?: 'manual' | 'ai-vision'; // Track recipe source
+  status: 'published' | 'draft';
+  source?: 'manual' | 'ai-vision' | 'ai-lifestyle-vision'; // Track recipe source
   aiMetadata?: UnifiedRecipe['aiMetadata']; // Preserve AI metadata
 
   // Cooking status tracking

@@ -8,8 +8,8 @@ import { analyzeCookableRecipes, getCookableRecipes } from '../../../lib/recipe-
 
 export async function GET() {
   try {
-    const top10 = analyzeCookableRecipes(10);
-    const allCookable = getCookableRecipes(70);
+    const top10 = await analyzeCookableRecipes(10);
+    const allCookable = await getCookableRecipes(70);
 
     return NextResponse.json({
       summary: {

@@ -54,6 +54,7 @@ export interface StoredOutfit {
       sleeveStyle?: string;
       fitDetails?: string;
       details?: string[];
+      productType1?: string;
       productType2?: string;
       productType3?: string;
       productType4?: string;

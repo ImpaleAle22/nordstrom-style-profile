@@ -32,6 +32,7 @@ export interface HardRuleViolation {
   details: string;        // Specific details about this violation
   affectedSlots?: string[]; // Which slots are problematic
   fixSuggestion: string;  // Actionable fix suggestion
+  fixPriority?: 'critical' | 'high' | 'medium'; // Priority level for fixing
 }
 
 /**

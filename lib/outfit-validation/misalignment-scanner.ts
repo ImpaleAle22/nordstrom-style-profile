@@ -234,14 +234,6 @@ export async function scanForMisalignment(
 
   return {
     reports,
-    // Legacy format for UI compatibility
-    total: outfits.length,
-    clean: cleanCount,
-    withIssues: reports.length,
-    critical: criticalCount,
-    high: highCount,
-    medium: mediumCount,
-    // New format
     summary: {
       totalOutfits: outfits.length,
       cleanOutfits: cleanCount,
