@@ -5,7 +5,7 @@
  * Interactive Tinder-style card interface
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import type { SwipeStack, SwipeCard } from '@/lib/types';
 import { supabase } from '@/lib/supabase-client';
 import Link from 'next/link';
@@ -43,29 +43,29 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
     setCardStartTime(Date.now());
   };
 
-  const handleSwipe = (verdict: 'yes' | 'no') => {
+  const handleSwipe = useCallback((verdict: 'yes' | 'no') => {
     if (!selectedStack) return;
 
     const currentCard = selectedStack.cards[currentCardIndex];
     const dwellMs = Date.now() - cardStartTime;
 
-    // Record swipe
-    setSwipeHistory([
+    const newHistory = [
       ...swipeHistory,
       {
         cardId: currentCard.cardId,
         verdict,
         dwellMs,
       },
-    ]);
+    ];
 
     // Move to next card or complete
     if (currentCardIndex >= selectedStack.cards.length - 1) {
       completeSession(verdict, dwellMs);
     } else {
+      setSwipeHistory(newHistory);
       setCurrentCardIndex(currentCardIndex + 1);
     }
-  };
+  }, [selectedStack, currentCardIndex, swipeHistory, cardStartTime]);
 
   const completeSession = async (lastVerdict: 'yes' | 'no', lastDwellMs: number) => {
     if (!selectedStack) return;
@@ -125,36 +125,48 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
 
   // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  useEffect(() => {
     if (!isDragging) return;
-    setDragOffset({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
-    });
-  };
 
-  const handleMouseUp = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
+    const handleMouseMove = (e: MouseEvent) => {
+      setDragOffset({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y,
+      });
+    };
 
-    // Determine swipe direction
-    if (Math.abs(dragOffset.x) > 100) {
-      if (dragOffset.x > 0) {
-        handleSwipe('yes');
-      } else {
-        handleSwipe('no');
+    const handleMouseUp = () => {
+      setIsDragging(false);
+
+      // Determine swipe direction
+      if (Math.abs(dragOffset.x) > 100) {
+        if (dragOffset.x > 0) {
+          handleSwipe('yes');
+        } else {
+          handleSwipe('no');
+        }
       }
-    }
 
-    setDragOffset({ x: 0, y: 0 });
-  };
+      setDragOffset({ x: 0, y: 0 });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragStart, dragOffset, handleSwipe]);
 
   // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
     const touch = e.touches[0];
     setIsDragging(true);
     setDragStart({ x: touch.clientX, y: touch.clientY });
@@ -162,6 +174,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return;
+    e.preventDefault();
     const touch = e.touches[0];
     setDragOffset({
       x: touch.clientX - dragStart.x,
@@ -169,8 +182,9 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
     });
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
     if (!isDragging) return;
+    e.preventDefault();
     setIsDragging(false);
 
     if (Math.abs(dragOffset.x) > 100) {
@@ -198,7 +212,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedStack, isComplete, currentCardIndex, swipeHistory]);
+  }, [selectedStack, isComplete, handleSwipe]);
 
   if (stacks.length === 0) {
     return (
@@ -357,9 +371,6 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
           className="relative w-full max-w-md h-[70vh] max-h-[600px] bg-white rounded-2xl shadow-2xl cursor-grab active:cursor-grabbing select-none"
           style={cardStyle}
           onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
