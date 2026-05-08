@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { StockImage, TaggedImage, TaggingError } from '@/lib/stock-image-types';
+import { embedImage, embedConcepts, cosineSimilarity, type StyleConcepts } from '@/lib/clip-client';
 
 interface Phase4TaggingProps {
   selectedImages: StockImage[];
@@ -29,6 +30,20 @@ export default function Phase4Tagging({ selectedImages, onTaggingComplete, onBac
     setLogs([]);
 
     addLog(`Starting tagging for ${selectedImages.length} images...`);
+
+    // Pre-load style concepts for CLIP validation (cached after first call)
+    let styleConcepts: StyleConcepts | null = null;
+    try {
+      addLog('Loading CLIP style concepts...');
+      styleConcepts = await embedConcepts({
+        categories: ['pillars', 'vibes', 'occasions'],
+        useCache: true
+      });
+      addLog(`✓ CLIP concepts loaded (${styleConcepts.metadata.totalConcepts} concepts)`);
+    } catch (clipError) {
+      addLog(`⚠️  CLIP concepts failed to load - validation will be skipped`);
+      console.error('CLIP concepts error:', clipError);
+    }
 
     try {
       // Call the existing lifecycle-scan-batch API
@@ -79,6 +94,8 @@ export default function Phase4Tagging({ selectedImages, onTaggingComplete, onBac
               addLog(`Analyzing ${result.imageId}...`);
             } else if (result.status === 'complete') {
               const sourceImage = selectedImages.find(img => img.id === result.imageId);
+
+              // Start with base tagged image
               const tagged: TaggedImage = {
                 id: result.image.imageId || result.imageId,
                 url: result.image.imageUrl,
@@ -90,6 +107,46 @@ export default function Phase4Tagging({ selectedImages, onTaggingComplete, onBac
                   brandAdherence: result.image.brandAdherence
                 }
               };
+
+              // Add CLIP embedding and validation
+              if (styleConcepts) {
+                try {
+                  addLog(`  → CLIP embedding ${result.imageId}...`);
+
+                  // Generate CLIP embedding for the image
+                  const { embedding } = await embedImage(result.image.imageUrl);
+                  tagged.embedding = embedding;
+
+                  // Validate Gemini's pillar assignment with CLIP
+                  const pillarKey = `${result.image.outfitAnalysis.stylePillar.toLowerCase()} fashion style outfit`;
+                  const pillarEmbedding = styleConcepts.pillars[pillarKey];
+
+                  if (pillarEmbedding) {
+                    const similarity = cosineSimilarity(embedding, pillarEmbedding);
+                    const confidence = similarity > 0.6 ? 'high'
+                                     : similarity > 0.4 ? 'medium'
+                                     : 'low';
+
+                    // Find top 3 matching pillars
+                    const pillarScores = Object.entries(styleConcepts.pillars).map(([name, emb]) => ({
+                      name: name.replace(' fashion style outfit', ''),
+                      score: cosineSimilarity(embedding, emb)
+                    })).sort((a, b) => b.score - a.score);
+
+                    tagged.clipValidation = {
+                      similarity,
+                      confidence,
+                      topPillars: pillarScores.slice(0, 3)
+                    };
+
+                    const emoji = confidence === 'high' ? '✅' : confidence === 'medium' ? '⚠️' : '❌';
+                    addLog(`  ${emoji} CLIP validation: ${confidence} confidence (${(similarity * 100).toFixed(1)}%)`);
+                  }
+                } catch (clipError) {
+                  addLog(`  ⚠️  CLIP embedding failed: ${clipError instanceof Error ? clipError.message : 'Unknown error'}`);
+                  console.error('CLIP error:', clipError);
+                }
+              }
 
               setTaggedResults(prev => [...prev, tagged]);
               setProgress(prev => prev + 1);
@@ -133,9 +190,9 @@ export default function Phase4Tagging({ selectedImages, onTaggingComplete, onBac
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-        <h2 className="text-xl font-semibold mb-2">AI Tagging with Recipe Scout</h2>
+        <h2 className="text-xl font-semibold mb-2">AI Tagging with Gemini + CLIP</h2>
         <p className="text-slate-400">
-          Using Gemini Vision AI to analyze and tag {selectedImages.length} images
+          Using Gemini Vision AI to analyze and tag {selectedImages.length} images, then validating with CLIP embeddings
         </p>
       </div>
 

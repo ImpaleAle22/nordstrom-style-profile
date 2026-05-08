@@ -57,19 +57,33 @@ export interface SemanticSearchResult {
 /**
  * Generate CLIP embedding for an image URL
  */
-export async function embedImage(imageUrl: string): Promise<Embedding> {
-  const response = await fetch(`${CLIP_API_URL}/embed-image`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ imageUrl })
-  });
+export async function embedImage(imageUrl: string, timeoutMs = 30000): Promise<Embedding> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(`Failed to embed image: ${error.error}`);
+  try {
+    const response = await fetch(`${CLIP_API_URL}/embed-image`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+      throw new Error(`Failed to embed image: ${error.error}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`Request timeout after ${timeoutMs}ms - CLIP API might be cold-starting`);
+    }
+    throw error;
   }
-
-  return response.json();
 }
 
 /**

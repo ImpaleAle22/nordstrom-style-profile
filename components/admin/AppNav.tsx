@@ -83,6 +83,7 @@ export default function AppNav() {
         { label: 'Vision Import', href: '/admin/vision-import' },
         { label: 'CLIP Search', href: '/admin/clip-search' },
         { label: 'Lifestyle Images', href: '/admin/lifestyle-images/import' },
+        { label: 'Validate Lifestyle Tags', href: '/admin/lifestyle-images/validate' },
       ],
     },
     {

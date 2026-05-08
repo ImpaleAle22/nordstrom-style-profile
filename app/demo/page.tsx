@@ -5,10 +5,14 @@
  * Editorial luxury design with two compelling options
  */
 
+import { useState } from 'react';
 import Link from 'next/link';
 import DesktopOnly from '@/components/DesktopOnly';
 
 export default function DemoPage() {
+  // Toggle this to show error state when demo is broken
+  const [demoWorking, setDemoWorking] = useState(false);
+
   return (
     <DesktopOnly>
       <div className="min-h-screen" style={{ backgroundColor: '#FAF9F5' }}>
@@ -54,7 +58,54 @@ export default function DemoPage() {
             </p>
           </div>
 
+          {/* Error State - Demo Not Working */}
+          {!demoWorking && (
+            <div className="max-w-3xl mx-auto">
+              <div
+                className="rounded-xl overflow-hidden p-12 text-center"
+                style={{
+                  backgroundColor: '#FFF4ED',
+                  border: '2px solid #FB923C',
+                }}
+              >
+                <div className="mb-6">
+                  <svg
+                    className="w-16 h-16 mx-auto"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    style={{ color: '#EA580C' }}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h3
+                  className="text-3xl font-light mb-4"
+                  style={{
+                    fontFamily: 'ui-serif, Georgia, serif',
+                    color: '#0C0C0C'
+                  }}
+                >
+                  Demo Temporarily Unavailable
+                </h3>
+                <p
+                  className="text-lg leading-relaxed mb-6"
+                  style={{ color: '#78716C' }}
+                >
+                  Sorry, something is wrong with the demo. It should be back up soon.
+                </p>
+                <p
+                  className="text-base"
+                  style={{ color: '#78716C' }}
+                >
+                  In the meantime, check out the <strong>ADMIN</strong> link in the top right corner to explore the content engine and admin tools.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Two Paths */}
+          {demoWorking && (
           <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
             {/* Path 1: Explore Demo Personas */}
             <Link
@@ -220,6 +271,7 @@ export default function DemoPage() {
               </div>
             </Link>
           </div>
+          )}
 
           {/* Back Link */}
           <div className="text-center mt-20">

@@ -21,6 +21,22 @@ export default function Phase5Review({
   const [importError, setImportError] = useState<string | null>(null);
   const [editingImage, setEditingImage] = useState<TaggedImage | null>(null);
   const [localTaggedResults, setLocalTaggedResults] = useState<TaggedImage[]>(taggedResults);
+  const [showLowConfidence, setShowLowConfidence] = useState(true);
+
+  // Calculate confidence stats
+  const highConfidenceImages = localTaggedResults.filter(
+    img => !img.clipValidation || img.clipValidation.confidence === 'high'
+  );
+  const mediumConfidenceImages = localTaggedResults.filter(
+    img => img.clipValidation?.confidence === 'medium'
+  );
+  const lowConfidenceImages = localTaggedResults.filter(
+    img => img.clipValidation?.confidence === 'low'
+  );
+
+  const imagesToDisplay = showLowConfidence
+    ? localTaggedResults
+    : localTaggedResults.filter(img => img.clipValidation?.confidence !== 'low');
 
   const handleImport = async () => {
     setImporting(true);
@@ -118,13 +134,55 @@ export default function Phase5Review({
         <p className="text-slate-400">
           Review tagged images and import {localTaggedResults.length} images to database
         </p>
+
+        {/* CLIP Confidence Stats */}
+        {(highConfidenceImages.length > 0 || mediumConfidenceImages.length > 0 || lowConfidenceImages.length > 0) && (
+          <div className="mt-4 pt-4 border-t border-slate-700">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-6 text-sm">
+                <div>
+                  <span className="text-slate-400">High Confidence:</span>
+                  <span className="ml-2 font-semibold text-green-400">{highConfidenceImages.length}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400">Medium:</span>
+                  <span className="ml-2 font-semibold text-yellow-400">{mediumConfidenceImages.length}</span>
+                </div>
+                <div>
+                  <span className="text-slate-400">Low:</span>
+                  <span className="ml-2 font-semibold text-red-400">{lowConfidenceImages.length}</span>
+                </div>
+              </div>
+
+              {lowConfidenceImages.length > 0 && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showLowConfidence}
+                    onChange={(e) => setShowLowConfidence(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-500"
+                  />
+                  <span className="text-sm text-slate-300">
+                    Include {lowConfidenceImages.length} low-confidence images
+                  </span>
+                </label>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Import Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-          <div className="text-slate-400 text-sm mb-1">Ready to Import</div>
-          <div className="text-3xl font-bold text-green-400">{localTaggedResults.length}</div>
+          <div className="text-slate-400 text-sm mb-1">Will Import</div>
+          <div className="text-3xl font-bold text-green-400">{imagesToDisplay.length}</div>
+        </div>
+        <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
+          <div className="text-slate-400 text-sm mb-1">Filtered Out</div>
+          <div className="text-3xl font-bold text-orange-400">
+            {showLowConfidence ? 0 : lowConfidenceImages.length}
+          </div>
         </div>
         <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
           <div className="text-slate-400 text-sm mb-1">Failed (Skipped)</div>
@@ -132,7 +190,7 @@ export default function Phase5Review({
         </div>
         <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
           <div className="text-slate-400 text-sm mb-1">Coverage Increase</div>
-          <div className="text-3xl font-bold text-blue-400">+{localTaggedResults.length}</div>
+          <div className="text-3xl font-bold text-blue-400">+{imagesToDisplay.length}</div>
         </div>
       </div>
 
@@ -148,9 +206,9 @@ export default function Phase5Review({
 
       {/* Tagged Images Grid */}
       <div className="bg-slate-800/50 rounded-lg p-6 border border-slate-700">
-        <h3 className="text-lg font-semibold mb-4">Tagged Images</h3>
+        <h3 className="text-lg font-semibold mb-4">Tagged Images ({imagesToDisplay.length})</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {localTaggedResults.map((img) => (
+          {imagesToDisplay.map((img) => (
             <div key={img.id} className="bg-slate-900/50 rounded-lg overflow-hidden border border-slate-700">
               {/* Image */}
               <div className="aspect-[3/4] relative">
@@ -181,12 +239,38 @@ export default function Phase5Review({
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-slate-400 mb-1">Confidence</div>
+                    <div className="text-xs text-slate-400 mb-1">Gemini Confidence</div>
                     <div className="text-sm">
                       {Math.round(img.lifestyleData.outfitAnalysis.pillarConfidence * 100)}%
                     </div>
                   </div>
                 </div>
+
+                {/* CLIP Validation Badge */}
+                {img.clipValidation && (
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">CLIP Validation</div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-2 py-1 rounded font-medium ${
+                        img.clipValidation.confidence === 'high'
+                          ? 'bg-green-500/20 text-green-300'
+                          : img.clipValidation.confidence === 'medium'
+                            ? 'bg-yellow-500/20 text-yellow-300'
+                            : 'bg-red-500/20 text-red-300'
+                      }`}>
+                        {img.clipValidation.confidence.toUpperCase()}
+                      </span>
+                      <span className="text-xs text-slate-400">
+                        {(img.clipValidation.similarity * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                    {img.clipValidation.topPillars && img.clipValidation.topPillars.length > 0 && (
+                      <div className="text-xs text-slate-500 mt-1">
+                        Top: {img.clipValidation.topPillars[0].name}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div>
                   <div className="text-xs text-slate-400 mb-1">Vibes</div>

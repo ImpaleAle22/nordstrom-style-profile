@@ -226,7 +226,7 @@ export const slides: Slide[] = [
   // SLIDE 6: The unlock
   {
     id: 'unlock',
-    title: 'The unlock',
+    title: 'The breakthrough',
     layout: 'content',
     content: (
       <div className="max-w-4xl mx-auto space-y-8">
@@ -264,7 +264,7 @@ export const slides: Slide[] = [
               "Here are 47,000 products. Make me an outfit."
             </p>
             <p className="text-lg text-gray-700 leading-relaxed">
-              Technically: outfits. Practically: the rules-based prefiltering was sub-par. The product sets selected weren't setting up good outfits.
+              Technically: outfits. Practically: the prefiltering was sub-par. The product sets selected weren't setting up good outfits.
             </p>
           </div>
 
@@ -273,7 +273,7 @@ export const slides: Slide[] = [
             <div className="text-2xl font-bold text-gray-900">Attempt 2</div>
             <div className="text-lg font-medium text-gray-600">AI + Rules</div>
             <p className="text-lg text-gray-700 leading-relaxed">
-              Added hard constraints. 4–6 pieces. Footwear required. No doubling up on roles. Formality has to make sense.
+              Added hard constraints. 4–6 pieces. Footwear required. Rules tailored to each role. Formality has to make sense.
             </p>
             <p className="text-lg text-gray-700 leading-relaxed">
               Better. More coherent. Still missing something.
@@ -284,7 +284,7 @@ export const slides: Slide[] = [
         {/* Key Insight */}
         <div className="bg-yellow-50 border-2 border-yellow-200 rounded-3xl p-8 text-center">
           <p className="text-2xl font-semibold text-gray-900">
-            The outfit building process was still missing expectations.<br />
+            The outfit building process still wasn't meeting expectations.<br />
             Something was missing.
           </p>
         </div>
@@ -358,7 +358,7 @@ export const slides: Slide[] = [
     content: (
       <div className="max-w-4xl mx-auto space-y-10">
         <p className="text-xl text-gray-700 leading-relaxed">
-          With CLIP-powered outfit building and Recipe Scout generating templates, the system could run at scale.
+          With CLIP-powered outfit building and Recipe Scout generating high-fidelity outfit templates, the system could run at scale.
         </p>
         <LiveStatsCards />
       </div>
@@ -369,11 +369,11 @@ export const slides: Slide[] = [
   {
     id: 'lifestyle-photo',
     title: 'A lifestyle photo is already an outfit brief',
-    layout: 'content',
+    layout: 'demo',
     content: (
       <div className="max-w-4xl mx-auto space-y-8">
         <p className="text-xl text-gray-700 leading-relaxed mb-8">
-          Once CLIP was working, a new input surface opened up: lifestyle photography. A styled editorial image already has everything — silhouette balance, color harmony, occasion context — baked in by whoever shot it. Recipe Scout scans these images, identifies the pieces, infers their attributes, and produces a recipe template. The top of the content funnel.
+          A styled editorial image already has everything baked in by whoever styled the model. Recipe Scout scans them, identifies each piece and its attributes, and produces a recipe template.
         </p>
         <RecipeScoutDemo />
       </div>
@@ -484,7 +484,7 @@ export const slides: Slide[] = [
           What aesthetic register is this outfit?
         </p>
         <div className="bg-gradient-to-r from-rose-50 via-purple-50 to-blue-50 rounded-3xl p-10 my-8">
-          <div className="flex flex-wrap justify-center gap-4 text-2xl font-bold text-gray-900">
+          <div className="flex flex-wrap justify-center gap-3 text-xl font-semibold text-gray-900">
             <span>Classic</span>
             <span className="text-gray-400">·</span>
             <span>Minimal</span>
@@ -505,7 +505,8 @@ export const slides: Slide[] = [
           </div>
         </div>
         <p className="text-xl font-bold text-gray-900 text-center leading-relaxed">
-          Nine pillars. Gender-agnostic. Arranged on a continuous spectrum, not discrete buckets.
+          Nine pillars. Gender-agnostic. Arranged on a continuous spectrum, not discrete buckets.<br />
+          Sub-pillars add nuance and fill gaps.
         </p>
 
         {/* Sub-pillar word cloud */}
@@ -585,53 +586,23 @@ export const slides: Slide[] = [
     ),
   },
 
-  // SLIDE 17: What connects to this
-  {
-    id: 'engine-works',
-    title: 'What connects to this',
-    layout: 'content',
-    content: (
-      <div className="max-w-4xl mx-auto space-y-10">
-        <p className="text-xl text-gray-700 leading-relaxed">
-          The content engine was working. Outfits were generating. Tagging was consistent. Recipe Scout was pulling briefs from images.
-        </p>
-        <p className="text-xl text-gray-700 leading-relaxed">
-          But infrastructure alone doesn't create value. I needed to find the surfaces that connect to it.
-        </p>
-        <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-3xl p-10 space-y-6">
-          <p className="text-2xl text-gray-900 font-bold">
-            The content engine is the supply side. What's the demand side?
-          </p>
-          <p className="text-xl text-gray-700 leading-relaxed">
-            The Playlist personalizes against a customer. That customer needs a profile. A way to capture taste, track behavior, and route content intelligently.
-          </p>
-        </div>
-        <p className="text-xl text-gray-900 font-semibold text-center">
-          So I built a style profile system that could plug directly into the same infrastructure.
-        </p>
-      </div>
-    ),
-  },
-
-  // SLIDE 18: The Style Profile
+  // SLIDE 17: The Style Profile
   {
     id: 'style-profile-intro',
     title: 'The Style Profile',
     layout: 'content',
     content: (
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-10">
         <p className="text-xl text-gray-700 leading-relaxed">
-          The Playlist personalizes against a customer. That customer needs a profile.
+          The foundation was solid. Products as content. AI and CLIP powered outfit building. Tagging at scale. Recipe Scout turning lifestyle images into templates.
+        </p>
+        <p className="text-xl text-gray-700 leading-relaxed">
+          I was looking for the next piece of infrastructure that could help power prototype building. The Playlist personalizes against a customer. That customer needs a profile.
         </p>
         <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-3xl p-12">
           <p className="text-2xl text-gray-900 font-semibold leading-relaxed">
-            The idea: a style profile that can be created from almost nothing and gets smarter over time.
+            Style profiles add a data structure for personalizing prototypes and bring editorial photography into the mix.
           </p>
-          <div className="mt-8 space-y-3 text-lg text-gray-700">
-            <p>• No lengthy onboarding.</p>
-            <p>• No mandatory quiz.</p>
-            <p>• Start with whatever signal exists — a single swipe, a purchase, a search — and build from there.</p>
-          </div>
         </div>
       </div>
     ),
@@ -658,54 +629,67 @@ export const slides: Slide[] = [
             </p>
           </div>
         </div>
-        <div className="p-10 bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl">
-          <div className="text-2xl font-bold text-gray-900 mb-6">Semantic Memory</div>
-          <p className="text-lg text-gray-700 mb-6">Three types of what the system knows:</p>
-          <div className="space-y-4 text-gray-700">
-            <div><strong>Stated</strong> — things they've said directly</div>
-            <div><strong>Inferred</strong> — patterns the system noticed</div>
-            <div><strong>Life Context</strong> — facts about their life (kids, job, hobbies)</div>
+        <div className="grid grid-cols-2 gap-8">
+          <div className="bg-green-50 rounded-3xl p-8">
+            <div className="text-2xl font-bold text-gray-900 mb-4">What Feeds In</div>
+            <div className="space-y-2 text-gray-700">
+              <div>• Style Quiz</div>
+              <div>• Swipes</div>
+              <div>• AI Chat</div>
+              <div>• Request a Look forms</div>
+              <div>• Saved & edited outfits</div>
+              <div>• Clicks & dwell time</div>
+            </div>
+            <p className="text-lg text-gray-700 mt-6 italic">
+              Start with one signal, build from there.
+            </p>
           </div>
-          <p className="text-lg text-gray-700 mt-6">
-            Each memory shows its source. Customers can push back on what's wrong.
-          </p>
-        </div>
-        <div className="bg-green-50 border-2 border-green-200 rounded-3xl p-8">
-          <p className="text-xl font-semibold text-gray-900 mb-3">Core principle:</p>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Never delete. Flag conflicts. A 2022 floral purchase and a 2024 "I hate florals" chat quote both stay in the record. Data is precious.
-          </p>
+          <div className="p-8 bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl">
+            <div className="text-2xl font-bold text-gray-900 mb-4">Semantic Memory</div>
+            <p className="text-lg text-gray-700 mb-4">Three types of knowledge:</p>
+            <div className="space-y-3 text-gray-700">
+              <div><strong>Stated</strong> — things they've said directly</div>
+              <div><strong>Inferred</strong> — patterns the system noticed</div>
+              <div><strong>Life Context</strong> — facts about their life (kids, job, hobbies)</div>
+            </div>
+            <p className="text-lg text-gray-700 mt-4">
+              Each memory shows its source. Customers can push back on what's wrong.
+            </p>
+            <p className="text-lg text-gray-700 mt-4 font-semibold">
+              Never delete. Flag conflicts. Data is precious.
+            </p>
+          </div>
         </div>
       </div>
     ),
   },
 
-  // SLIDE 20: How the profile learns
+  // SLIDE 19: How the profile learns
   {
     id: 'profile-learns',
     title: 'How the profile learns',
     layout: 'content',
     content: (
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-8">
         <p className="text-xl text-gray-700 text-center mb-10">
           Three layers working together:
         </p>
-        <div className="space-y-6">
-          <div className="p-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-3xl">
-            <div className="text-2xl font-bold text-gray-900 mb-4">Behavioral Signals</div>
-            <p className="text-lg text-gray-700 leading-relaxed">
+        <div className="grid grid-cols-3 gap-6">
+          <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-3xl">
+            <div className="text-xl font-bold text-gray-900 mb-3">Behavioral Signals</div>
+            <p className="text-gray-700 leading-relaxed">
               Deterministic. Every swipe, purchase, and search updates pillar weights by fixed amounts. Fast, consistent, auditable.
             </p>
           </div>
-          <div className="p-8 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-3xl">
-            <div className="text-2xl font-bold text-gray-900 mb-4">Semantic Brain</div>
-            <p className="text-lg text-gray-700 leading-relaxed">
+          <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-3xl">
+            <div className="text-xl font-bold text-gray-900 mb-3">Semantic Brain</div>
+            <p className="text-gray-700 leading-relaxed">
               LLM-powered. Reads text events (chat, search queries, stylist notes, RAL forms) and extracts memories, spots patterns, flags conflicts. Temperature 0 — deterministic outputs.
             </p>
           </div>
-          <div className="p-8 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-3xl">
-            <div className="text-2xl font-bold text-gray-900 mb-4">Synthesizer</div>
-            <p className="text-lg text-gray-700 leading-relaxed">
+          <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-3xl">
+            <div className="text-xl font-bold text-gray-900 mb-3">Synthesizer</div>
+            <p className="text-gray-700 leading-relaxed">
               Merges both. Updates the profile state. Applies recency decay. Never overwrites history.
             </p>
           </div>
@@ -714,55 +698,48 @@ export const slides: Slide[] = [
     ),
   },
 
-  // SLIDE 21: What this is, really
+  // SLIDE 20: What got built
   {
     id: 'conclusion',
-    title: 'What this is, really',
+    title: 'What got built',
     layout: 'content',
     content: (
       <div className="max-w-4xl mx-auto space-y-10">
         <p className="text-xl text-gray-700 leading-relaxed">
-          A few weeks ago this was a contest entry idea.
+          Started with a simple goal: populate the Playlist with dummy data for a contest entry.
         </p>
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-12 space-y-6">
-          <p className="text-xl text-gray-700 leading-relaxed">
-            It became a content engine with 20,000+ outfits, a style taxonomy built from scratch, a visual search tool that outperforms what's currently in production, and a personalization layer that learns from almost no input.
-          </p>
+          <div className="space-y-4 text-lg text-gray-700">
+            <p>• <strong>49,000 products</strong> organized and tagged as content</p>
+            <p>• <strong>42,000+ outfits</strong> generated with CLIP-powered visual compatibility</p>
+            <p>• <strong>Style taxonomy</strong> with 9 pillars, sub-styles, vibes, and occasions</p>
+            <p>• <strong>Recipe Scout</strong> extracting outfit templates from lifestyle photography</p>
+            <p>• <strong>Style profiles</strong> that learn from minimal customer signals</p>
+          </div>
         </div>
-        <p className="text-xl text-gray-700 leading-relaxed">
-          The Playlist isn't done. But it's no longer blocked by infrastructure.
+        <p className="text-2xl font-bold text-gray-900 text-center pt-6">
+          Infrastructure for building prototypes that feel real.
         </p>
-        <p className="text-3xl font-bold text-gray-900 text-center pt-8">
-          Neither is anything else that's been waiting on this problem.
-        </p>
-        <div className="pt-12 text-center">
-          <p className="text-lg text-gray-500">
-            edit-engine · Nordstrom Experience Design · Claude Code Contest · 2026
-          </p>
-        </div>
       </div>
     ),
   },
 
-  // SLIDE 22: Demo — The Style Profile
+  // SLIDE 21: Try it yourself
   {
     id: 'profile-demo',
-    title: 'Demo — The Style Profile',
+    title: 'Try it yourself',
     layout: 'content',
     content: (
       <div className="max-w-4xl mx-auto space-y-10 text-center">
         <p className="text-xl text-gray-700 leading-relaxed">
-          Nine customer personas. Each one a different style story with months of interaction history.
-        </p>
-        <p className="text-xl text-gray-700 leading-relaxed">
-          Step through the session scrubber. Watch the profile learn in real time — memories surface, pillar weights shift, the map moves.
+          The style profile is still a work in progress, but you can explore what's built so far. There are two ways to experience it: explore nine pre-built personas with months of interaction history, or build your own profile from scratch by swiping through outfits. Either way, you'll see how the system learns and adapts in real time.
         </p>
         <div className="pt-8">
           <a
             href="/demo"
             className="inline-flex items-center gap-3 px-10 py-5 bg-black text-white text-xl font-semibold rounded-2xl hover:bg-gray-800 transition-all hover:scale-105"
           >
-            Launch Style Profile Demo
+            Launch Demo
             <span className="text-2xl">→</span>
           </a>
         </div>

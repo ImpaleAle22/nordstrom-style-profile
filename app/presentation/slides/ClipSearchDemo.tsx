@@ -22,8 +22,20 @@ export default function ClipSearchDemo() {
     'Sleek leather boots edgy',
     'Vintage denim jacket',
     'Effortless weekend brunch',
-    'Downtown gallery opening',
+    'Downtown art gallery opening',
   ];
+
+  // Query expansion map - translates short concepts into detailed CLIP prompts
+  const queryExpansion: Record<string, string> = {
+    'Downtown art gallery opening': 'Sophisticated elegant outfit for upscale art gallery opening, polished dressy pieces, refined tailored black dress sleek blazer, formal evening wear chic modern',
+    'Effortless weekend brunch': 'Relaxed casual weekend brunch outfit, comfortable soft sweater loose denim, laid-back effortless style, cozy morning coffee',
+    'Coastal grandmother cardigan': 'Cozy oversized coastal grandmother cardigan, soft neutral beige cream, relaxed coastal aesthetic, comfortable elegant knitwear',
+    'Boardroom but make it interesting': 'Professional office blazer with unexpected details, structured tailored workwear, business formal with unique twist, modern sophisticated power dressing',
+    'Black turtleneck minimalist': 'Clean minimal black turtleneck, sleek modern simple design, understated elegant basics, refined monochrome aesthetic',
+    'Romantic pink dress': 'Soft romantic pink dress, feminine flowing delicate, dreamy ethereal silhouette, gentle pastel spring',
+    'Sleek leather boots edgy': 'Edgy sleek black leather boots, modern urban cool, structured bold statement footwear, contemporary street style',
+    'Vintage denim jacket': 'Classic vintage denim jacket, retro washed blue jean, timeless casual staple, authentic worn-in style',
+  };
 
   const handleSearch = async (searchQuery?: string) => {
     const queryToUse = searchQuery || query;
@@ -37,10 +49,37 @@ export default function ClipSearchDemo() {
     setImageErrors(new Set());
 
     try {
+      // Step 1: Expand query (use preset or call API)
+      let expandedQuery = queryExpansion[queryToUse];
+      let hasProductType = false;
+
+      if (!expandedQuery) {
+        // Call expansion API for dynamic queries
+        const expansionResponse = await fetch('/api/expand-query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: queryToUse }),
+        });
+
+        if (expansionResponse.ok) {
+          const expansionData = await expansionResponse.json();
+          expandedQuery = expansionData.expandedQuery;
+          hasProductType = expansionData.hasProductType;
+        } else {
+          // Fallback to original query
+          expandedQuery = queryToUse;
+        }
+      }
+
+      // Step 2: Search with expanded query and product type flag
       const response = await fetch('/api/clip-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: queryToUse, limit: 12 }),
+        body: JSON.stringify({
+          query: expandedQuery,
+          limit: 12,
+          hasProductType
+        }),
       });
 
       if (!response.ok) {

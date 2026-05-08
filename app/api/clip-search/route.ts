@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase-client';
 
 export async function POST(request: NextRequest) {
   try {
-    const { query, limit = 6 } = await request.json();
+    const { query, limit = 6, hasProductType } = await request.json();
 
     if (!query || typeof query !== 'string') {
       return NextResponse.json(
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
     if (!clipApiUrl) {
       // Return real products from Supabase for demo purposes
-      const mockResults = await generateMockResults(query, limit);
+      const mockResults = await generateMockResults(query, limit, hasProductType);
       return NextResponse.json({
         results: mockResults,
         mock: true,
@@ -47,18 +47,20 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
-    // Detect if query is vibe-based (no specific product type mentioned)
-    const queryLower = query.toLowerCase();
-    const productTypeKeywords = [
-      'dress', 'dresses', 'top', 'tops', 'shirt', 'shirts', 'blouse', 'blouses',
-      'sweater', 'sweaters', 'cardigan', 'cardigans', 'jacket', 'jackets', 'coat', 'coats',
-      'pants', 'jeans', 'trouser', 'trousers', 'skirt', 'skirts', 'short', 'shorts',
-      'shoe', 'shoes', 'boot', 'boots', 'sneaker', 'sneakers', 'heel', 'heels',
-      'bag', 'bags', 'purse', 'handbag', 'tote', 'clutch',
-      'jewelry', 'jewellery', 'necklace', 'earring', 'bracelet', 'ring',
-      'scarf', 'scarves', 'belt', 'belts', 'hat', 'hats'
-    ];
-    const hasProductTypeInQuery = productTypeKeywords.some(keyword => queryLower.includes(keyword));
+    // Use the hasProductType flag if provided, otherwise detect from query
+    const hasProductTypeInQuery = hasProductType !== undefined ? hasProductType : (() => {
+      const queryLower = query.toLowerCase();
+      const productTypeKeywords = [
+        'dress', 'dresses', 'top', 'tops', 'shirt', 'shirts', 'blouse', 'blouses',
+        'sweater', 'sweaters', 'cardigan', 'cardigans', 'jacket', 'jackets', 'coat', 'coats',
+        'pants', 'jeans', 'trouser', 'trousers', 'skirt', 'skirts', 'short', 'shorts',
+        'shoe', 'shoes', 'boot', 'boots', 'sneaker', 'sneakers', 'heel', 'heels',
+        'bag', 'bags', 'purse', 'handbag', 'tote', 'clutch',
+        'jewelry', 'jewellery', 'necklace', 'earring', 'bracelet', 'ring',
+        'scarf', 'scarves', 'belt', 'belts', 'hat', 'hats'
+      ];
+      return productTypeKeywords.some(keyword => queryLower.includes(keyword));
+    })();
 
     // Key outfit-building product types (when query is vibe-based)
     const coreOutfitTypes = [
@@ -108,23 +110,25 @@ export async function POST(request: NextRequest) {
 }
 
 // Generate mock results using real products from Supabase
-async function generateMockResults(query: string, limit: number) {
+async function generateMockResults(query: string, limit: number, hasProductType?: boolean) {
   try {
     // Extract keywords from query for basic matching
     const queryLower = query.toLowerCase();
     const keywords = queryLower.split(/\s+/).filter(w => w.length > 2);
 
-    // Detect if query is vibe-based (no specific product type mentioned)
-    const productTypeKeywords = [
-      'dress', 'dresses', 'top', 'tops', 'shirt', 'shirts', 'blouse', 'blouses',
-      'sweater', 'sweaters', 'cardigan', 'cardigans', 'jacket', 'jackets', 'coat', 'coats',
-      'pants', 'jeans', 'trouser', 'trousers', 'skirt', 'skirts', 'short', 'shorts',
-      'shoe', 'shoes', 'boot', 'boots', 'sneaker', 'sneakers', 'heel', 'heels',
-      'bag', 'bags', 'purse', 'handbag', 'tote', 'clutch',
-      'jewelry', 'jewellery', 'necklace', 'earring', 'bracelet', 'ring',
-      'scarf', 'scarves', 'belt', 'belts', 'hat', 'hats'
-    ];
-    const hasProductTypeInQuery = productTypeKeywords.some(keyword => queryLower.includes(keyword));
+    // Use provided flag or detect from query
+    const hasProductTypeInQuery = hasProductType !== undefined ? hasProductType : (() => {
+      const productTypeKeywords = [
+        'dress', 'dresses', 'top', 'tops', 'shirt', 'shirts', 'blouse', 'blouses',
+        'sweater', 'sweaters', 'cardigan', 'cardigans', 'jacket', 'jackets', 'coat', 'coats',
+        'pants', 'jeans', 'trouser', 'trousers', 'skirt', 'skirts', 'short', 'shorts',
+        'shoe', 'shoes', 'boot', 'boots', 'sneaker', 'sneakers', 'heel', 'heels',
+        'bag', 'bags', 'purse', 'handbag', 'tote', 'clutch',
+        'jewelry', 'jewellery', 'necklace', 'earring', 'bracelet', 'ring',
+        'scarf', 'scarves', 'belt', 'belts', 'hat', 'hats'
+      ];
+      return productTypeKeywords.some(keyword => queryLower.includes(keyword));
+    })();
 
     // Key outfit-building product types (when query is vibe-based)
     const coreOutfitTypes = [

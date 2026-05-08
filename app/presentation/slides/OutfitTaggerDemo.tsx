@@ -5,7 +5,8 @@
  * Pick items to create an outfit, then tag it with AI
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase-client';
 
 interface ProductOption {
   id: string;
@@ -24,112 +25,122 @@ interface OutfitSlot {
 }
 
 export default function OutfitTaggerDemo() {
-  // Pre-loaded products for instant demo experience
   const [slots, setSlots] = useState<OutfitSlot[]>([
-    {
-      id: 'top',
-      label: 'Top',
-      selected: null,
-      options: [
-        {
-          id: 'silk_blouse',
-          name: 'Silk Blouse',
-          color: 'Cream',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0108775044.jpg'
-        },
-        {
-          id: 'cashmere_sweater',
-          name: 'Cashmere Sweater',
-          color: 'Grey',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0759871001.jpg'
-        },
-        {
-          id: 'white_tee',
-          name: 'White T-Shirt',
-          color: 'White',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0685816001.jpg'
-        },
-      ],
-    },
-    {
-      id: 'bottom',
-      label: 'Bottom',
-      selected: null,
-      options: [
-        {
-          id: 'tailored_trousers',
-          name: 'Tailored Trousers',
-          color: 'Black',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0713995001.jpg'
-        },
-        {
-          id: 'midi_skirt',
-          name: 'Pleated Midi Skirt',
-          color: 'Navy',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0685816030.jpg'
-        },
-        {
-          id: 'denim_jeans',
-          name: 'Classic Denim',
-          color: 'Blue',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0714790001.jpg'
-        },
-      ],
-    },
-    {
-      id: 'shoes',
-      label: 'Shoes',
-      selected: null,
-      options: [
-        {
-          id: 'heeled_boots',
-          name: 'Heeled Boots',
-          color: 'Black',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0713976001.jpg'
-        },
-        {
-          id: 'loafers',
-          name: 'Leather Loafers',
-          color: 'Brown',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0747176001.jpg'
-        },
-        {
-          id: 'sneakers',
-          name: 'White Sneakers',
-          color: 'White',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0714026001.jpg'
-        },
-      ],
-    },
-    {
-      id: 'accessory',
-      label: 'Accessory',
-      selected: null,
-      options: [
-        {
-          id: 'leather_bag',
-          name: 'Leather Tote',
-          color: 'Tan',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0747395004.jpg'
-        },
-        {
-          id: 'crossbody',
-          name: 'Crossbody Bag',
-          color: 'Black',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0766888001.jpg'
-        },
-        {
-          id: 'backpack',
-          name: 'Canvas Backpack',
-          color: 'Navy',
-          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0685816051.jpg'
-        },
-      ],
-    },
+    { id: 'top', label: 'Top', selected: null, options: [] },
+    { id: 'bottom', label: 'Bottom', selected: null, options: [] },
+    { id: 'shoes', label: 'Shoes', selected: null, options: [] },
+    { id: 'accessory', label: 'Accessory', selected: null, options: [] },
   ]);
 
   const [tagging, setTagging] = useState(false);
   const [results, setResults] = useState<any>(null);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+
+  // Load curated products using CLIP search on mount
+  useEffect(() => {
+    async function loadCuratedProducts() {
+      try {
+        // Define search queries for each slot/option - all womenswear, prefer flat lay shots
+        const searches = [
+          // Tops
+          { slot: 'top', query: 'women cream silk blouse feminine elegant flat lay', limit: 2, index: 1 }, // Skip to 2nd result
+          { slot: 'top', query: 'women grey cashmere sweater soft cozy flat lay', limit: 1, index: 0 },
+          { slot: 'top', query: 'women white t-shirt classic simple flat lay', limit: 1, index: 0 },
+          // Bottoms
+          { slot: 'bottom', query: 'women black tailored trousers professional flat lay', limit: 3, index: 2 },
+          { slot: 'bottom', query: 'women navy pleated midi skirt flat lay', limit: 1, index: 0 },
+          { slot: 'bottom', query: 'women blue denim jeans classic flat lay', limit: 3, index: 2 },
+          // Shoes
+          { slot: 'shoes', query: 'women black heeled boots ankle flat lay', limit: 1, index: 0 },
+          { slot: 'shoes', query: 'women brown leather loafers flat lay', limit: 1, index: 0 },
+          { slot: 'shoes', query: 'women white sneakers clean minimal flat lay', limit: 1, index: 0 },
+          // Accessories
+          { slot: 'accessory', query: 'women tan leather tote bag flat lay', limit: 1, index: 0 },
+          { slot: 'accessory', query: 'women black crossbody bag flat lay', limit: 1, index: 0 },
+          { slot: 'accessory', query: 'women silver chain necklace delicate flat lay', limit: 1, index: 0 },
+        ];
+
+        // Fetch all products in parallel
+        const searchPromises = searches.map(async ({ query, limit, index }) => {
+          const response = await fetch('/api/clip-search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, limit }),
+          });
+          const data = await response.json();
+          return data.results?.[index] || null;
+        });
+
+        const products = await Promise.all(searchPromises);
+
+        // Group products by slot
+        const groupedSlots = {
+          top: products.slice(0, 3).filter(Boolean),
+          bottom: products.slice(3, 6).filter(Boolean),
+          shoes: products.slice(6, 9).filter(Boolean),
+          accessory: products.slice(9, 12).filter(Boolean),
+        };
+
+        setSlots([
+          {
+            id: 'top',
+            label: 'Top',
+            selected: null,
+            options: groupedSlots.top.map(p => ({
+              id: p.productId,
+              name: p.title,
+              color: p.color || '',
+              imageUrl: p.imageUrl,
+            })),
+          },
+          {
+            id: 'bottom',
+            label: 'Bottom',
+            selected: null,
+            options: groupedSlots.bottom.map(p => ({
+              id: p.productId,
+              name: p.title,
+              color: p.color || '',
+              imageUrl: p.imageUrl,
+            })),
+          },
+          {
+            id: 'shoes',
+            label: 'Shoes',
+            selected: null,
+            options: groupedSlots.shoes.map(p => ({
+              id: p.productId,
+              name: p.title,
+              color: p.color || '',
+              imageUrl: p.imageUrl,
+            })),
+          },
+          {
+            id: 'accessory',
+            label: 'Accessory',
+            selected: null,
+            options: groupedSlots.accessory.map(p => ({
+              id: p.productId,
+              name: p.title,
+              color: p.color || '',
+              imageUrl: p.imageUrl,
+            })),
+          },
+        ]);
+      } catch (error) {
+        console.error('Failed to load curated products:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCuratedProducts();
+  }, []);
+
+  const handleImageError = (productId: string) => {
+    setImageErrors(prev => new Set(prev).add(productId));
+  };
 
   const handleSelectItem = (slotId: string, optionId: string) => {
     setSlots(
@@ -216,7 +227,23 @@ export default function OutfitTaggerDemo() {
         </p>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      )}
+
+      {!loading && slots.every(slot => slot.options.length === 0) && (
+        <div className="text-center py-12">
+          <p className="text-gray-600">Unable to load products. Please check your connection.</p>
+        </div>
+      )}
+
       {/* Outfit Builder */}
+      {!loading && slots.some(slot => slot.options.length > 0) && (
+      <>
       <div className="grid md:grid-cols-4 gap-4 mb-6">
         {slots.map((slot) => (
           <div key={slot.id} className="bg-white rounded-xl border-2 border-gray-200 p-4">
@@ -233,16 +260,20 @@ export default function OutfitTaggerDemo() {
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      {option.imageUrl ? (
+                      {option.imageUrl && !imageErrors.has(option.id) ? (
                         <div className="w-16 h-24 bg-gray-100 rounded overflow-hidden flex-shrink-0">
                           <img
                             src={option.imageUrl}
                             alt={option.name}
                             className="w-full h-full object-cover"
+                            onError={() => handleImageError(option.id)}
+                            loading="lazy"
                           />
                         </div>
                       ) : (
-                        <div className="w-16 h-24 bg-gray-200 rounded flex-shrink-0"></div>
+                        <div className="w-16 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                          <span className="text-2xl">👕</span>
+                        </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{option.name}</p>
@@ -354,6 +385,8 @@ export default function OutfitTaggerDemo() {
             </p>
           </div>
         </div>
+      )}
+      </>
       )}
 
     </div>

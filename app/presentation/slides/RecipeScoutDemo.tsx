@@ -170,99 +170,131 @@ export default function RecipeScoutDemo() {
     }
   };
 
-  const handleFeelingLucky = () => {
-    const randomUrl = realSampleUrls[Math.floor(Math.random() * realSampleUrls.length)];
-    handleScan(randomUrl);
-  };
-
   const handleGoogleSearch = () => {
-    const searchQuery = encodeURIComponent('fashion street style outfit editorial');
+    const searchQuery = encodeURIComponent('2026 outfit ideas');
     window.open(`https://www.google.com/search?q=${searchQuery}&tbm=isch`, '_blank');
   };
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Main Input Area */}
+      {/* Main Input Area - Hide when loading or results present */}
+      {!loading && !results && (
       <div
         className={`bg-white rounded-xl border-2 ${
           dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-        } p-8 mb-6 transition-all`}
+        } mb-6 transition-all`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
       >
-        {/* Instructions */}
-        <div className="text-center mb-6">
-          <h3 className="text-lg font-semibold mb-2">Upload a Lifestyle Image</h3>
-          <p className="text-sm text-gray-600">
-            Paste a URL, drag & drop, or choose a file to scan
-          </p>
-        </div>
+        <div className="grid grid-cols-3 gap-6 p-8">
+          {/* Left Column - Controls (2/3) */}
+          <div className="col-span-2">
+            {/* Instructions */}
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-semibold mb-2">Upload a Lifestyle Image</h3>
+              <p className="text-sm text-gray-600">
+                Paste a URL, drag & drop, or choose a file to scan
+              </p>
+            </div>
 
-        {/* URL Input */}
-        <div className="flex gap-3 mb-6">
-          <input
-            type="text"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleScan()}
-            placeholder="Paste image URL here..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-          />
-          <button
-            onClick={() => handleScan()}
-            disabled={loading || !imageUrl.trim()}
-            className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
-          >
-            {loading ? 'Scanning...' : 'Scan Image'}
-          </button>
-        </div>
+            {/* URL Input */}
+            <div className="flex gap-3 mb-6">
+              <input
+                type="text"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleScan()}
+                placeholder="Paste image URL here..."
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+              <button
+                onClick={() => handleScan()}
+                disabled={loading || !imageUrl.trim()}
+                className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                {loading ? 'Scanning...' : 'Scan'}
+              </button>
+            </div>
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="flex-1 border-t border-gray-300"></div>
-          <span className="text-sm text-gray-500 font-medium">OR</span>
-          <div className="flex-1 border-t border-gray-300"></div>
-        </div>
+            {/* Divider */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="flex-1 border-t border-gray-300"></div>
+              <span className="text-sm text-gray-500 font-medium">OR</span>
+              <div className="flex-1 border-t border-gray-300"></div>
+            </div>
 
-        {/* File Upload & Quick Actions */}
-        <div className="grid md:grid-cols-3 gap-3">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileInput}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={loading}
-            className="px-4 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-colors disabled:opacity-50"
-          >
-            📁 Choose File
-          </button>
-          <button
-            onClick={handleFeelingLucky}
-            disabled={loading}
-            className="px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 transition-colors disabled:opacity-50"
-          >
-            ✨ Feeling Lucky
-          </button>
-          <button
-            onClick={handleGoogleSearch}
-            className="px-4 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-colors"
-          >
-            🔍 Find on Google
-          </button>
-        </div>
+            {/* Drop Zone + Buttons Side by Side */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Drop Zone - Left Half */}
+              <div className={`border-2 border-dashed rounded-xl p-8 transition-all ${
+                dragActive
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-300 bg-gray-50'
+              }`}>
+                <div className="text-center">
+                  <div className="text-4xl mb-3">📸</div>
+                  <p className={`font-medium mb-2 ${dragActive ? 'text-blue-600' : 'text-gray-700'}`}>
+                    {dragActive ? 'Drop image here' : 'Drag & drop'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Drop image to scan
+                  </p>
+                </div>
+              </div>
 
-        {dragActive && (
-          <div className="mt-6 text-center">
-            <p className="text-blue-600 font-medium animate-pulse">Drop image here</p>
+              {/* Buttons - Right Half */}
+              <div className="flex flex-col gap-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileInput}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading}
+                  className="flex-1 px-4 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-colors disabled:opacity-50"
+                >
+                  📁 Choose File
+                </button>
+                <button
+                  onClick={handleGoogleSearch}
+                  className="flex-1 px-4 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                >
+                  🔍 Find on Google
+                </button>
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Right Column - Image Guidelines (1/3) */}
+          <div className="border-l border-gray-200 pl-6">
+            <h4 className="font-semibold text-gray-900 mb-4">Image Guidelines</h4>
+            <ul className="space-y-3 text-sm text-gray-700">
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">✓</span>
+                <span>Single person in frame</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">✓</span>
+                <span>Head-to-toe outfit visible</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">✓</span>
+                <span>Clear, well-lit photo</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-0.5">✓</span>
+                <span>Editorial or street style shots work best</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
+      )}
 
       {/* Loading State */}
       {loading && (
@@ -296,7 +328,7 @@ export default function RecipeScoutDemo() {
                 saveStatus === 'saved' ? 'text-green-700' : 'text-blue-700'
               }`}>
                 {saveStatus === 'saved'
-                  ? 'This recipe has been added to your recipe pool for future use.'
+                  ? 'This recipe has been added to the recipe pool for future use.'
                   : 'This image has already been analyzed. Showing existing recipe.'}
               </p>
             </div>
@@ -379,38 +411,6 @@ export default function RecipeScoutDemo() {
         </div>
       )}
 
-      {/* Explanation */}
-      {!results && !loading && (
-        <div className="bg-blue-50 rounded-xl border border-blue-200 p-6">
-          <h3 className="font-semibold mb-3">How Recipe Scout Works</h3>
-          <ul className="space-y-2 text-sm text-gray-700">
-            <li className="flex items-start gap-2">
-              <span className="text-blue-600 mt-1">•</span>
-              <span>
-                <strong>Image analysis:</strong> AI identifies all visible garments and accessories
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-blue-600 mt-1">•</span>
-              <span>
-                <strong>Attribute extraction:</strong> Determines style, color, silhouette, formality for each item
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-blue-600 mt-1">•</span>
-              <span>
-                <strong>Recipe template:</strong> Creates a structured brief with slots for each detected piece
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-blue-600 mt-1">•</span>
-              <span>
-                <strong>Top of the funnel:</strong> These templates feed directly into the outfit cooking pipeline
-              </span>
-            </li>
-          </ul>
-        </div>
-      )}
     </div>
   );
 }

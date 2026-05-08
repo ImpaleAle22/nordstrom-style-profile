@@ -79,7 +79,7 @@ export default function PresentationContainer({
             className="text-sm tracking-wide opacity-80 text-center max-w-md"
             style={{ color: '#C85A3B' }}
           >
-            Best viewed on a wider screen. Content will scroll if needed.
+            Best viewed on a wider screen, but content will scroll if cut off.
           </p>
         </div>
 
