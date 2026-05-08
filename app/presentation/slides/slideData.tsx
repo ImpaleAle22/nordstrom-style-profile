@@ -5,6 +5,8 @@
 
 import ClipSearchDemo from './ClipSearchDemo';
 import OutfitTaggerDemo from './OutfitTaggerDemo';
+import RecipeScoutDemo from './RecipeScoutDemo';
+import LiveStatsCards from './LiveStatsCards';
 
 export interface Slide {
   id: string;
@@ -67,7 +69,7 @@ export const slides: Slide[] = [
         {/* Left Column - Text */}
         <div className="space-y-6 flex flex-col justify-center pl-10">
           <p className="text-xl text-gray-700 leading-relaxed">
-            The Playlist concept that Clair has been championing and the Personalized Edit concept I had explored share a lot of DNA.
+            The Playlist concept that Clair has championed and the Personalized Edit concept I explored share a lot of DNA.
           </p>
           <p className="text-xl text-gray-700 leading-relaxed">
             Could I build something like that for the Claude Code contest?
@@ -102,53 +104,53 @@ export const slides: Slide[] = [
     ),
   },
 
-  // SLIDE 3: How much data does a Playlist actually need?
+  // SLIDE 3: How much data do I need?
   {
     id: 'data-needs',
-    title: 'How much data does a Playlist actually need?',
+    title: 'How much data do I need?',
     layout: 'content',
     content: (
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-5">
         <p className="text-xl text-gray-700">
-          To make one Playlist both <em>feel real</em> and be <em>completely interactive</em> — every feature working or appearing to work as if it were live in production:
+          To make one Playlist <em>feel real</em> and be <em>fully interactive</em>:
         </p>
-        <div className="space-y-6 my-8">
+        <div className="space-y-4 my-5">
           {/* Row 1: Three items */}
-          <div className="grid grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl">
-              <div className="text-4xl font-bold text-gray-900 mb-2">8–12</div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 px-5 pt-4 pb-4 rounded-2xl">
+              <div className="text-4xl font-bold text-gray-900 mb-1">8–12</div>
               <div className="text-gray-700">outfits</div>
             </div>
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl">
-              <div className="text-4xl font-bold text-gray-900 mb-2">1–3</div>
-              <div className="text-gray-700">Recommendation product sets</div>
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 px-5 pt-4 pb-4 rounded-2xl">
+              <div className="text-4xl font-bold text-gray-900 mb-1">1–3</div>
+              <div className="text-gray-700">Recommendation sets</div>
             </div>
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl">
-              <div className="text-4xl font-bold text-gray-900 mb-2">100–150+</div>
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 px-5 pt-4 pb-4 rounded-2xl">
+              <div className="text-4xl font-bold text-gray-900 mb-1">100–150+</div>
               <div className="text-gray-700">Unique Products</div>
             </div>
           </div>
 
           {/* Row 2: Two items */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl">
-              <div className="text-4xl font-bold text-gray-900 mb-2">Editorial</div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 px-5 pt-4 pb-4 rounded-2xl">
+              <div className="text-4xl font-bold text-gray-900 mb-1">Editorial</div>
               <div className="text-gray-700">content</div>
             </div>
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl">
-              <div className="text-4xl font-bold text-gray-900 mb-2">Trend</div>
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 px-5 pt-4 pb-4 rounded-2xl">
+              <div className="text-4xl font-bold text-gray-900 mb-1">Trend</div>
               <div className="text-gray-700">content</div>
             </div>
           </div>
 
           {/* Row 3: Two items */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl">
-              <div className="text-4xl font-bold text-gray-900 mb-2">Outfit Editing</div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 px-5 pt-4 pb-4 rounded-2xl">
+              <div className="text-2xl font-bold text-gray-900 mb-1">Outfit Editing</div>
               <div className="text-gray-700">Compatible alternatives for every slot</div>
             </div>
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-2xl">
-              <div className="text-4xl font-bold text-gray-900 mb-2">Customer Profiles</div>
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 px-5 pt-4 pb-4 rounded-2xl">
+              <div className="text-2xl font-bold text-gray-900 mb-1">Customer Profiles</div>
               <div className="text-gray-700">Data to personalize against</div>
             </div>
           </div>
@@ -171,12 +173,12 @@ export const slides: Slide[] = [
           <p className="text-3xl text-gray-400 line-through">Build the Playlist</p>
           <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-8" />
           <p className="text-4xl font-bold text-gray-900 leading-tight">
-            Build the API that makes the Playlist<br />(and so much more) possible.
+            Build the content engine that makes the Playlist<br />(and so much more) possible.
           </p>
         </div>
         <div className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-12 text-left">
           <p className="text-xl text-gray-700 leading-relaxed">
-            A tool XD team members can call when they need real place holder product data for prototypes they build in Claude Code. Feed it a concept. Get back outfits, products, tagged content — all usable, all real enough to demo with.
+            A vast pool of products organized into outfits, lifestyle images, and a tagging system that includes style pillars, vibes, and occasions. Semantic search, visual similarity, concept-based queries. Real content, ready to use in Claude Code prototypes.
           </p>
         </div>
       </div>
@@ -193,29 +195,28 @@ export const slides: Slide[] = [
         <p className="text-xl text-gray-700 leading-relaxed">
           Started pulling products together. Manual copying. Scraping. Puppeteer scripts. Every trick that seemed like it might work.
         </p>
-        <div className="text-center my-12">
+        <div className="text-center my-8">
           <div className="text-6xl font-bold text-gray-900 mb-4">2,000 products</div>
-          <p className="text-lg text-gray-600">Felt like a win.</p>
         </div>
-        <p className="text-xl text-gray-700">Then audited the category coverage.</p>
-        <div className="grid grid-cols-2 gap-4 my-8">
-          <div className="p-4 bg-gray-100 rounded-xl">
+        <p className="text-xl text-gray-700 text-center">Felt like a win. Then I audited the category coverage.</p>
+        <div className="flex gap-4 my-8">
+          <div className="flex-1 p-4 bg-gray-100 rounded-xl whitespace-nowrap">
             <span className="text-gray-700">Tops?</span> <span className="font-semibold">Decent.</span>
           </div>
-          <div className="p-4 bg-red-50 rounded-xl">
+          <div className="flex-1 p-4 bg-red-50 rounded-xl whitespace-nowrap">
             <span className="text-gray-700">Shoes?</span> <span className="font-semibold text-red-700">Thin.</span>
           </div>
-          <div className="p-4 bg-red-50 rounded-xl">
+          <div className="flex-1 p-4 bg-red-50 rounded-xl whitespace-nowrap">
             <span className="text-gray-700">Outerwear?</span> <span className="font-semibold text-red-700">Sparse.</span>
           </div>
-          <div className="p-4 bg-red-100 rounded-xl">
+          <div className="flex-1 p-4 bg-red-100 rounded-xl whitespace-nowrap">
             <span className="text-gray-700">Accessories?</span> <span className="font-semibold text-red-800">Basically nothing.</span>
           </div>
         </div>
-        <p className="text-xl text-gray-900 font-semibold">
-          2,000 products sounds like a lot until you try to build outfits from them. The gaps were everywhere.
+        <p className="text-xl text-gray-900 font-semibold text-center">
+          2,000 products sounds like a lot until you try to build outfits. The gaps were everywhere.
         </p>
-        <p className="text-2xl font-bold text-gray-900 text-center pt-6">
+        <p className="text-2xl font-bold text-gray-900 text-center pt-1.5">
           Needed more. A lot more.
         </p>
       </div>
@@ -232,7 +233,7 @@ export const slides: Slide[] = [
         <p className="text-xl text-gray-700 leading-relaxed">
           Discovered the H&M Kaggle dataset. Open source. Publicly available. Part of a machine learning competition H&M ran a few years ago.
         </p>
-        <div className="grid grid-cols-3 gap-6 my-12">
+        <div className="grid grid-cols-2 gap-6 my-12">
           <div className="text-center p-8 bg-gradient-to-br from-green-50 to-green-100 rounded-3xl">
             <div className="text-5xl font-bold text-gray-900 mb-3">~105K</div>
             <div className="text-gray-700">Total products</div>
@@ -241,17 +242,7 @@ export const slides: Slide[] = [
             <div className="text-5xl font-bold text-gray-900 mb-3">~47K</div>
             <div className="text-gray-700">Outfit-eligible items</div>
           </div>
-          <div className="text-center p-8 bg-gradient-to-br from-purple-50 to-purple-100 rounded-3xl">
-            <div className="text-5xl font-bold text-gray-900 mb-3">31M</div>
-            <div className="text-gray-700">Purchase transactions</div>
-          </div>
         </div>
-        <p className="text-xl font-semibold text-gray-900">
-          Category coverage: instantly workable.
-        </p>
-        <p className="text-lg text-gray-600 leading-relaxed">
-          The purchase transaction data is interesting too — 31 million real co-purchase pairs that could eventually train a compatibility model. But that's future work. Right now: <strong className="text-gray-900">47,000 products to build outfits from.</strong>
-        </p>
       </div>
     ),
   },
@@ -273,7 +264,7 @@ export const slides: Slide[] = [
               "Here are 47,000 products. Make me an outfit."
             </p>
             <p className="text-lg text-gray-700 leading-relaxed">
-              Technically: outfits. Practically: random items grouped together. No real sense of whether pieces actually look good together.
+              Technically: outfits. Practically: the rules-based prefiltering was sub-par. The product sets selected weren't setting up good outfits.
             </p>
           </div>
 
@@ -293,8 +284,8 @@ export const slides: Slide[] = [
         {/* Key Insight */}
         <div className="bg-yellow-50 border-2 border-yellow-200 rounded-3xl p-8 text-center">
           <p className="text-2xl font-semibold text-gray-900">
-            The model could read descriptions.<br />
-            It couldn't <em>see</em> the clothes.
+            The outfit building process was still missing expectations.<br />
+            Something was missing.
           </p>
         </div>
       </div>
@@ -308,27 +299,39 @@ export const slides: Slide[] = [
     layout: 'content',
     content: (
       <div className="max-w-4xl mx-auto space-y-8">
-        <p className="text-xl text-gray-700 leading-relaxed">
-          The ACE team built Fashion Map Search using CLIP — a model that maps images and text into the same space, so visually similar things end up numerically close to each other, regardless of how their descriptions are written.
-        </p>
-        <p className="text-xl text-gray-700 leading-relaxed">
-          I implemented a newer, more powerful version of the same idea.
-        </p>
-        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-3xl p-10 my-10">
-          <div className="text-3xl font-bold text-gray-900 mb-4">Marqo-FashionSigLIP</div>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            A CLIP model released this year, trained specifically on fashion data. It outperforms the SigLIP v2 model that ACE and Recs currently use on fashion-specific tasks.
-          </p>
-        </div>
-        <div className="space-y-6">
-          <p className="text-xl text-gray-700">Adding it to the outfit engine changed the question the system was asking:</p>
-          <div className="text-center space-y-6">
-            <p className="text-lg text-gray-500 italic">"Do these items' descriptions match?"</p>
-            <div className="text-4xl text-gray-400">↓</div>
-            <p className="text-2xl font-bold text-gray-900">"Do these items actually look good together?"</p>
+        <div className="flex gap-6 items-center">
+          <div className="flex-1">
+            <p className="text-xl text-gray-700 leading-relaxed">
+              The ACE team built Fashion Map Search using CLIP, an embedding model that maps images and text into the same space. I implemented a newer, more powerful version released this year, trained specifically on fashion data.
+            </p>
+          </div>
+          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-3xl px-8 py-6 flex items-center gap-4 whitespace-nowrap">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="w-12 h-12 flex-shrink-0" fill="currentColor">
+              <path d="M344,144H168a24.028,24.028,0,0,0-24,24V344a24.028,24.028,0,0,0,24,24H344a24.028,24.028,0,0,0,24-24V168A24.028,24.028,0,0,0,344,144Zm8,200a8.009,8.009,0,0,1-8,8H168a8.009,8.009,0,0,1-8-8V168a8.009,8.009,0,0,1,8-8H344a8.009,8.009,0,0,1,8,8Z"/>
+              <path d="M221.657,218.343a8,8,0,0,0-11.314,0l-32,32a8,8,0,0,0,0,11.314l32,32a8,8,0,1,0,11.314-11.314L195.314,256l26.343-26.343A8,8,0,0,0,221.657,218.343Z"/>
+              <path d="M301.657,218.343a8,8,0,0,0-11.314,11.314L316.686,256l-26.343,26.343a8,8,0,0,0,11.314,11.314l32-32a8,8,0,0,0,0-11.314Z"/>
+              <path d="M265.94,216.239a8,8,0,0,0-9.7,5.821l-16,64a8,8,0,1,0,15.522,3.88l16-64A8,8,0,0,0,265.94,216.239Z"/>
+              <path d="M408,216a24.039,24.039,0,0,0,22.624-16H456a8,8,0,0,0,7.59-5.47L477.766,152H488a8,8,0,0,0,0-16H472a8,8,0,0,0-7.59,5.47L450.234,184h-19.61A23.985,23.985,0,0,0,400,169.376V152a40.059,40.059,0,0,0-33.57-39.476A23.981,23.981,0,0,0,352,81.376V24a8,8,0,0,0-16,0V81.376A23.985,23.985,0,0,0,321.376,112H302.624A23.985,23.985,0,0,0,288,81.376V24a8,8,0,0,0-16,0V81.376A23.985,23.985,0,0,0,257.376,112H190.624A23.985,23.985,0,0,0,176,81.376V24a8,8,0,0,0-16,0V81.376a23.984,23.984,0,0,0-14.431,31.148A40.059,40.059,0,0,0,112,152v17.376A23.985,23.985,0,0,0,81.376,184H61.766L47.589,141.47A8,8,0,0,0,40,136H24a8,8,0,0,0,0,16H34.234l14.177,42.53A8,8,0,0,0,56,200H81.376A23.985,23.985,0,0,0,112,214.624v18.752A23.985,23.985,0,0,0,81.376,248H24a8,8,0,0,0,0,16H81.376A23.985,23.985,0,0,0,112,278.624v18.752A23.985,23.985,0,0,0,81.376,312H56a8,8,0,0,0-7.589,5.47L34.234,360H24a8,8,0,0,0,0,16H40a8,8,0,0,0,7.589-5.47L61.766,328h19.61A23.985,23.985,0,0,0,112,342.624V360a40.059,40.059,0,0,0,33.569,39.476A23.984,23.984,0,0,0,160,430.624V488a8,8,0,0,0,16,0V430.624A23.985,23.985,0,0,0,190.624,400h66.752A23.985,23.985,0,0,0,272,430.624V488a8,8,0,0,0,16,0V430.624A23.985,23.985,0,0,0,302.624,400h18.752A23.985,23.985,0,0,0,336,430.624V488a8,8,0,0,0,16,0V430.624a23.981,23.981,0,0,0,14.43-31.148A40.059,40.059,0,0,0,400,360V342.624A23.985,23.985,0,0,0,430.624,328h19.61l14.176,42.53A8,8,0,0,0,472,376h16a8,8,0,0,0,0-16H477.766L463.59,317.47A8,8,0,0,0,456,312H430.624A23.985,23.985,0,0,0,400,297.376V278.624A23.985,23.985,0,0,0,430.624,264H488a8,8,0,0,0,0-16H430.624A23.985,23.985,0,0,0,400,233.376V214.624A23.885,23.885,0,0,0,408,216Zm0-32a8,8,0,1,1-8,8A8.009,8.009,0,0,1,408,184ZM104,328a8,8,0,1,1,8-8A8.009,8.009,0,0,1,104,328Zm0-64a8,8,0,1,1,8-8A8.009,8.009,0,0,1,104,264Zm0-64a8,8,0,1,1,8-8A8.009,8.009,0,0,1,104,200ZM344,96a8,8,0,1,1-8,8A8.009,8.009,0,0,1,344,96Zm-64,0a8,8,0,1,1-8,8A8.009,8.009,0,0,1,280,96ZM168,96a8,8,0,1,1-8,8A8.009,8.009,0,0,1,168,96Zm0,320a8,8,0,1,1,8-8A8.009,8.009,0,0,1,168,416Zm112,0a8,8,0,1,1,8-8A8.009,8.009,0,0,1,280,416Zm64,0a8,8,0,1,1,8-8A8.009,8.009,0,0,1,344,416Zm40-56a24.028,24.028,0,0,1-24,24H152a24.028,24.028,0,0,1-24-24V152a24.028,24.028,0,0,1,24-24H360a24.028,24.028,0,0,1,24,24Zm24-48a8,8,0,1,1-8,8A8.009,8.009,0,0,1,408,312Zm0-64a8,8,0,1,1-8,8A8.009,8.009,0,0,1,408,248Z"/>
+            </svg>
+            <div className="text-2xl font-bold text-gray-900">Marqo-FashionSigLIP</div>
           </div>
         </div>
-        <p className="text-xl font-semibold text-gray-900 text-center pt-6">
+        <div className="space-y-6">
+          <p className="text-xl font-semibold text-gray-900 text-center">Adding it to the outfit engine changed the question the system was asking:</p>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="p-6 bg-gray-50 border-2 border-gray-200 rounded-2xl">
+              <p className="text-lg text-gray-700 leading-relaxed">
+                "Do the attributes of these products make a logical outfit?"
+              </p>
+            </div>
+            <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl">
+              <p className="text-lg text-gray-900 font-semibold leading-relaxed">
+                "Do these items actually <strong>look</strong> good together?"
+              </p>
+            </div>
+          </div>
+        </div>
+        <p className="text-xl font-semibold text-gray-900 text-center pt-3">
           That's the unlock. Outfitting went from coherent-but-off to genuinely good.
         </p>
       </div>
@@ -342,84 +345,37 @@ export const slides: Slide[] = [
     layout: 'demo',
     content: (
       <div className="space-y-8">
-        <div className="max-w-3xl mx-auto text-center space-y-4">
-          <p className="text-xl text-gray-700">
-            Type a concept — not a keyword. A feeling.
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center text-sm">
-            <span className="px-4 py-2 bg-gray-100 rounded-full text-gray-700">"Coastal grandmother cardigan"</span>
-            <span className="px-4 py-2 bg-gray-100 rounded-full text-gray-700">"Goth girl birthday dress"</span>
-            <span className="px-4 py-2 bg-gray-100 rounded-full text-gray-700">"Boardroom but make it interesting"</span>
-          </div>
-        </div>
         <ClipSearchDemo />
       </div>
     ),
   },
 
-  // SLIDE 10: A lifestyle photo is already an outfit brief
-  {
-    id: 'lifestyle-photo',
-    title: 'A lifestyle photo is already an outfit brief',
-    layout: 'content',
-    content: (
-      <div className="max-w-4xl mx-auto space-y-8">
-        <p className="text-xl text-gray-700 leading-relaxed">
-          Once CLIP was working, a new input surface opened up: lifestyle photography.
-        </p>
-        <p className="text-xl text-gray-700 leading-relaxed">
-          A styled editorial image already has everything — silhouette balance, color harmony, occasion context — baked in by whoever shot it.
-        </p>
-        <div className="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 rounded-3xl p-10 my-10">
-          <div className="text-2xl font-bold text-gray-900 mb-4">Recipe Scout</div>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Scans a lifestyle image, identifies the pieces, infers their attributes, and produces a recipe template. The top of the content funnel. It goes out into the world and comes back with a brief.
-          </p>
-        </div>
-        <p className="text-lg text-gray-600 italic text-center">
-          [Demo: upload or fetch an image → watch it become a recipe]
-        </p>
-      </div>
-    ),
-  },
-
-  // SLIDE 11: From recipes to 20,000 outfits
+  // SLIDE 10: From recipes to outfits
   {
     id: 'scale',
-    title: 'From recipes to 20,000 outfits',
+    title: 'From recipes to outfits',
     layout: 'content',
     content: (
       <div className="max-w-4xl mx-auto space-y-10">
         <p className="text-xl text-gray-700 leading-relaxed">
           With CLIP-powered outfit building and Recipe Scout generating templates, the system could run at scale.
         </p>
-        <div className="grid grid-cols-2 gap-8 my-12">
-          <div className="text-center p-10 bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl">
-            <div className="text-6xl font-bold text-gray-900 mb-3">357</div>
-            <div className="text-xl text-gray-700">recipes</div>
-          </div>
-          <div className="text-center p-10 bg-gradient-to-br from-emerald-50 to-green-50 rounded-3xl">
-            <div className="text-6xl font-bold text-gray-900 mb-3">20,000+</div>
-            <div className="text-xl text-gray-700">outfits</div>
-          </div>
-        </div>
-        <div className="space-y-4">
-          <p className="text-xl font-semibold text-gray-900">Each outfit gets a confidence score:</p>
-          <div className="space-y-3 text-lg">
-            <div className="flex items-center gap-4 p-4 bg-green-50 rounded-xl">
-              <div className="font-bold text-green-700 text-xl">≥75</div>
-              <div className="text-gray-700">— Displayable</div>
-            </div>
-            <div className="flex items-center gap-4 p-4 bg-yellow-50 rounded-xl">
-              <div className="font-bold text-yellow-700 text-xl">50–74</div>
-              <div className="text-gray-700">— Suppressed until the pool improves</div>
-            </div>
-            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-              <div className="font-bold text-gray-500 text-xl">&lt;50</div>
-              <div className="text-gray-700">— Not shown</div>
-            </div>
-          </div>
-        </div>
+        <LiveStatsCards />
+      </div>
+    ),
+  },
+
+  // SLIDE 11: A lifestyle photo is already an outfit brief
+  {
+    id: 'lifestyle-photo',
+    title: 'A lifestyle photo is already an outfit brief',
+    layout: 'content',
+    content: (
+      <div className="max-w-4xl mx-auto space-y-8">
+        <p className="text-xl text-gray-700 leading-relaxed mb-8">
+          Once CLIP was working, a new input surface opened up: lifestyle photography. A styled editorial image already has everything — silhouette balance, color harmony, occasion context — baked in by whoever shot it. Recipe Scout scans these images, identifies the pieces, infers their attributes, and produces a recipe template. The top of the content funnel.
+        </p>
+        <RecipeScoutDemo />
       </div>
     ),
   },
@@ -431,18 +387,14 @@ export const slides: Slide[] = [
     layout: 'content',
     content: (
       <div className="max-w-5xl mx-auto space-y-8">
-        <p className="text-xl text-gray-700 leading-relaxed">
-          CLIP tells you if two pieces look compatible. It doesn't tell you if an outfit is <em>Minimal or Romantic. Work or Weekend. Summer or transitional.</em> That requires semantic tagging — a hybrid approach combining rules and AI.
-        </p>
-
         {/* Three Cards with Arrows - Rules → AI → Confidence */}
-        <div className="my-12">
+        <div className="mt-4 mb-12">
           <div className="flex items-stretch gap-4">
             {/* Card 1: Rules Fire First */}
             <div className="flex-1 flex flex-col bg-blue-50 border-2 border-blue-200 rounded-2xl p-6">
               <div className="text-xl font-bold text-gray-900 mb-3">1. Rules Fire First</div>
               <p className="text-gray-700 leading-relaxed flex-1">
-                Deterministic logic scans structured data — colors, materials, product types. Fast pattern matching produces instant tags with known confidence.
+                Scans structured product data. Fast pattern matching produces instant tags with tracked confidence scores.
               </p>
             </div>
 
@@ -453,7 +405,7 @@ export const slides: Slide[] = [
             <div className="flex-1 flex flex-col bg-purple-50 border-2 border-purple-200 rounded-2xl p-6">
               <div className="text-xl font-bold text-gray-900 mb-3">2. AI Fills the Gaps</div>
               <p className="text-gray-700 leading-relaxed flex-1">
-                When rules can't extract from titles or descriptions (confidence sub-70%), vision models analyze images and context for attributes rules missed.
+                When rules can't extract from structured data, vision models analyze images and context for tags rules missed.
               </p>
             </div>
 
@@ -474,29 +426,21 @@ export const slides: Slide[] = [
           <div className="p-6 bg-white border-2 border-gray-200 rounded-2xl">
             <div className="text-lg font-bold text-gray-900 mb-3">Product-Level Tags</div>
             <ul className="space-y-2 text-gray-700">
-              <li>• Color palette & materials</li>
-              <li>• Product type & silhouette</li>
-              <li>• Formality indicators</li>
-              <li>• Season/weather appropriateness</li>
-              <li>• Style pillar affinity scores</li>
+              <li>• Color palette, materials, product type & silhouette</li>
+              <li>• Formality indicators and season/weather appropriateness</li>
+              <li>• Style pillar affinity scores across all nine pillars</li>
             </ul>
           </div>
 
           <div className="p-6 bg-white border-2 border-gray-200 rounded-2xl">
             <div className="text-lg font-bold text-gray-900 mb-3">Outfit-Level Tags</div>
             <ul className="space-y-2 text-gray-700">
-              <li>• Style Pillar (dominant aesthetic)</li>
-              <li>• Vibe (emotional register)</li>
-              <li>• Occasions (use cases)</li>
-              <li>• Formality score (0-10)</li>
-              <li>• Composition analysis</li>
+              <li>• Style Pillar (aesthetic) and Vibe (emotional tone)</li>
+              <li>• Occasions (use cases) and Formality score (0-10 scale)</li>
+              <li>• Composition analysis: balance, proportion, color harmony</li>
             </ul>
           </div>
         </div>
-
-        <p className="text-lg text-gray-700 leading-relaxed italic">
-          Product tags help predict what outfits can be built. Outfit tags validate and refine product understanding. The system learns bidirectionally.
-        </p>
       </div>
     ),
   },
@@ -504,7 +448,7 @@ export const slides: Slide[] = [
   // SLIDE 13: Three fuzzy things
   {
     id: 'fuzzy-things',
-    title: 'Three fuzzy things that needed their own approach',
+    title: 'Three fuzzy things',
     layout: 'content',
     content: (
       <div className="max-w-4xl mx-auto">
@@ -539,17 +483,17 @@ export const slides: Slide[] = [
         <p className="text-xl text-gray-700 italic text-center">
           What aesthetic register is this outfit?
         </p>
-        <div className="bg-gradient-to-r from-rose-50 via-purple-50 to-blue-50 rounded-3xl p-8 my-8">
-          <div className="flex flex-wrap justify-center gap-4 text-lg font-semibold text-gray-900">
-            <span>Romantic</span>
-            <span className="text-gray-400">·</span>
-            <span>Bohemian</span>
-            <span className="text-gray-400">·</span>
-            <span>Casual</span>
-            <span className="text-gray-400">·</span>
+        <div className="bg-gradient-to-r from-rose-50 via-purple-50 to-blue-50 rounded-3xl p-10 my-8">
+          <div className="flex flex-wrap justify-center gap-4 text-2xl font-bold text-gray-900">
             <span>Classic</span>
             <span className="text-gray-400">·</span>
             <span>Minimal</span>
+            <span className="text-gray-400">·</span>
+            <span>Casual</span>
+            <span className="text-gray-400">·</span>
+            <span>Bohemian</span>
+            <span className="text-gray-400">·</span>
+            <span>Romantic</span>
             <span className="text-gray-400">·</span>
             <span>Maximal</span>
             <span className="text-gray-400">·</span>
@@ -560,12 +504,42 @@ export const slides: Slide[] = [
             <span>Utility</span>
           </div>
         </div>
-        <p className="text-lg text-gray-700 leading-relaxed">
-          Nine pillars. Gender-agnostic. Arranged on a continuous spectrum — not discrete buckets.
+        <p className="text-xl font-bold text-gray-900 text-center leading-relaxed">
+          Nine pillars. Gender-agnostic. Arranged on a continuous spectrum, not discrete buckets.
         </p>
-        <p className="text-lg text-gray-700 leading-relaxed">
-          Each pillar has sub-terms that act as scoring dimensions. A piece can be 60% Classic, 30% Minimal, 10% Casual. The highest-scoring pillar wins — but the others aren't lost.
-        </p>
+
+        {/* Sub-pillar word cloud */}
+        <div className="bg-gray-50 rounded-2xl p-8 mt-12">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-4 items-center">
+            <span className="text-2xl text-gray-700 font-medium">tailored</span>
+            <span className="text-base text-gray-500">clean</span>
+            <span className="text-xl text-gray-600">relaxed</span>
+            <span className="text-lg text-gray-500">flowing</span>
+            <span className="text-2xl text-gray-700 font-medium">soft</span>
+            <span className="text-base text-gray-500">bold</span>
+            <span className="text-xl text-gray-600">urban</span>
+            <span className="text-lg text-gray-500">sporty</span>
+            <span className="text-2xl text-gray-700 font-medium">functional</span>
+            <span className="text-base text-gray-500">sophisticated</span>
+            <span className="text-xl text-gray-600">sleek</span>
+            <span className="text-lg text-gray-500">effortless</span>
+            <span className="text-2xl text-gray-700 font-medium">artistic</span>
+            <span className="text-base text-gray-500">delicate</span>
+            <span className="text-xl text-gray-600">dramatic</span>
+            <span className="text-lg text-gray-500">edgy</span>
+            <span className="text-2xl text-gray-700 font-medium">active</span>
+            <span className="text-base text-gray-500">practical</span>
+            <span className="text-xl text-gray-600">timeless</span>
+            <span className="text-lg text-gray-500">modern</span>
+            <span className="text-base text-gray-500">comfortable</span>
+            <span className="text-2xl text-gray-700 font-medium">eclectic</span>
+            <span className="text-lg text-gray-500">feminine</span>
+            <span className="text-xl text-gray-600">statement</span>
+            <span className="text-base text-gray-500">contemporary</span>
+            <span className="text-lg text-gray-500">performance</span>
+            <span className="text-2xl text-gray-700 font-medium">rugged</span>
+          </div>
+        </div>
       </div>
     ),
   },
@@ -580,7 +554,7 @@ export const slides: Slide[] = [
         <div className="space-y-6">
           <div className="text-2xl font-bold text-gray-900">Vibes</div>
           <p className="text-lg text-gray-700 leading-relaxed">
-            The emotional register — independent of Pillar. An outfit can be Athletic pillar with a Grunge vibe. Classic pillar with a Romantic vibe. 28 active terms, kept strictly separate from Pillar vocabulary.
+            The emotional register, independent of Pillar. An outfit can be Athletic pillar with a Grunge vibe. Classic pillar with an Elegant vibe. 28 active terms, kept strictly separate from Pillar vocabulary.
           </p>
         </div>
         <div className="space-y-6">
@@ -595,11 +569,6 @@ export const slides: Slide[] = [
             <div className="p-4 bg-gray-100 rounded-xl">4. Social register</div>
           </div>
         </div>
-        <div className="bg-red-50 border-2 border-red-200 rounded-3xl p-8">
-          <p className="text-lg text-gray-700 leading-relaxed">
-            The old approach (single formality axis) put <strong className="text-red-700">80% of outfits in "Date Night" or "Casual Dinner."</strong> Four axes produce specific, varied occasions from the same outfits.
-          </p>
-        </div>
       </div>
     ),
   },
@@ -611,46 +580,35 @@ export const slides: Slide[] = [
     layout: 'demo',
     content: (
       <div className="space-y-8">
-        <p className="text-xl text-gray-700 text-center max-w-3xl mx-auto">
-          Watch the system work — rules fire, AI fills gaps, reasoning is visible for every decision.
-        </p>
         <OutfitTaggerDemo />
       </div>
     ),
   },
 
-  // SLIDE 17: The content engine works
+  // SLIDE 17: What connects to this
   {
     id: 'engine-works',
-    title: 'The content engine works. The Playlist is still waiting.',
+    title: 'What connects to this',
     layout: 'content',
     content: (
       <div className="max-w-4xl mx-auto space-y-10">
-        <div className="space-y-4 text-xl">
-          <div className="flex items-center gap-4">
-            <span className="text-3xl text-green-600">✓</span>
-            <span className="text-gray-700">Outfits</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-3xl text-green-600">✓</span>
-            <span className="text-gray-700">Tagging</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-3xl text-green-600">✓</span>
-            <span className="text-gray-700">Recipe system</span>
-          </div>
-        </div>
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-10 space-y-6">
+        <p className="text-xl text-gray-700 leading-relaxed">
+          The content engine was working. Outfits were generating. Tagging was consistent. Recipe Scout was pulling briefs from images.
+        </p>
+        <p className="text-xl text-gray-700 leading-relaxed">
+          But infrastructure alone doesn't create value. I needed to find the surfaces that connect to it.
+        </p>
+        <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-3xl p-10 space-y-6">
+          <p className="text-2xl text-gray-900 font-bold">
+            The content engine is the supply side. What's the demand side?
+          </p>
           <p className="text-xl text-gray-700 leading-relaxed">
-            But the Playlist needs more than outfits. It needs trend content. Campaign content. And — most importantly — it needs to know <em>who it's for.</em>
-          </p>
-          <p className="text-xl text-gray-900 font-semibold">
-            The outfit engine is the supply side.
-          </p>
-          <p className="text-2xl text-gray-900 font-bold text-center pt-4">
-            The supply side is ready. The demand side is next.
+            The Playlist personalizes against a customer. That customer needs a profile. A way to capture taste, track behavior, and route content intelligently.
           </p>
         </div>
+        <p className="text-xl text-gray-900 font-semibold text-center">
+          So I built a style profile system that could plug directly into the same infrastructure.
+        </p>
       </div>
     ),
   },
@@ -734,7 +692,7 @@ export const slides: Slide[] = [
         </p>
         <div className="space-y-6">
           <div className="p-8 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-3xl">
-            <div className="text-2xl font-bold text-gray-900 mb-4">Rules Engine</div>
+            <div className="text-2xl font-bold text-gray-900 mb-4">Behavioral Signals</div>
             <p className="text-lg text-gray-700 leading-relaxed">
               Deterministic. Every swipe, purchase, and search updates pillar weights by fixed amounts. Fast, consistent, auditable.
             </p>
@@ -756,33 +714,7 @@ export const slides: Slide[] = [
     ),
   },
 
-  // SLIDE 21: Demo — The Style Profile
-  {
-    id: 'profile-demo',
-    title: 'Demo — The Style Profile',
-    layout: 'content',
-    content: (
-      <div className="max-w-4xl mx-auto space-y-10 text-center">
-        <p className="text-xl text-gray-700 leading-relaxed">
-          Nine customer personas. Each one a different style story with months of interaction history.
-        </p>
-        <p className="text-xl text-gray-700 leading-relaxed">
-          Step through the session scrubber. Watch the profile learn in real time — memories surface, pillar weights shift, the map moves.
-        </p>
-        <div className="pt-8">
-          <a
-            href="/demo"
-            className="inline-flex items-center gap-3 px-10 py-5 bg-black text-white text-xl font-semibold rounded-2xl hover:bg-gray-800 transition-all hover:scale-105"
-          >
-            Launch Style Profile Demo
-            <span className="text-2xl">→</span>
-          </a>
-        </div>
-      </div>
-    ),
-  },
-
-  // SLIDE 22: What this is, really
+  // SLIDE 21: What this is, really
   {
     id: 'conclusion',
     title: 'What this is, really',
@@ -807,6 +739,32 @@ export const slides: Slide[] = [
           <p className="text-lg text-gray-500">
             edit-engine · Nordstrom Experience Design · Claude Code Contest · 2026
           </p>
+        </div>
+      </div>
+    ),
+  },
+
+  // SLIDE 22: Demo — The Style Profile
+  {
+    id: 'profile-demo',
+    title: 'Demo — The Style Profile',
+    layout: 'content',
+    content: (
+      <div className="max-w-4xl mx-auto space-y-10 text-center">
+        <p className="text-xl text-gray-700 leading-relaxed">
+          Nine customer personas. Each one a different style story with months of interaction history.
+        </p>
+        <p className="text-xl text-gray-700 leading-relaxed">
+          Step through the session scrubber. Watch the profile learn in real time — memories surface, pillar weights shift, the map moves.
+        </p>
+        <div className="pt-8">
+          <a
+            href="/demo"
+            className="inline-flex items-center gap-3 px-10 py-5 bg-black text-white text-xl font-semibold rounded-2xl hover:bg-gray-800 transition-all hover:scale-105"
+          >
+            Launch Style Profile Demo
+            <span className="text-2xl">→</span>
+          </a>
         </div>
       </div>
     ),

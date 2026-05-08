@@ -5,8 +5,7 @@
  * Pick items to create an outfit, then tag it with AI
  */
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase-client';
+import { useState } from 'react';
 
 interface ProductOption {
   id: string;
@@ -22,19 +21,34 @@ interface OutfitSlot {
   label: string;
   options: ProductOption[];
   selected: string | null;
-  loading?: boolean;
 }
 
 export default function OutfitTaggerDemo() {
+  // Pre-loaded products for instant demo experience
   const [slots, setSlots] = useState<OutfitSlot[]>([
     {
       id: 'top',
       label: 'Top',
       selected: null,
       options: [
-        { id: 'silk_blouse', name: 'Silk Blouse', emoji: '👚' },
-        { id: 'cashmere_sweater', name: 'Cashmere Sweater', emoji: '🧶' },
-        { id: 'white_tee', name: 'White T-Shirt', emoji: '👕' },
+        {
+          id: 'silk_blouse',
+          name: 'Silk Blouse',
+          color: 'Cream',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0108775044.jpg'
+        },
+        {
+          id: 'cashmere_sweater',
+          name: 'Cashmere Sweater',
+          color: 'Grey',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0759871001.jpg'
+        },
+        {
+          id: 'white_tee',
+          name: 'White T-Shirt',
+          color: 'White',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0685816001.jpg'
+        },
       ],
     },
     {
@@ -42,9 +56,24 @@ export default function OutfitTaggerDemo() {
       label: 'Bottom',
       selected: null,
       options: [
-        { id: 'tailored_trousers', name: 'Tailored Trousers', emoji: '👖' },
-        { id: 'midi_skirt', name: 'Pleated Midi Skirt', emoji: '🩳' },
-        { id: 'denim_jeans', name: 'Classic Denim', emoji: '👖' },
+        {
+          id: 'tailored_trousers',
+          name: 'Tailored Trousers',
+          color: 'Black',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0713995001.jpg'
+        },
+        {
+          id: 'midi_skirt',
+          name: 'Pleated Midi Skirt',
+          color: 'Navy',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0685816030.jpg'
+        },
+        {
+          id: 'denim_jeans',
+          name: 'Classic Denim',
+          color: 'Blue',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0714790001.jpg'
+        },
       ],
     },
     {
@@ -52,9 +81,24 @@ export default function OutfitTaggerDemo() {
       label: 'Shoes',
       selected: null,
       options: [
-        { id: 'heeled_boots', name: 'Heeled Boots', emoji: '👢' },
-        { id: 'loafers', name: 'Leather Loafers', emoji: '👞' },
-        { id: 'sneakers', name: 'White Sneakers', emoji: '👟' },
+        {
+          id: 'heeled_boots',
+          name: 'Heeled Boots',
+          color: 'Black',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0713976001.jpg'
+        },
+        {
+          id: 'loafers',
+          name: 'Leather Loafers',
+          color: 'Brown',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0747176001.jpg'
+        },
+        {
+          id: 'sneakers',
+          name: 'White Sneakers',
+          color: 'White',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0714026001.jpg'
+        },
       ],
     },
     {
@@ -62,81 +106,30 @@ export default function OutfitTaggerDemo() {
       label: 'Accessory',
       selected: null,
       options: [
-        { id: 'leather_bag', name: 'Leather Tote', emoji: '👜' },
-        { id: 'crossbody', name: 'Crossbody Bag', emoji: '👝' },
-        { id: 'backpack', name: 'Minimalist Backpack', emoji: '🎒' },
+        {
+          id: 'leather_bag',
+          name: 'Leather Tote',
+          color: 'Tan',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0747395004.jpg'
+        },
+        {
+          id: 'crossbody',
+          name: 'Crossbody Bag',
+          color: 'Black',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0766888001.jpg'
+        },
+        {
+          id: 'backpack',
+          name: 'Canvas Backpack',
+          color: 'Navy',
+          imageUrl: 'https://14cac9ed5c6670895b9bf1f751f09e36.r2.cloudflarestorage.com/0685816051.jpg'
+        },
       ],
     },
   ]);
 
   const [tagging, setTagging] = useState(false);
   const [results, setResults] = useState<any>(null);
-
-  // Fetch real products from Supabase on mount
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        // Fetch products for each category
-        const categories = [
-          { slot: 'top', types: ['Sweater', 'Blouse', 'T-shirt', 'Top'] },
-          { slot: 'bottom', types: ['Trousers', 'Skirt', 'Jeans'] },
-          { slot: 'shoes', types: ['Boots', 'Shoes', 'Sneakers'] },
-          { slot: 'accessory', types: ['Bag', 'Accessories'] },
-        ];
-
-        const updatedSlots = await Promise.all(
-          categories.map(async ({ slot, types }) => {
-            // Fetch products via the public API to use CLIP search
-            const searchQueries: Record<string, string> = {
-              top: 'casual sweater or blouse',
-              bottom: 'pants or skirt',
-              shoes: 'stylish shoes or boots',
-              accessory: 'bag or purse',
-            };
-
-            try {
-              const response = await fetch('/api/public/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  query: searchQueries[slot] || types.join(' or '),
-                  limit: 10,
-                }),
-              });
-
-              const { products } = await response.json();
-              const slotData = slots.find((s) => s.id === slot)!;
-
-              if (products && products.length > 0) {
-                // Randomly pick 3 products
-                const shuffled = products.sort(() => Math.random() - 0.5).slice(0, 3);
-                const options: ProductOption[] = shuffled.map((p: any) => ({
-                  id: p.id,
-                  name: p.name,
-                  productType: p.category,
-                  color: p.colors?.[0] || 'Multi',
-                  imageUrl: p.image_url,
-                }));
-
-                return { ...slotData, options, loading: false };
-              }
-
-              return slotData;
-            } catch (error) {
-              console.error(`Error fetching ${slot} products:`, error);
-              return slots.find((s) => s.id === slot)!;
-            }
-          })
-        );
-
-        setSlots(updatedSlots);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
-
-    fetchProducts();
-  }, []); // Only run once on mount
 
   const handleSelectItem = (slotId: string, optionId: string) => {
     setSlots(
@@ -217,7 +210,7 @@ export default function OutfitTaggerDemo() {
   return (
     <div className="max-w-5xl mx-auto">
       {/* Instructions */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 text-center">
+      <div className="mb-6 text-center">
         <p className="text-gray-700">
           <strong>Build an outfit:</strong> Select one item from each category, then hit "Tag Outfit" to see the AI analysis
         </p>
@@ -229,10 +222,7 @@ export default function OutfitTaggerDemo() {
           <div key={slot.id} className="bg-white rounded-xl border-2 border-gray-200 p-4">
             <h3 className="font-semibold mb-3 text-center">{slot.label}</h3>
             <div className="space-y-2">
-              {slot.loading ? (
-                <div className="text-center py-4 text-sm text-gray-500">Loading...</div>
-              ) : (
-                slot.options.map((option) => (
+              {slot.options.map((option) => (
                   <button
                     key={option.id}
                     onClick={() => handleSelectItem(slot.id, option.id)}
@@ -244,7 +234,7 @@ export default function OutfitTaggerDemo() {
                   >
                     <div className="flex items-center gap-2">
                       {option.imageUrl ? (
-                        <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                        <div className="w-16 h-24 bg-gray-100 rounded overflow-hidden flex-shrink-0">
                           <img
                             src={option.imageUrl}
                             alt={option.name}
@@ -252,7 +242,7 @@ export default function OutfitTaggerDemo() {
                           />
                         </div>
                       ) : (
-                        <span className="text-2xl">{option.emoji || '👕'}</span>
+                        <div className="w-16 h-24 bg-gray-200 rounded flex-shrink-0"></div>
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{option.name}</p>
@@ -263,7 +253,7 @@ export default function OutfitTaggerDemo() {
                     </div>
                   </button>
                 ))
-              )}
+              }
             </div>
           </div>
         ))}
@@ -366,32 +356,6 @@ export default function OutfitTaggerDemo() {
         </div>
       )}
 
-      {/* No Results Yet */}
-      {!results && !tagging && (
-        <div className="bg-gray-50 rounded-xl border border-gray-200 p-6">
-          <h3 className="font-semibold mb-3">What Gets Tagged</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
-            <div>
-              <h4 className="font-medium mb-2">Visual Analysis</h4>
-              <ul className="space-y-1">
-                <li>• Colors and patterns</li>
-                <li>• Silhouettes and proportions</li>
-                <li>• Materials and textures</li>
-                <li>• Overall aesthetic</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2">Semantic Intelligence</h4>
-              <ul className="space-y-1">
-                <li>• Style pillars (Minimal, Classic, etc.)</li>
-                <li>• Vibes (Polished, Edgy, Romantic...)</li>
-                <li>• Suitable occasions</li>
-                <li>• Formality level (1-10 scale)</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -15,12 +15,14 @@ export default function ClipSearchDemo() {
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
   const exampleQueries = [
-    'black turtleneck sweater minimalist',
-    'romantic pink dress date night',
-    'casual denim jacket vintage',
-    'sleek leather boots edgy',
-    'flowy floral midi skirt boho',
-    'tailored blazer professional',
+    'Coastal grandmother cardigan',
+    'Boardroom but make it interesting',
+    'Black turtleneck minimalist',
+    'Romantic pink dress',
+    'Sleek leather boots edgy',
+    'Vintage denim jacket',
+    'Effortless weekend brunch',
+    'Downtown gallery opening',
   ];
 
   const handleSearch = async (searchQuery?: string) => {
@@ -66,9 +68,29 @@ export default function ClipSearchDemo() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Intro Text */}
+      <div className="max-w-3xl mx-auto text-center mb-6">
+        <p className="text-xl text-gray-700 mb-4">
+          Type a concept — not a keyword. A feeling.
+        </p>
+        {/* Example Query Pills */}
+        <div className="flex flex-wrap gap-3 justify-center mb-6">
+          {exampleQueries.map((example) => (
+            <button
+              key={example}
+              onClick={() => handleSearch(example)}
+              disabled={loading}
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors disabled:opacity-50 text-sm"
+            >
+              "{example}"
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Search Box */}
-      <div className="bg-white rounded-xl border-2 border-gray-200 p-6 mb-6">
-        <div className="flex gap-3 mb-4">
+      <div className="mb-6">
+        <div className="flex gap-3">
           <input
             type="text"
             value={query}
@@ -85,36 +107,38 @@ export default function ClipSearchDemo() {
             {loading ? 'Searching...' : 'Search'}
           </button>
         </div>
-
-        {/* Example Queries */}
-        <div className="flex flex-wrap gap-2">
-          <span className="text-sm text-gray-600 mr-2">Try:</span>
-          {exampleQueries.map((example) => (
-            <button
-              key={example}
-              onClick={() => handleSearch(example)}
-              disabled={loading}
-              className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors disabled:opacity-50"
-            >
-              {example}
-            </button>
-          ))}
-        </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="space-y-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+            <p className="text-sm text-blue-800">
+              🔥 Model warming up... This first search may take a moment. Subsequent searches will be much faster!
+            </p>
+          </div>
+          <div className="grid grid-cols-4 gap-4">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="bg-white rounded-lg border border-gray-200 p-3 animate-pulse">
+                <div className="aspect-[2/3] bg-gray-200 rounded-lg mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Error Message */}
-      {error && (
+      {error && !loading && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
           <p className="text-sm text-yellow-800">{error}</p>
         </div>
       )}
 
       {/* Results */}
-      {results.length > 0 && (
+      {results.length > 0 && !loading && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">
-            Visual Similarity Results
-          </h3>
           <div className="grid grid-cols-4 gap-4">
             {results.map((result, index) => (
               <div
@@ -169,12 +193,6 @@ export default function ClipSearchDemo() {
               <span className="text-blue-600 mt-1">•</span>
               <span>
                 <strong>Visual embeddings:</strong> Every product is encoded into a high-dimensional vector space
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-blue-600 mt-1">•</span>
-              <span>
-                <strong>Semantic search:</strong> Your text query is embedded in the same space
               </span>
             </li>
             <li className="flex items-start gap-2">

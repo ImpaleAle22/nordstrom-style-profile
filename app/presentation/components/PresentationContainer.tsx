@@ -70,6 +70,19 @@ export default function PresentationContainer({
 
       {/* Main Slide Container - 16:9 Aspect Ratio */}
       <main className="flex-1 flex items-center justify-center px-12 py-2 relative">
+        {/* Hidden text - visible only when viewport is narrow */}
+        <div
+          className="absolute top-8 left-0 right-0 flex justify-center pointer-events-none"
+          style={{ zIndex: 0 }}
+        >
+          <p
+            className="text-sm tracking-wide opacity-80 text-center max-w-md"
+            style={{ color: '#C85A3B' }}
+          >
+            Best viewed on a wider screen. Content will scroll if needed.
+          </p>
+        </div>
+
         {/* Previous Button - Left of slide */}
         <button
           onClick={onPrevious}
@@ -121,10 +134,20 @@ export default function PresentationContainer({
         </button>
 
         <div
-          className="w-full max-w-[1400px] aspect-video rounded-xl overflow-hidden relative"
+          className={`w-full max-w-[1400px] rounded-xl overflow-hidden relative ${
+            slide.layout === 'title' ? 'aspect-video' : ''
+          }`}
           style={{
             backgroundColor: '#FFFFFF',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            zIndex: 10,
+            ...(slide.layout === 'title' ? {} :
+              slide.layout === 'demo' ? { height: '787.5px' } :
+              {
+                minHeight: 'min(787.5px, calc((100vw - 6rem) * 9 / 16))',
+                maxHeight: 'calc(min(787.5px, calc((100vw - 6rem) * 9 / 16)) * 1.1)'
+              }
+            )
           }}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
@@ -166,7 +189,7 @@ export default function PresentationContainer({
               /* Content Slides - Standard Layout */
               <>
                 {/* Slide Header */}
-                <div className="px-16 pt-16 pb-8">
+                <div className="px-16 pt-16 xl:pt-12 lg:pt-10 md:pt-8 pb-8">
                   <div className="border-l-4 pl-8" style={{ borderColor: '#0C0C0C' }}>
                     <h2
                       className="text-5xl font-light leading-tight"
@@ -189,8 +212,8 @@ export default function PresentationContainer({
                 </div>
 
                 {/* Slide Body */}
-                <div className="flex-1 px-16 pb-16 overflow-auto">
-                  <div className="h-full">
+                <div className={`flex-1 px-16 pb-16 overflow-auto ${slide.layout === 'demo' ? '' : 'flex flex-col justify-center'}`}>
+                  <div className="pb-5">
                     {slide.content}
                   </div>
                 </div>
@@ -210,17 +233,6 @@ export default function PresentationContainer({
           </div>
         </div>
       </main>
-
-      {/* Admin Link - Bottom center */}
-      <div className="pb-12 flex justify-center">
-        <Link
-          href="/admin"
-          className="text-xs hover:opacity-60 transition-opacity tracking-wider"
-          style={{ color: '#8E8A82' }}
-        >
-          ADMIN
-        </Link>
-      </div>
     </div>
   );
 }
