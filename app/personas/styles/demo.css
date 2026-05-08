@@ -1,0 +1,334 @@
+/**
+ * Demo Sidebar Styles
+ * Left panel with demo controls
+ */
+
+.demo-sidebar {
+  width: 320px;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.demo-header {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.demo-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.demo-badge {
+  font-size: 10px;
+  padding: 4px 8px;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.demo-section {
+  padding: 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.demo-section h4 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+}
+
+/* Persona Card */
+.persona-card-section {
+  padding: 16px;
+}
+
+.current-persona-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.persona-card-header-compact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.persona-avatar-small {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.persona-info-compact {
+  flex: 1;
+}
+
+.persona-name-compact {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.persona-type-compact {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+.persona-stats-compact {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.stat-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-label-compact {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value-compact {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.change-persona-btn {
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.change-persona-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* Session Navigation */
+.session-nav-section {
+  padding: 16px;
+}
+
+.session-scrubber-compact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.scrubber-btn-compact {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #374151;
+}
+
+.scrubber-btn-compact:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.scrubber-btn-compact:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.session-info-compact {
+  flex: 1;
+  text-align: center;
+}
+
+.session-label-compact {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.session-date-compact {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* Activity Feed */
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activity-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.activity-icon {
+  font-size: 20px;
+}
+
+.activity-text {
+  flex: 1;
+}
+
+.activity-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.activity-meta {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.activity-placeholder {
+  text-align: center;
+  padding: 20px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* Session Stats */
+.session-stats-box {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.stat-row + .stat-row {
+  border-top: 1px solid #e5e7eb;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Keyboard Shortcuts */
+.keyboard-shortcuts-sticky {
+  padding: 16px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 11px;
+  color: #6b7280;
+  text-align: center;
+  margin-top: auto;
+}
+
+.keyboard-shortcuts-sticky kbd {
+  display: inline-block;
+  padding: 3px 6px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 2px;
+}
+
+.shortcut-divider {
+  margin: 0 8px;
+  color: #d1d5db;
+}
+
+/* Radar Chart Placeholder */
+.radar-chart-placeholder {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.radar-chart-visual {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.radar-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.radar-label {
+  font-size: 12px;
+  font-weight: 500;
+  fill: #666;
+}
+
+/* Profile Section Adjustments */
+.profile-section-title.profile-serif {
+  font-family: serif;
+  font-weight: 300;
+}
+
+.session-stats-box .text-green-600 {
+  color: #059669;
+}

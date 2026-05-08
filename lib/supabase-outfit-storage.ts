@@ -8,22 +8,157 @@ import { supabase } from './supabase-client';
 import type { StoredOutfit } from './outfit-storage';
 
 /**
- * Get all outfits
+ * Get all outfits (with optional pagination)
  */
-export async function getAllOutfits(): Promise<StoredOutfit[]> {
+export async function getAllOutfits(options?: {
+  offset?: number;
+  limit?: number;
+}): Promise<StoredOutfit[]> {
   try {
+    const offset = options?.offset || 0;
+    const limit = options?.limit || 1000;
+
     const { data, error } = await supabase
       .from('outfits')
       .select('*')
-      .order('generated_at', { ascending: false });
+      .order('generated_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (error) throw error;
 
+    console.log(`Loaded ${data?.length || 0} outfits (offset: ${offset}, limit: ${limit})`);
+
     // Transform from snake_case to camelCase
-    return (data || []).map(transformFromSupabase);
+    const outfits = (data || []).map(transformFromSupabase);
+
+    // Enrich with current product data
+    return await enrichOutfitsWithProductData(outfits);
   } catch (error) {
     console.error('Failed to fetch outfits from Supabase:', error);
     return [];
+  }
+}
+
+/**
+ * Get best image URL from product, prioritizing flat-lay over lifestyle/studio shots
+ */
+function getBestImageUrl(product: any): string {
+  // Priority 1: Look for primary-flat-lay or flat-lay in images array
+  if (product.images && Array.isArray(product.images)) {
+    const flatLay = product.images.find(
+      (img: any) => img.type === 'primary-flat-lay' || img.type === 'flat-lay'
+    );
+    if (flatLay?.url) return flatLay.url;
+  }
+
+  // Priority 2: Use r2_image_url (usually flat-lay for older products)
+  if (product.r2_image_url) return product.r2_image_url;
+
+  // Priority 3: Fallback to image_url (might be detail shot or lifestyle)
+  if (product.image_url) return product.image_url;
+
+  return ''; // No image available
+}
+
+/**
+ * Enrich outfits with current product data from Supabase
+ * Handles both old format (embedded product objects) and new format (product_id only)
+ */
+async function enrichOutfitsWithProductData(outfits: StoredOutfit[]): Promise<StoredOutfit[]> {
+  try {
+    // Extract all unique product IDs from all outfits
+    const productIds = new Set<string>();
+    outfits.forEach(outfit => {
+      outfit.items.forEach(item => {
+        // Handle both formats:
+        // New: { role: "tops", product_id: "uuid" }
+        // Old: { role: "tops", product: { id: "uuid", ... } }
+        const productId = item.product_id || item.product?.id;
+        if (productId) {
+          productIds.add(productId);
+        }
+      });
+    });
+
+    if (productIds.size === 0) return outfits;
+
+    console.log(`Fetching ${productIds.size} products to enrich outfit data...`);
+
+    // Batch fetch using product_id (original IDs) instead of id (UUIDs)
+    const productIdsArray = Array.from(productIds);
+    const chunkSize = 50; // Can use larger chunks now
+    const allProducts = [];
+
+    for (let i = 0; i < productIdsArray.length; i += chunkSize) {
+      const chunk = productIdsArray.slice(i, i + chunkSize);
+
+      try {
+        const { data: products, error } = await supabase
+          .from('products')
+          .select('id, product_id, image_url, r2_image_url, images, title, brand, price, department')
+          .in('product_id', chunk); // Query by product_id field, not id!
+
+        if (error) {
+          console.error(`Failed to fetch products batch ${i}-${i+chunk.length}:`, error);
+          continue;
+        }
+
+        if (products && products.length > 0) {
+          console.log(`✓ Batch ${Math.floor(i / chunkSize) + 1}: Fetched ${products.length}/${chunk.length} products`);
+          allProducts.push(...products);
+        }
+      } catch (err) {
+        console.error(`Error fetching batch ${i}:`, err);
+      }
+    }
+
+    console.log(`✓ Total products fetched: ${allProducts.length}/${productIds.size}`);
+
+    if (allProducts.length === 0) {
+      console.error('No products fetched for enrichment');
+      return outfits;
+    }
+
+    // Create lookup map: product_id (original ID) -> current product data
+    const productMap = new Map();
+    allProducts.forEach(p => {
+      productMap.set(p.product_id, { // Use product_id as key (not UUID id)
+        id: p.product_id, // Keep original ID for compatibility
+        title: p.title,
+        brand: p.brand,
+        price: p.price,
+        department: p.department,
+        imageUrl: getBestImageUrl(p), // Prioritize flat-lay images
+      });
+    });
+
+    // Enrich each outfit's items with product data
+    const enrichedOutfits = outfits.map(outfit => ({
+      ...outfit,
+      items: outfit.items.map(item => {
+        const productId = item.product_id || item.product?.id;
+        const currentProduct = productMap.get(productId);
+
+        if (currentProduct) {
+          // Return item with full product object (for backward compatibility with UI)
+          return {
+            role: item.role,
+            product: currentProduct,
+            ingredientTitle: item.ingredientTitle,
+          };
+        }
+
+        // If product not found, keep original structure
+        return item;
+      })
+    }));
+
+    console.log(`✓ Enriched ${outfits.length} outfits with current product data`);
+    return enrichedOutfits;
+
+  } catch (error) {
+    console.error('Error enriching outfits:', error);
+    return outfits; // Return original outfits on error
   }
 }
 
@@ -40,7 +175,8 @@ export async function getOutfitsByRecipe(recipeId: string): Promise<StoredOutfit
 
     if (error) throw error;
 
-    return (data || []).map(transformFromSupabase);
+    const outfits = (data || []).map(transformFromSupabase);
+    return await enrichOutfitsWithProductData(outfits);
   } catch (error) {
     console.error('Failed to fetch outfits by recipe:', error);
     return [];
@@ -60,7 +196,8 @@ export async function getOutfitsByTier(tier: 'primary' | 'secondary' | 'suppress
 
     if (error) throw error;
 
-    return (data || []).map(transformFromSupabase);
+    const outfits = (data || []).map(transformFromSupabase);
+    return await enrichOutfitsWithProductData(outfits);
   } catch (error) {
     console.error('Failed to fetch outfits by tier:', error);
     return [];
@@ -166,25 +303,99 @@ export async function getOutfitCount(): Promise<number> {
 }
 
 /**
- * Get outfit statistics
+ * Get outfit statistics (optimized with SQL queries - no memory loading)
  */
 export async function getOutfitStats() {
-  const outfits = await getAllOutfits();
-  const byRecipe = new Map<string, number>();
+  try {
+    // Get total count (fast - no data loading)
+    const total = await getOutfitCount();
 
-  outfits.forEach((outfit) => {
-    byRecipe.set(outfit.recipeId, (byRecipe.get(outfit.recipeId) || 0) + 1);
-  });
+    // Count by pool tier (separate fast queries)
+    const { count: primaryCount } = await supabase
+      .from('outfits')
+      .select('*', { count: 'exact', head: true })
+      .eq('pool_tier', 'primary');
 
-  return {
-    total: outfits.length,
-    primary: outfits.filter((o) => o.poolTier === 'primary').length,
-    secondary: outfits.filter((o) => o.poolTier === 'secondary').length,
-    suppressed: outfits.filter((o) => o.poolTier === 'suppressed').length,
-    recipeCount: byRecipe.size,
-    avgScore: outfits.reduce((sum, o) => sum + o.confidenceScore, 0) / outfits.length || 0,
-    byRecipe: Object.fromEntries(byRecipe),
-  };
+    const { count: secondaryCount } = await supabase
+      .from('outfits')
+      .select('*', { count: 'exact', head: true })
+      .eq('pool_tier', 'secondary');
+
+    const { count: suppressedCount } = await supabase
+      .from('outfits')
+      .select('*', { count: 'exact', head: true })
+      .eq('pool_tier', 'suppressed');
+
+    // Count tagged (has non-empty attributes)
+    // NOTE: SQL query doesn't work for JSONB empty object check, so we load and count in JS
+    const { data: attributesData } = await supabase
+      .from('outfits')
+      .select('attributes');
+
+    let taggedCount = 0;
+    if (attributesData) {
+      taggedCount = attributesData.filter(row =>
+        row.attributes &&
+        typeof row.attributes === 'object' &&
+        Object.keys(row.attributes).length > 0
+      ).length;
+    }
+
+    // Get unique recipe count
+    const { data: recipeData } = await supabase
+      .from('outfits')
+      .select('recipe_id');
+
+    const uniqueRecipes = new Set(recipeData?.map(r => r.recipe_id) || []);
+
+    // For byRecipe breakdown, we need to load all recipe_ids (lightweight)
+    const byRecipe = new Map<string, number>();
+    if (recipeData) {
+      recipeData.forEach((row) => {
+        byRecipe.set(row.recipe_id, (byRecipe.get(row.recipe_id) || 0) + 1);
+      });
+    }
+
+    // For avgScore, we need to calculate from actual data
+    // This is still expensive, but only loads scores not full outfits
+    const { data: scoreData } = await supabase
+      .from('outfits')
+      .select('quality_score, confidence_score');
+
+    let avgScore = 0;
+    if (scoreData && scoreData.length > 0) {
+      const sumScores = scoreData.reduce((sum, row) => {
+        return sum + (row.confidence_score || row.quality_score || 0);
+      }, 0);
+      avgScore = sumScores / scoreData.length;
+    }
+
+    return {
+      total,
+      primary: primaryCount || 0,
+      secondary: secondaryCount || 0,
+      suppressed: suppressedCount || 0,
+      tagged: taggedCount || 0,
+      untagged: total - (taggedCount || 0),
+      recipeCount: uniqueRecipes.size,
+      avgScore,
+      byRecipe: Object.fromEntries(byRecipe),
+    };
+  } catch (error) {
+    console.error('Failed to get outfit stats:', error);
+    // Return safe defaults on error
+    return {
+      total: 0,
+      primary: 0,
+      secondary: 0,
+      suppressed: 0,
+      tagged: 0,
+      untagged: 0,
+      recipeCount: 0,
+      avgScore: 0,
+      byRecipe: {},
+    };
+  }
 }
 
 /**
@@ -271,9 +482,14 @@ export async function saveOutfitsBatch(outfits: StoredOutfit[]): Promise<void> {
 
 /**
  * Fix image URLs in Supabase outfits
- * Fetches missing imageUrls from CLIP API and updates outfits
+ * DEPRECATED: After migration to product_id references, enrichment layer handles this automatically
  */
 export async function fixOutfitImageUrls(): Promise<{ fixed: number; fetched: number; updated: number; total: number }> {
+  // No-op after migration - enrichment handles image URLs automatically
+  console.log('✓ Image URL fixing handled by enrichment layer (post-migration)');
+  return { fixed: 0, fetched: 0, updated: 0, total: 0 };
+
+  /* OLD CODE - DISABLED AFTER MIGRATION
   try {
     const outfits = await getAllOutfits();
     let fetchedCount = 0;
@@ -378,4 +594,5 @@ export async function fixOutfitImageUrls(): Promise<{ fixed: number; fetched: nu
     console.error('Failed to fix outfit imageUrls:', error);
     throw error;
   }
+  */
 }

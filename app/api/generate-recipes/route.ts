@@ -11,6 +11,7 @@ import { visionToRecipeSlots } from '@/lib/vision-to-recipe';
 import type { LifestyleImage } from '@/lib/lifestyle-image-types';
 import type { UnifiedRecipe } from '@/lib/unified-recipe-types';
 import { nanoid } from 'nanoid';
+import { supabase } from '@/lib/supabase-client';
 
 const GEMINI_MODEL = 'gemini-2.5-flash';
 const TEMPERATURE = 0.4;
@@ -24,7 +25,100 @@ interface RecipeGenerationRequest {
   batchId?: string;
 }
 
-// Helper: Save recipe to disk immediately
+// Helper: Check if recipe already exists for this image URL
+async function checkRecipeExists(imageUrl: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('recipes')
+      .select('id')
+      .eq('ai_metadata->>sourceImageUrl', imageUrl)
+      .limit(1);
+
+    if (error) {
+      console.error('Error checking recipe existence:', error);
+      return false;
+    }
+
+    return data && data.length > 0;
+  } catch (error) {
+    console.error('Error checking recipe existence:', error);
+    return false;
+  }
+}
+
+// Helper: Save recipe to Supabase
+async function saveRecipeToSupabase(recipe: UnifiedRecipe): Promise<void> {
+  try {
+    const supabaseRecipe = {
+      id: recipe.id,
+      title: recipe.title,
+      status: recipe.status,
+      department: recipe.department,
+      slot_count: recipe.slotCount,
+      slots: recipe.slots,
+      source: recipe.source,
+      ai_metadata: recipe.aiMetadata,
+      seasons: recipe.seasons || [],
+      batch_id: recipe.batchId,
+      created_at: recipe.createdAt,
+      updated_at: recipe.updatedAt,
+    };
+
+    const { error } = await supabase
+      .from('recipes')
+      .upsert(supabaseRecipe, { onConflict: 'id' });
+
+    if (error) throw error;
+
+    console.log(`✅ Saved recipe to Supabase: ${recipe.title}`);
+  } catch (error) {
+    console.error('❌ Failed to save recipe to Supabase:', error);
+    // Don't throw - continue processing even if save fails
+  }
+}
+
+// Helper: Detect if URL is from Unsplash or Pexels
+function detectImageSource(imageUrl: string): 'unsplash' | 'pexels' | null {
+  if (imageUrl.includes('unsplash.com')) return 'unsplash';
+  if (imageUrl.includes('pexels.com')) return 'pexels';
+  return null;
+}
+
+// Helper: Save lifestyle image to database (for Unsplash/Pexels images)
+async function saveLifestyleImage(image: any): Promise<void> {
+  try {
+    const source = detectImageSource(image.imageUrl);
+    if (!source) {
+      // Not from Unsplash/Pexels, skip saving
+      return;
+    }
+
+    const lifestyleImageRecord = {
+      image_id: image.imageId,
+      image_url: image.imageUrl,
+      source: source,
+      outfit_analysis: image.outfitAnalysis,
+      display_suitability: image.displaySuitability,
+      brand_adherence: image.brandAdherence,
+      is_recipe_generation_candidate: image.isRecipeGenerationCandidate,
+      scanned_at: image.taggedAt,
+      tagged_at: image.taggedAt,
+    };
+
+    const { error } = await supabase
+      .from('lifestyle_images')
+      .upsert(lifestyleImageRecord, { onConflict: 'image_id' });
+
+    if (error) throw error;
+
+    console.log(`✅ Saved lifestyle image from ${source}: ${image.imageId}`);
+  } catch (error) {
+    console.error('❌ Failed to save lifestyle image:', error);
+    // Don't throw - continue processing even if save fails
+  }
+}
+
+// Helper: Save recipe to disk immediately (backup)
 function autoSaveRecipe(recipe: UnifiedRecipe, batchId: string) {
   try {
     // Ensure autosave directory exists
@@ -74,15 +168,32 @@ export async function POST(request: NextRequest) {
     }
 
     const recipes: UnifiedRecipe[] = [];
+    const savedRecipes: string[] = [];
+    const skippedRecipes: string[] = [];
     const finalBatchId = batchId || `batch-lifestyle-${Date.now()}`;
 
     // Generate recipe for each image
     for (const image of images) {
       try {
+        // Check if recipe already exists for this image
+        const exists = await checkRecipeExists(image.imageUrl);
+        if (exists) {
+          console.log(`⏭️  Recipe already exists for ${image.imageUrl.substring(0, 60)}...`);
+          skippedRecipes.push(image.imageId);
+          continue;
+        }
+
         const recipe = await generateRecipeFromImage(image, apiKey, finalBatchId);
         recipes.push(recipe);
 
-        // AUTO-SAVE TO DISK IMMEDIATELY (prevents data loss)
+        // SAVE TO SUPABASE (primary storage)
+        await saveRecipeToSupabase(recipe);
+        savedRecipes.push(recipe.id);
+
+        // SAVE LIFESTYLE IMAGE (if Unsplash/Pexels)
+        await saveLifestyleImage(image);
+
+        // AUTO-SAVE TO DISK (backup - prevents data loss)
         autoSaveRecipe(recipe, finalBatchId);
       } catch (error) {
         console.error(`Failed to generate recipe for ${image.imageId}:`, error);
@@ -94,6 +205,8 @@ export async function POST(request: NextRequest) {
       success: true,
       recipeCount: recipes.length,
       recipes,
+      savedToDatabase: savedRecipes.length,
+      skippedDuplicates: skippedRecipes.length,
     });
 
   } catch (error) {

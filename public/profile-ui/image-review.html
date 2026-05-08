@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style Pillar Image Review</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica', Arial, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+
+    header {
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 24px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .stats {
+      margin-top: 16px;
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+      align-items: center;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #4a5568;
+    }
+
+    .gender-filter {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .gender-btn {
+      padding: 8px 16px;
+      border: 2px solid #e0e0e0;
+      background: white;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .gender-btn:hover {
+      border-color: #2563eb;
+      color: #2563eb;
+    }
+
+    .gender-btn.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .pillar-section {
+      background: white;
+      border-radius: 8px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .pillar-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .pillar-name {
+      font-size: 24px;
+      font-weight: 600;
+      text-transform: capitalize;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pillar-description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .pillar-keywords {
+      font-size: 12px;
+      color: #999;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .pillar-count {
+      color: #666;
+      font-size: 14px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .pillar-stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pillar-stat-value {
+      font-weight: 600;
+      color: #2563eb;
+    }
+
+    .pillar-stat-value.selected {
+      color: #10b981;
+    }
+
+    .pillar-stat-value.rejected {
+      color: #dc2626;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .image-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .image-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .image-card.selected {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .image-card.rejected {
+      opacity: 0.4;
+      border-color: #dc2626;
+    }
+
+    .image-wrapper {
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: #f0f0f0;
+      position: relative;
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .image-source {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .brand-score {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      color: #1a1a1a;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .brand-score.excellent {
+      background: #10b981;
+      color: white;
+    }
+
+    .brand-score.good {
+      background: #fbbf24;
+      color: #78350f;
+    }
+
+    .brand-score.consider {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .image-info {
+      padding: 12px;
+    }
+
+    .photographer {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .photographer a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .photographer a:hover {
+      text-decoration: underline;
+    }
+
+    .image-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .move-select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 12px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .move-select:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    .btn-select {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-select:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-reject {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .btn-reject:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-reset {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 64px;
+      color: #666;
+    }
+
+    .error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 32px;
+      color: #991b1b;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 64px;
+      color: #666;
+    }
+
+    .pillar-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 12px;
+      text-transform: uppercase;
+    }
+
+    .romantic { background: #fce7f3; color: #9f1239; }
+    .bohemian { background: #fef3c7; color: #78350f; }
+    .casual { background: #dbeafe; color: #1e3a8a; }
+    .classic { background: #e0e7ff; color: #3730a3; }
+    .minimal { background: #f3f4f6; color: #1f2937; }
+    .maximal { background: #fae8ff; color: #86198f; }
+    .fashion_forward { background: #f0fdf4; color: #14532d; }
+    .athletic { background: #ecfccb; color: #365314; }
+    .utility { background: #fed7aa; color: #7c2d12; }
+
+    .selection-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #2563eb;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .rejection-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #dc2626;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .subterm-selector {
+      margin-top: 8px;
+      padding: 8px;
+      background: #f9fafb;
+      border-radius: 4px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .subterm-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .subterm-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .subterm-tag {
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      background: white;
+      border: 1px solid #d1d5db;
+      color: #4b5563;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .subterm-tag:hover {
+      border-color: #2563eb;
+      color: #2563eb;
+    }
+
+    .subterm-tag.selected {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
+
+    .subterm-count {
+      font-size: 10px;
+      opacity: 0.7;
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Style Pillar Image Review</h1>
+    <p class="subtitle">Review and select fashion photography for each style pillar from Pexels and Unsplash</p>
+    <div class="stats">
+      <div class="stat">
+        <span>Total Images:</span>
+        <span class="stat-value" id="totalImages">—</span>
+      </div>
+      <div class="stat">
+        <span>Selected:</span>
+        <span class="stat-value" id="selectedCount">0</span>
+      </div>
+      <div class="stat">
+        <span>Rejected:</span>
+        <span class="stat-value" id="rejectedCount">0</span>
+      </div>
+      <div class="stat">
+        <span>With Sub-Terms:</span>
+        <span class="stat-value" id="subTermCount">0</span>
+      </div>
+      <div class="stat" id="dataSourceIndicator" style="display: none; background: #fef3c7; padding: 6px 12px; border-radius: 6px;">
+        <span style="color: #92400e; font-weight: 600;">📍 Viewing refilled data</span>
+      </div>
+      <div class="gender-filter">
+        <button class="gender-btn active" data-gender="all" onclick="filterGender('all')">All</button>
+        <button class="gender-btn" data-gender="womenswear" onclick="filterGender('womenswear')">Womenswear</button>
+        <button class="gender-btn" data-gender="menswear" onclick="filterGender('menswear')">Menswear</button>
+      </div>
+    </div>
+    <div style="padding: 0 32px 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+      <button class="btn btn-select" onclick="saveSelections()">💾 Save</button>
+      <button class="btn btn-select" style="background: #10b981;" onclick="exportApproved()">📦 Export Approved</button>
+      <button class="btn btn-reject" onclick="refillRejected()" id="refillBtn">🔄 Refill Rejected</button>
+      <button class="btn" style="background: #6b7280; color: white; border: none;" onclick="downloadUpdatedImages()">⬇️ Download All</button>
+      <button class="btn" style="background: #fef3c7; color: #78350f; border: 1px solid #fcd34d;" onclick="removeDuplicates()">🔧 Remove Duplicates</button>
+      <button class="btn" style="background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb;" onclick="resetToServer()">🔄 Reset</button>
+      <button class="btn" style="background: #fef9e7; color: #d97706; border: 1px solid #fbbf24;" onclick="clearExclusionList()">🔓 Clear Exclusions</button>
+      <button class="btn" style="background: #fee; color: #dc2626; border: 1px solid #fecaca;" onclick="clearAllSelections()">🗑️ Clear All</button>
+      <span id="saveStatus" style="margin-left: 12px; font-size: 13px; color: #666;"></span>
+    </div>
+  </header>
+
+  <main id="content">
+    <div class="loading">Loading images...</div>
+  </main>
+
+  <script>
+    let imageData = null;
+    let selections = {};
+    let subTermSelections = {}; // Store sub-term selections per image
+    let currentGenderFilter = 'all';
+    let exclusionList = { approved: new Set(), rejected: new Set() }; // Permanent exclusion list
+
+    // API Keys (loaded from .env via backend or set here)
+    const PEXELS_API_KEY = 'kuHbk8VkSxmxFrUC7VJQRO2A3cvoZJbMCarBS1gos86IFPw2ofEeAKod';
+    const UNSPLASH_ACCESS_KEY = 'm-GHjSbWfy3wYrydA1CHKwdyScDO-I-OsLVpEs41rNA';
+
+    // Style pillar descriptions
+    const PILLAR_DESCRIPTIONS = {
+      romantic: {
+        title: "Romantic",
+        description: "Soft, feminine, and ethereal. Flowing fabrics, delicate details, florals, lace, and dreamy silhouettes. Think garden parties and vintage romance.",
+        keywords: "feminine, delicate, flowing, ethereal, soft, floral, lace"
+      },
+      bohemian: {
+        title: "Bohemian",
+        description: "Free-spirited, earthy, and eclectic. Natural fabrics, vintage finds, artisanal details, layered textures. Think festival style and worldly wanderer.",
+        keywords: "boho, earthy, natural, vintage, artisanal, layered, free-spirit"
+      },
+      casual: {
+        title: "Casual",
+        description: "Relaxed, comfortable, and effortless everyday style. Practical pieces, easy fits, versatile basics. Think weekend errands and coffee runs.",
+        keywords: "relaxed, comfortable, everyday, practical, easy, versatile"
+      },
+      classic: {
+        title: "Classic",
+        description: "Timeless, polished, and sophisticated. Tailored fits, quality fabrics, refined details, elegant simplicity. Think boardroom confidence and cocktail hour.",
+        keywords: "timeless, tailored, sophisticated, polished, elegant, refined"
+      },
+      minimal: {
+        title: "Minimal",
+        description: "Clean, modern, and understated. Monochromatic palettes, architectural lines, simple silhouettes, refined basics. Think art gallery openings and urban minimalism.",
+        keywords: "minimal, clean, modern, monochromatic, simple, architectural"
+      },
+      maximal: {
+        title: "Maximal",
+        description: "Bold, vibrant, and expressive. Bright colors, mixed patterns, statement pieces, eye-catching details. Think art collector and maximalist expression.",
+        keywords: "bold, vibrant, colorful, statement, expressive, dramatic"
+      },
+      fashion_forward: {
+        title: "Fashion Forward",
+        description: "Edgy, trendy, and contemporary. Streetwear influences, urban edge, modern silhouettes, trend-driven pieces. Think runway to street style.",
+        keywords: "streetwear, edgy, urban, contemporary, trendy, modern"
+      },
+      athletic: {
+        title: "Athletic",
+        description: "Active, functional, and performance-driven. Athleisure, sportswear, technical fabrics, movement-friendly fits. Think gym to street style.",
+        keywords: "athletic, athleisure, sportswear, activewear, functional, performance"
+      },
+      utility: {
+        title: "Utility",
+        description: "Rugged, practical, and durable. Workwear influences, functional details, outdoor-ready fabrics, military-inspired. Think adventure and durability.",
+        keywords: "utility, workwear, rugged, functional, durable, outdoor, military"
+      }
+    };
+
+    // Sub-terms for each pillar (from STYLE-TAGGING-SPEC.md)
+    const PILLAR_SUBTERMS = {
+      classic: ['Timeless Classic', 'Sophisticated', 'Polished', 'Classic Chic', 'Dressy', 'Chic', 'Tailored', 'Timeless', 'Menswear-inspired', 'Heritage', 'Preppy', 'Nautical'],
+      minimal: ['Modern Minimal', 'Sleek', 'Modern', 'Monochromatic', 'Elegant', 'Architectural', 'Refined', 'Understated', 'Romantic Minimal'],
+      romantic: ['Effortless Romantic', 'Ladylike', 'Delicate', 'Ethereal', 'Feminine', 'Whimsical', 'Free-spirited'],
+      bohemian: ['Natural', 'Hippie', 'Worldly', 'Vintage-inspired', 'Beachy', 'Artisanal', 'Eclectic', 'Artistic', 'Tropical'],
+      maximal: ['Daring Maximal', 'Vibrant', 'Exotic', 'Bold', 'Glam', 'Quirky'],
+      fashion_forward: ['Edgy', 'Urban', 'Streetwear', 'Tomboy', 'Military'],
+      utility: ['Utility Streetwear', 'Workwear', 'Utility Workwear', 'Rugged', 'Safari', 'Outdoorsy', 'Western'],
+      athletic: ['Sportswear', 'Athleisure', 'Sporty Casual'],
+      casual: ['Pragmatic Casual', 'Smart Casual', 'Relaxed Classic']
+    };
+
+    // Alternative search terms for refilling
+    const ALTERNATIVE_SEARCH_TERMS = {
+      romantic: {
+        womenswear: ['elegant dress fashion model', 'feminine style portrait', 'soft romantic fashion editorial'],
+        menswear: ['elegant men portrait fashion', 'soft mens fashion editorial', 'romantic menswear style']
+      },
+      bohemian: {
+        womenswear: ['boho fashion model', 'free spirit women style', 'bohemian chic outfit'],
+        menswear: ['bohemian men style', 'casual vintage men fashion', 'boho mens outfit']
+      },
+      casual: {
+        womenswear: ['casual chic women fashion', 'everyday women style model', 'comfortable women outfit'],
+        menswear: ['casual men fashion model', 'everyday mens style', 'relaxed men outfit']
+      },
+      classic: {
+        womenswear: ['timeless women fashion', 'elegant classic outfit', 'sophisticated women style'],
+        menswear: ['classic menswear style', 'timeless men fashion', 'elegant men suit']
+      },
+      minimal: {
+        womenswear: ['minimalist women fashion', 'simple elegant outfit', 'clean modern women style'],
+        menswear: ['minimalist men fashion', 'simple modern menswear', 'clean men outfit']
+      },
+      maximal: {
+        womenswear: ['bold fashion women', 'vibrant colorful outfit', 'statement fashion style'],
+        menswear: ['bold men fashion', 'colorful menswear style', 'statement men outfit']
+      },
+      fashion_forward: {
+        womenswear: ['trendy women fashion', 'modern streetwear women', 'edgy fashion style'],
+        menswear: ['trendy men fashion', 'modern streetwear men', 'edgy menswear style']
+      },
+      athletic: {
+        womenswear: ['athletic women fashion', 'sportswear model women', 'fitness fashion style'],
+        menswear: ['athletic men fashion', 'sportswear model men', 'fitness menswear style']
+      },
+      utility: {
+        womenswear: ['utilitarian women fashion', 'workwear women style', 'functional fashion outfit'],
+        menswear: ['utilitarian men fashion', 'workwear men style', 'rugged outdoor menswear']
+      }
+    };
+
+    // Save updated image data to localStorage
+    function saveImageData() {
+      localStorage.setItem('pillar-images-data', JSON.stringify(imageData));
+      console.log('✓ Image data saved to localStorage');
+    }
+
+    // Load data (check localStorage first, then scored images, then regular)
+    async function loadData() {
+      try {
+        // First, check localStorage for updated data
+        const cachedData = localStorage.getItem('pillar-images-data');
+        if (cachedData) {
+          console.log('✓ Loaded images from localStorage (includes any refilled images)');
+          imageData = JSON.parse(cachedData);
+
+          // Show indicator that we're viewing refilled data
+          const indicator = document.getElementById('dataSourceIndicator');
+          if (indicator) {
+            indicator.style.display = 'flex';
+          }
+
+          // Migrate old selections if needed
+          migrateOldSelections();
+
+          // Filter out excluded images
+          filterExcludedImages();
+
+          renderContent();
+          return;
+        }
+
+        // Try to load scored images from server
+        let response = await fetch('../data/pillar-images-scored.json');
+
+        if (!response.ok) {
+          // Fall back to regular images
+          console.log('Scored images not found, loading regular images...');
+          response = await fetch('../data/pillar-images.json');
+        } else {
+          console.log('✓ Loaded brand-scored images');
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to load image data');
+        }
+
+        imageData = await response.json();
+
+        // Migrate old selections if needed
+        migrateOldSelections();
+
+        // Filter out excluded images
+        filterExcludedImages();
+
+        renderContent();
+      } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('content').innerHTML = `
+          <div class="error">
+            <h2>Error Loading Images</h2>
+            <p>Could not load pillar-images.json. Have you run the search script yet?</p>
+            <p style="margin-top: 16px;">Run: <code>node search-pillar-images.js</code></p>
+          </div>
+        `;
+      }
+    }
+
+    // Filter by gender
+    window.filterGender = function(gender) {
+      currentGenderFilter = gender;
+
+      // Update button states
+      document.querySelectorAll('.gender-btn[data-gender]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.gender === gender);
+      });
+
+      renderContent();
+    };
+
+    // Render all content
+    function renderContent() {
+      if (!imageData || !imageData.pillars) {
+        document.getElementById('content').innerHTML = '<div class="empty">No image data found.</div>';
+        return;
+      }
+
+      const pillars = imageData.pillars;
+
+      // Calculate total images based on filter (excluding rejected)
+      let totalImages = 0;
+      Object.values(pillars).forEach(genders => {
+        let images = [];
+        if (currentGenderFilter === 'all') {
+          images = [...(genders.womenswear || []), ...(genders.menswear || [])];
+        } else {
+          images = genders[currentGenderFilter] || [];
+        }
+
+        // Always filter out rejected images
+        images = images.filter(img => selections[img.id] !== 'rejected');
+
+        totalImages += images.length;
+      });
+
+      document.getElementById('totalImages').textContent = totalImages;
+
+      const html = Object.entries(pillars).map(([pillarName, genders]) => {
+        // Collect images based on gender filter
+        let allImages = [];
+        if (currentGenderFilter === 'all') {
+          allImages = [
+            ...(genders.womenswear || []).map(img => ({ ...img, gender: 'womenswear' })),
+            ...(genders.menswear || []).map(img => ({ ...img, gender: 'menswear' }))
+          ];
+        } else {
+          allImages = (genders[currentGenderFilter] || []).map(img => ({ ...img, gender: currentGenderFilter }));
+        }
+
+        // Calculate stats for this pillar (before filtering rejected)
+        const allCount = allImages.length;
+        const selectedCount = allImages.filter(img => selections[img.id] === 'selected').length;
+        const rejectedCount = allImages.filter(img => selections[img.id] === 'rejected').length;
+        const unselectedCount = allCount - selectedCount - rejectedCount;
+
+        // Always filter out rejected images from display
+        allImages = allImages.filter(img => selections[img.id] !== 'rejected');
+        const totalCount = allImages.length; // Total visible (excludes rejected)
+
+        if (allImages.length === 0) return '';
+
+        // Get pillar description
+        const pillarInfo = PILLAR_DESCRIPTIONS[pillarName] || {
+          title: pillarName,
+          description: 'No description available',
+          keywords: ''
+        };
+
+        return `
+          <section class="pillar-section" id="pillar-${pillarName}">
+            <div class="pillar-header">
+              <h2 class="pillar-name">
+                ${pillarInfo.title}
+                <span class="pillar-badge ${pillarName}">${pillarInfo.title}</span>
+              </h2>
+              <p class="pillar-description">${pillarInfo.description}</p>
+              <p class="pillar-keywords">Keywords: ${pillarInfo.keywords}</p>
+              <div class="pillar-count">
+                <span class="pillar-stat">
+                  <span>Total:</span>
+                  <span class="pillar-stat-value">${totalCount}</span>
+                </span>
+                <span class="pillar-stat">
+                  <span>Selected:</span>
+                  <span class="pillar-stat-value selected">${selectedCount}</span>
+                </span>
+                <span class="pillar-stat">
+                  <span>Rejected:</span>
+                  <span class="pillar-stat-value rejected">${rejectedCount}</span>
+                </span>
+                <span class="pillar-stat">
+                  <span>Unreviewed:</span>
+                  <span class="pillar-stat-value">${unselectedCount}</span>
+                </span>
+              </div>
+            </div>
+            <div class="image-grid">
+              ${allImages.map((image, index) => renderImageCard(pillarName, image, index)).join('')}
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      document.getElementById('content').innerHTML = html;
+
+      // Attach event listeners
+      attachEventListeners();
+    }
+
+    // Render a single image card
+    function renderImageCard(pillarName, image, index) {
+      // Use the actual image ID from API (stable across refills)
+      const imageId = image.id;
+      const status = selections[imageId] || 'none';
+      const genderLabel = image.gender === 'womenswear' ? '♀ Women' : '♂ Men';
+
+      // Brand score badge
+      let brandScoreBadge = '';
+      if (image.brandScore !== undefined) {
+        const scoreClass = image.brandScore >= 70 ? 'excellent' : image.brandScore >= 50 ? 'good' : 'consider';
+        brandScoreBadge = `<div class="brand-score ${scoreClass}">${image.brandScore} brand</div>`;
+      }
+
+      return `
+        <div class="image-card ${status === 'selected' ? 'selected' : ''} ${status === 'rejected' ? 'rejected' : ''}"
+             data-pillar="${pillarName}"
+             data-gender="${image.gender}"
+             data-index="${index}"
+             data-id="${imageId}">
+          <div class="image-wrapper">
+            ${status === 'selected' ? '<div class="selection-badge">✓ Selected</div>' : ''}
+            ${status === 'rejected' ? '<div class="rejection-badge">✗ Rejected</div>' : ''}
+            <div class="image-source">${image.source} · ${genderLabel}</div>
+            ${brandScoreBadge}
+            <img src="${image.thumbnail}" alt="${image.alt}" loading="lazy">
+          </div>
+          <div class="image-info">
+            <div class="photographer">
+              Photo by <a href="${image.photographerUrl}" target="_blank">${image.photographer}</a>
+            </div>
+            <div class="image-actions">
+              <div class="action-row">
+                ${status === 'selected' || status === 'rejected'
+                  ? `<button class="btn btn-reset" onclick="resetImage('${imageId}')">Reset</button>`
+                  : `
+                    <button class="btn btn-select" onclick="selectImage('${imageId}')">Select</button>
+                    <button class="btn btn-reject" onclick="rejectImage('${imageId}')">Reject</button>
+                  `
+                }
+              </div>
+              <select class="move-select" onchange="moveImageToPillar('${imageId}', '${pillarName}', this.value)">
+                <option value="">↔️ Move to pillar...</option>
+                <option value="romantic" ${pillarName === 'romantic' ? 'disabled' : ''}>Romantic</option>
+                <option value="bohemian" ${pillarName === 'bohemian' ? 'disabled' : ''}>Bohemian</option>
+                <option value="casual" ${pillarName === 'casual' ? 'disabled' : ''}>Casual</option>
+                <option value="classic" ${pillarName === 'classic' ? 'disabled' : ''}>Classic</option>
+                <option value="minimal" ${pillarName === 'minimal' ? 'disabled' : ''}>Minimal</option>
+                <option value="maximal" ${pillarName === 'maximal' ? 'disabled' : ''}>Maximal</option>
+                <option value="fashion_forward" ${pillarName === 'fashion_forward' ? 'disabled' : ''}>Fashion Forward</option>
+                <option value="athletic" ${pillarName === 'athletic' ? 'disabled' : ''}>Athletic</option>
+                <option value="utility" ${pillarName === 'utility' ? 'disabled' : ''}>Utility</option>
+              </select>
+            </div>
+            ${renderSubTermSelector(imageId, pillarName)}
+          </div>
+        </div>
+      `;
+    }
+
+    // Render sub-term selector for an image
+    function renderSubTermSelector(imageId, pillarName) {
+      const subTerms = PILLAR_SUBTERMS[pillarName] || [];
+      if (subTerms.length === 0) return '';
+
+      const selected = subTermSelections[imageId] || [];
+      const selectedCount = selected.length;
+
+      return `
+        <div class="subterm-selector">
+          <div class="subterm-label">
+            Sub-Terms (up to 3)
+            ${selectedCount > 0 ? `<span class="subterm-count">${selectedCount} selected</span>` : ''}
+          </div>
+          <div class="subterm-tags">
+            ${subTerms.map(term => `
+              <div class="subterm-tag ${selected.includes(term) ? 'selected' : ''}"
+                   onclick="toggleSubTerm('${imageId}', '${term}')">
+                ${term}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Toggle sub-term selection
+    window.toggleSubTerm = function(imageId, term) {
+      if (!subTermSelections[imageId]) {
+        subTermSelections[imageId] = [];
+      }
+
+      const selected = subTermSelections[imageId];
+      const index = selected.indexOf(term);
+
+      if (index > -1) {
+        // Remove if already selected
+        selected.splice(index, 1);
+      } else {
+        // Add if not selected (max 3)
+        if (selected.length < 3) {
+          selected.push(term);
+        } else {
+          // Show a brief message
+          const card = document.querySelector(`[data-id="${imageId}"]`);
+          if (card) {
+            const selector = card.querySelector('.subterm-selector');
+            const label = selector.querySelector('.subterm-label');
+            const originalText = label.textContent;
+            label.textContent = 'Maximum 3 sub-terms!';
+            label.style.color = '#dc2626';
+            setTimeout(() => {
+              label.textContent = originalText;
+              label.style.color = '';
+            }, 1500);
+          }
+          return;
+        }
+      }
+
+      // Save and re-render
+      saveSubTermSelections();
+      renderContent();
+    };
+
+    // Event handlers
+    window.selectImage = function(imageId) {
+      selections[imageId] = 'selected';
+      updateStats();
+      renderContent();
+    };
+
+    window.rejectImage = function(imageId) {
+      selections[imageId] = 'rejected';
+
+      // Add to permanent exclusion list immediately
+      exclusionList.rejected.add(imageId);
+      saveExclusionList();
+
+      updateStats();
+      renderContent();
+    };
+
+    window.resetImage = function(imageId) {
+      delete selections[imageId];
+      updateStats();
+      renderContent();
+    };
+
+    // Move image to different pillar
+    window.moveImageToPillar = function(imageId, fromPillar, toPillar) {
+      if (!toPillar || toPillar === fromPillar) return;
+
+      // Find the image in the source pillar
+      let foundImage = null;
+      let foundGender = null;
+
+      ['womenswear', 'menswear'].forEach(gender => {
+        const images = imageData.pillars[fromPillar]?.[gender] || [];
+        const index = images.findIndex(img => img.id === imageId);
+        if (index !== -1) {
+          foundImage = images[index];
+          foundGender = gender;
+          // Remove from source pillar
+          images.splice(index, 1);
+        }
+      });
+
+      if (!foundImage) {
+        console.error('Image not found:', imageId);
+        return;
+      }
+
+      // Add to destination pillar
+      if (!imageData.pillars[toPillar]) {
+        imageData.pillars[toPillar] = { womenswear: [], menswear: [] };
+      }
+      if (!imageData.pillars[toPillar][foundGender]) {
+        imageData.pillars[toPillar][foundGender] = [];
+      }
+
+      imageData.pillars[toPillar][foundGender].push(foundImage);
+
+      // Save and re-render
+      saveImageData();
+      renderContent();
+
+      const status = document.getElementById('saveStatus');
+      const fromName = PILLAR_DESCRIPTIONS[fromPillar]?.title || fromPillar;
+      const toName = PILLAR_DESCRIPTIONS[toPillar]?.title || toPillar;
+      status.textContent = `✓ Moved image from ${fromName} to ${toName}`;
+      status.style.color = '#10b981';
+      setTimeout(() => { status.textContent = ''; }, 3000);
+    };
+
+    function attachEventListeners() {
+      // Click on image to quick-select
+      document.querySelectorAll('.image-wrapper img').forEach(img => {
+        img.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const card = e.target.closest('.image-card');
+          const imageId = card.dataset.id;
+          if (!selections[imageId]) {
+            selectImage(imageId);
+          }
+        });
+      });
+    }
+
+    function updateStats() {
+      const selectedCount = Object.values(selections).filter(s => s === 'selected').length;
+      const rejectedCount = Object.values(selections).filter(s => s === 'rejected').length;
+      const subTermCount = Object.values(subTermSelections).filter(terms => terms && terms.length > 0).length;
+
+      document.getElementById('selectedCount').textContent = selectedCount;
+      document.getElementById('rejectedCount').textContent = rejectedCount;
+      document.getElementById('subTermCount').textContent = subTermCount;
+    }
+
+    // Save selections to localStorage
+    window.saveSelections = function() {
+      localStorage.setItem('pillar-image-selections', JSON.stringify(selections));
+      saveSubTermSelections(); // Also save sub-terms
+      const status = document.getElementById('saveStatus');
+      status.textContent = '✓ Selections saved';
+      status.style.color = '#10b981';
+      setTimeout(() => {
+        status.textContent = '';
+      }, 3000);
+    };
+
+    // Save sub-term selections to localStorage
+    function saveSubTermSelections() {
+      localStorage.setItem('pillar-image-subterms', JSON.stringify(subTermSelections));
+    }
+
+    // Load sub-term selections from localStorage
+    function loadSubTermSelections() {
+      const stored = localStorage.getItem('pillar-image-subterms');
+      if (stored) {
+        try {
+          subTermSelections = JSON.parse(stored);
+          console.log('✓ Loaded sub-term selections from localStorage');
+        } catch (e) {
+          console.error('Failed to load sub-term selections:', e);
+          subTermSelections = {};
+        }
+      }
+    }
+
+    // Extract base ID (remove timestamp suffix if present)
+    function getBaseId(imageId) {
+      // Handle IDs like "pexels_123_1234567890" or "unsplash_abc_1234567890"
+      // Return "pexels_123" or "unsplash_abc"
+      const parts = imageId.split('_');
+      if (parts.length >= 2) {
+        // If last part is a timestamp (all digits, long number), remove it
+        const lastPart = parts[parts.length - 1];
+        if (/^\d{13,}$/.test(lastPart)) {
+          // It's a timestamp, return everything except last part
+          return parts.slice(0, -1).join('_');
+        }
+      }
+      return imageId;
+    }
+
+    // Remove duplicate images
+    window.removeDuplicates = function() {
+      if (!imageData) return;
+
+      let removedCount = 0;
+      const status = document.getElementById('saveStatus');
+
+      Object.entries(imageData.pillars).forEach(([pillarName, genders]) => {
+        ['womenswear', 'menswear'].forEach(gender => {
+          const images = genders[gender] || [];
+          const seenBaseIds = new Map(); // Map base ID to first occurrence
+          const unique = [];
+
+          images.forEach(img => {
+            const baseId = getBaseId(img.id);
+
+            if (!seenBaseIds.has(baseId)) {
+              seenBaseIds.set(baseId, img);
+              unique.push(img);
+            } else {
+              removedCount++;
+              console.log(`Removing duplicate: ${img.id} (base: ${baseId})`);
+
+              // If the duplicate was selected/rejected, preserve that selection on the original
+              if (selections[img.id]) {
+                const originalImg = seenBaseIds.get(baseId);
+                if (!selections[originalImg.id]) {
+                  selections[originalImg.id] = selections[img.id];
+                }
+                delete selections[img.id];
+              }
+            }
+          });
+
+          genders[gender] = unique;
+        });
+      });
+
+      if (removedCount > 0) {
+        saveImageData();
+        saveSelections();
+        renderContent();
+
+        status.textContent = `✓ Removed ${removedCount} duplicate images`;
+        status.style.color = '#10b981';
+        setTimeout(() => { status.textContent = ''; }, 5000);
+      } else {
+        status.textContent = 'ℹ️ No duplicates found';
+        status.style.color = '#666';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+      }
+    };
+
+    // Clear all selections
+    window.clearAllSelections = function() {
+      const confirmMsg = 'Clear all selections?\n\nApproved images will be saved to permanent exclusion list.\nRejected images are already permanently excluded.\n\nThese images will be removed from the view.';
+      if (!confirm(confirmMsg)) {
+        return;
+      }
+
+      // Archive current selections to permanent exclusion list
+      let approvedCount = 0;
+      let rejectedCount = 0;
+
+      Object.entries(selections).forEach(([imageId, status]) => {
+        if (status === 'selected') {
+          exclusionList.approved.add(imageId);
+          approvedCount++;
+        } else if (status === 'rejected') {
+          exclusionList.rejected.add(imageId);
+          rejectedCount++;
+        }
+      });
+
+      saveExclusionList();
+
+      // Clear working selections
+      selections = {};
+      saveSelections();
+
+      // Filter out the newly excluded images from current imageData
+      filterExcludedImages();
+
+      // Save the cleaned imageData
+      saveImageData();
+
+      renderContent();
+
+      const status = document.getElementById('saveStatus');
+      status.textContent = `✓ Cleared! Removed ${approvedCount} approved + ${rejectedCount} rejected images`;
+      status.style.color = '#10b981';
+      setTimeout(() => { status.textContent = ''; }, 5000);
+    };
+
+    // Migrate old selections format to new stable IDs
+    function migrateOldSelections() {
+      if (!imageData) return;
+
+      const needsMigration = Object.keys(selections).some(key => {
+        // Old format: pillarName_gender_index
+        // New format: pexels_123 or unsplash_abc
+        return key.includes('womenswear') || key.includes('menswear');
+      });
+
+      if (!needsMigration) return;
+
+      console.log('⚠️ Migrating old selection format to stable IDs...');
+
+      const newSelections = {};
+      let migratedCount = 0;
+
+      Object.entries(selections).forEach(([oldId, status]) => {
+        // Try to parse old format: pillarName_gender_index
+        const parts = oldId.split('_');
+        if (parts.length < 3) return;
+
+        const pillarName = parts[0];
+        const gender = parts[1];
+        const index = parseInt(parts.slice(2).join('_')); // Handle pillars with underscores
+
+        // Find the image at that position
+        const images = imageData.pillars[pillarName]?.[gender];
+        if (images && images[index]) {
+          const newId = images[index].id;
+          newSelections[newId] = status;
+          migratedCount++;
+        }
+      });
+
+      if (migratedCount > 0) {
+        selections = newSelections;
+        saveSelections();
+        console.log(`✓ Migrated ${migratedCount} selections to stable IDs`);
+
+        const status = document.getElementById('saveStatus');
+        status.textContent = `✓ Updated ${migratedCount} selections to new format`;
+        status.style.color = '#2563eb';
+        setTimeout(() => { status.textContent = ''; }, 5000);
+      }
+    }
+
+    // Load exclusion list from localStorage
+    function loadExclusionList() {
+      const saved = localStorage.getItem('pillar-image-exclusions');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          exclusionList.approved = new Set(data.approved || []);
+          exclusionList.rejected = new Set(data.rejected || []);
+          console.log(`📋 Loaded exclusion list: ${exclusionList.approved.size} approved, ${exclusionList.rejected.size} rejected`);
+        } catch (e) {
+          console.error('Failed to load exclusion list:', e);
+          exclusionList = { approved: new Set(), rejected: new Set() };
+        }
+      }
+    }
+
+    // Filter out excluded images from imageData
+    function filterExcludedImages() {
+      if (!imageData || !imageData.pillars) return;
+
+      let removedCount = 0;
+
+      Object.entries(imageData.pillars).forEach(([pillarName, genders]) => {
+        ['womenswear', 'menswear'].forEach(gender => {
+          if (!genders[gender]) return;
+
+          const originalLength = genders[gender].length;
+          genders[gender] = genders[gender].filter(img => {
+            const imageId = img.id;
+            const baseId = getBaseId(imageId);
+
+            // Keep image if NOT in exclusion lists
+            const isExcluded = exclusionList.approved.has(imageId) ||
+                              exclusionList.approved.has(baseId) ||
+                              exclusionList.rejected.has(imageId) ||
+                              exclusionList.rejected.has(baseId);
+
+            return !isExcluded;
+          });
+
+          removedCount += originalLength - genders[gender].length;
+        });
+      });
+
+      if (removedCount > 0) {
+        console.log(`🧹 Filtered out ${removedCount} excluded images from loaded data`);
+      }
+    }
+
+    // Save exclusion list to localStorage
+    function saveExclusionList() {
+      const data = {
+        approved: Array.from(exclusionList.approved),
+        rejected: Array.from(exclusionList.rejected)
+      };
+      localStorage.setItem('pillar-image-exclusions', JSON.stringify(data));
+      console.log(`💾 Saved exclusion list: ${exclusionList.approved.size} approved, ${exclusionList.rejected.size} rejected`);
+    }
+
+    // Load selections from localStorage
+    function loadSelections() {
+      const saved = localStorage.getItem('pillar-image-selections');
+      if (saved) {
+        selections = JSON.parse(saved);
+        updateStats();
+      }
+      loadSubTermSelections(); // Also load sub-terms
+    }
+
+    // Search Pexels API
+    async function searchPexels(query, perPage = 2) {
+      if (!PEXELS_API_KEY) return [];
+      try {
+        const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${perPage}&orientation=portrait`;
+        const response = await fetch(url, {
+          headers: { 'Authorization': PEXELS_API_KEY }
+        });
+        if (!response.ok) return [];
+        const data = await response.json();
+        return data.photos.map(photo => ({
+          id: `pexels_${photo.id}`,
+          source: 'pexels',
+          url: photo.src.large2x,
+          thumbnail: photo.src.medium,
+          photographer: photo.photographer,
+          photographerUrl: photo.photographer_url,
+          alt: photo.alt || query,
+          originalUrl: photo.url
+        }));
+      } catch (error) {
+        console.error('Pexels error:', error);
+        return [];
+      }
+    }
+
+    // Search Unsplash API
+    async function searchUnsplash(query, perPage = 2) {
+      if (!UNSPLASH_ACCESS_KEY) return [];
+      try {
+        const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${perPage}&orientation=portrait`;
+        const response = await fetch(url, {
+          headers: { 'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}` }
+        });
+        if (!response.ok) return [];
+        const data = await response.json();
+        return data.results.map(photo => ({
+          id: `unsplash_${photo.id}`,
+          source: 'unsplash',
+          url: photo.urls.regular,
+          thumbnail: photo.urls.small,
+          photographer: photo.user.name,
+          photographerUrl: photo.user.links.html,
+          alt: photo.alt_description || query,
+          originalUrl: photo.links.html
+        }));
+      } catch (error) {
+        console.error('Unsplash error:', error);
+        return [];
+      }
+    }
+
+    // Search both APIs
+    async function searchBothAPIs(query) {
+      const [pexels, unsplash] = await Promise.all([
+        searchPexels(query, 2),
+        searchUnsplash(query, 2)
+      ]);
+      return [...pexels, ...unsplash];
+    }
+
+    // Analyze rejections
+    function analyzeRejections() {
+      const rejections = {};
+
+      // Build a map of imageId -> {pillar, gender} from current imageData
+      const imageMap = {};
+      Object.entries(imageData.pillars).forEach(([pillarName, genders]) => {
+        ['womenswear', 'menswear'].forEach(gender => {
+          const images = genders[gender] || [];
+          images.forEach(image => {
+            imageMap[image.id] = { pillarName, gender };
+          });
+        });
+      });
+
+      // Count rejections by pillar/gender
+      Object.entries(selections).forEach(([imageId, status]) => {
+        if (status !== 'rejected') return;
+
+        const imageInfo = imageMap[imageId];
+        if (!imageInfo) return; // Image not found (maybe from old data)
+
+        const { pillarName, gender } = imageInfo;
+
+        if (!rejections[pillarName]) {
+          rejections[pillarName] = { womenswear: 0, menswear: 0 };
+        }
+        rejections[pillarName][gender]++;
+      });
+
+      return rejections;
+    }
+
+    // Refill rejected images
+    window.refillRejected = async function() {
+      const rejections = analyzeRejections();
+
+      if (Object.keys(rejections).length === 0) {
+        const status = document.getElementById('saveStatus');
+        status.textContent = 'ℹ️ No rejected images to refill';
+        status.style.color = '#666';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+        return;
+      }
+
+      const btn = document.getElementById('refillBtn');
+      const status = document.getElementById('saveStatus');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Fetching...';
+      status.textContent = 'Searching for new images...';
+      status.style.color = '#2563eb';
+
+      let totalFetched = 0;
+
+      try {
+        for (const [pillarName, genders] of Object.entries(rejections)) {
+          for (const [gender, count] of Object.entries(genders)) {
+            if (count === 0) continue;
+
+            status.textContent = `Fetching ${count} ${gender} images for ${pillarName}...`;
+
+            const searchTerms = ALTERNATIVE_SEARCH_TERMS[pillarName]?.[gender] || [];
+            const newImages = [];
+
+            for (const term of searchTerms) {
+              if (newImages.length >= count) break;
+
+              const images = await searchBothAPIs(term);
+              newImages.push(...images.map(img => ({ ...img, gender })));
+
+              // Small delay for API rate limits
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            if (newImages.length > 0) {
+              // Get existing image IDs for this pillar/gender to avoid duplicates
+              if (!imageData.pillars[pillarName]) {
+                imageData.pillars[pillarName] = { womenswear: [], menswear: [] };
+              }
+              if (!imageData.pillars[pillarName][gender]) {
+                imageData.pillars[pillarName][gender] = [];
+              }
+
+              // Get base IDs of existing images (handles old timestamp IDs)
+              const existingBaseIds = new Set(
+                imageData.pillars[pillarName][gender].map(img => getBaseId(img.id))
+              );
+
+              // Also check across ALL pillars to avoid same image in multiple pillars
+              const allExistingBaseIds = new Set();
+              Object.values(imageData.pillars).forEach(genders => {
+                ['womenswear', 'menswear'].forEach(g => {
+                  (genders[g] || []).forEach(img => {
+                    allExistingBaseIds.add(getBaseId(img.id));
+                  });
+                });
+              });
+
+              // Filter out duplicates, excluded approved, and excluded rejected images
+              const uniqueNewImages = newImages.filter(img => {
+                const baseId = getBaseId(img.id);
+                const imageId = img.id;
+
+                // Check if it's a duplicate
+                if (allExistingBaseIds.has(baseId)) return false;
+
+                // Check if it's in permanent exclusion lists
+                if (exclusionList.approved.has(imageId) || exclusionList.approved.has(baseId)) return false;
+                if (exclusionList.rejected.has(imageId) || exclusionList.rejected.has(baseId)) return false;
+
+                return true;
+              });
+
+              const shuffled = uniqueNewImages
+                .sort(() => Math.random() - 0.5)
+                .slice(0, count);
+
+              if (shuffled.length > 0) {
+                imageData.pillars[pillarName][gender].push(...shuffled);
+                totalFetched += shuffled.length;
+              } else {
+                console.log(`⚠️ No new unique images found for ${pillarName} ${gender} (all were duplicates)`);
+              }
+            }
+          }
+        }
+
+        // Save updated data to localStorage
+        saveImageData();
+
+        // Re-render with new images
+        renderContent();
+
+        status.textContent = `✓ Added ${totalFetched} new images! (Auto-saved)`;
+        status.style.color = '#10b981';
+
+        setTimeout(() => { status.textContent = ''; }, 5000);
+
+      } catch (error) {
+        console.error('Refill error:', error);
+        status.textContent = '❌ Error fetching images. Check console.';
+        status.style.color = '#dc2626';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔄 Refill Rejected';
+      }
+    };
+
+    // Download updated images JSON (includes refilled images)
+    window.downloadUpdatedImages = function() {
+      if (!imageData) return;
+
+      const blob = new Blob([JSON.stringify(imageData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'pillar-images-updated.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      const status = document.getElementById('saveStatus');
+      status.textContent = '✓ Downloaded updated images JSON (save to data/ to persist)';
+      status.style.color = '#2563eb';
+      setTimeout(() => { status.textContent = ''; }, 5000);
+    };
+
+    // Reset to server data (clear localStorage)
+    window.resetToServer = function() {
+      if (!confirm('Reset to server data? This will clear any refilled images from this session.')) {
+        return;
+      }
+
+      localStorage.removeItem('pillar-images-data');
+      localStorage.removeItem('pillar-image-selections');
+      selections = {};
+
+      const status = document.getElementById('saveStatus');
+      status.textContent = '🔄 Reloading from server...';
+      status.style.color = '#2563eb';
+
+      // Reload page to fetch from server
+      setTimeout(() => {
+        location.reload();
+      }, 500);
+    };
+
+    // Clear exclusion list only (keeps showing original images but clears the "do not fetch" list)
+    window.clearExclusionList = function() {
+      const count = exclusionList.approved.size + exclusionList.rejected.size;
+      const confirmMsg = `Clear the permanent exclusion list?\n\nThis will remove ${count} images from the exclusion list.\n\nThis means previously approved/rejected images can appear again in future searches.\n\nThis does NOT restore them to the current view.`;
+
+      if (!confirm(confirmMsg)) {
+        return;
+      }
+
+      localStorage.removeItem('pillar-image-exclusions');
+      exclusionList = { approved: new Set(), rejected: new Set() };
+
+      const status = document.getElementById('saveStatus');
+      status.textContent = `✓ Cleared ${count} images from exclusion list`;
+      status.style.color = '#10b981';
+      setTimeout(() => { status.textContent = ''; }, 5000);
+    };
+
+    // Export approved images to JSON
+    window.exportApproved = function() {
+      if (!imageData) return;
+
+      const approved = {
+        exportedAt: new Date().toISOString(),
+        pillars: {}
+      };
+
+      // Build approved images structure
+      Object.entries(imageData.pillars).forEach(([pillarName, genders]) => {
+        approved.pillars[pillarName] = {
+          womenswear: [],
+          menswear: []
+        };
+
+        // Check womenswear - use stable image.id
+        (genders.womenswear || []).forEach((image) => {
+          if (selections[image.id] === 'selected') {
+            // Add sub-terms if they exist
+            const imageWithSubTerms = { ...image };
+            if (subTermSelections[image.id] && subTermSelections[image.id].length > 0) {
+              imageWithSubTerms.subTerms = subTermSelections[image.id];
+            }
+            approved.pillars[pillarName].womenswear.push(imageWithSubTerms);
+          }
+        });
+
+        // Check menswear - use stable image.id
+        (genders.menswear || []).forEach((image) => {
+          if (selections[image.id] === 'selected') {
+            // Add sub-terms if they exist
+            const imageWithSubTerms = { ...image };
+            if (subTermSelections[image.id] && subTermSelections[image.id].length > 0) {
+              imageWithSubTerms.subTerms = subTermSelections[image.id];
+            }
+            approved.pillars[pillarName].menswear.push(imageWithSubTerms);
+          }
+        });
+      });
+
+      // Calculate stats and add to permanent exclusion list
+      let totalApproved = 0;
+      Object.values(approved.pillars).forEach(genders => {
+        // Add approved images to exclusion list
+        [...genders.womenswear, ...genders.menswear].forEach(img => {
+          exclusionList.approved.add(img.id);
+          totalApproved++;
+        });
+      });
+
+      // Save updated exclusion list
+      saveExclusionList();
+
+      approved.metadata = {
+        totalApproved,
+        approvalRate: ((totalApproved / Object.values(selections).filter(s => s === 'selected').length) * 100).toFixed(1) + '%'
+      };
+
+      // Download as JSON
+      const blob = new Blob([JSON.stringify(approved, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'pillar-images-approved.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      const status = document.getElementById('saveStatus');
+      status.textContent = `✓ Exported ${totalApproved} approved images`;
+      status.style.color = '#10b981';
+      setTimeout(() => {
+        status.textContent = '';
+      }, 5000);
+    };
+
+    // Initialize
+    loadExclusionList(); // Load permanent exclusions first
+    loadSelections();
+    loadData();
+  </script>
+</body>
+</html>

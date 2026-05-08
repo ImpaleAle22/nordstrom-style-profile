@@ -6,6 +6,11 @@
 import { supabase } from '@/lib/supabase-client';
 import type { CustomerProfile } from '@/lib/types';
 import PersonaDemoUI from './PersonaDemoUI';
+import ProfileStyleLoader from './components/ProfileStyleLoader';
+
+export const metadata = {
+  title: 'Demo Personas - Nordstrom Style Profile',
+};
 
 async function getCustomerProfiles(): Promise<CustomerProfile[]> {
   const { data, error } = await supabase
@@ -26,10 +31,10 @@ export default async function PersonasPage() {
 
   if (profiles.length === 0) {
     return (
-      <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">No customer profiles found.</p>
-          <p className="text-sm text-gray-500">
+      <div style={{ minHeight: '100vh', background: '#FAF9F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: '#666', marginBottom: '16px' }}>No customer profiles found.</p>
+          <p style={{ fontSize: '14px', color: '#999' }}>
             Run the import-customer-profiles.py script to load demo data.
           </p>
         </div>
@@ -37,5 +42,9 @@ export default async function PersonasPage() {
     );
   }
 
-  return <PersonaDemoUI profiles={profiles} />;
+  return (
+    <ProfileStyleLoader>
+      <PersonaDemoUI profiles={profiles} />
+    </ProfileStyleLoader>
+  );
 }

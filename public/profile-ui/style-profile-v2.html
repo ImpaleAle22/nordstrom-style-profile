@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Style - Nordstrom</title>
+  <style>
+    /* Nordstrom Brand Colors & Typography */
+    :root {
+      --nordstrom-bg: #FAF9F5;
+      --nordstrom-white: #FFFFFF;
+      --nordstrom-black: #191A1B;
+      --nordstrom-gray-900: #374151;
+      --nordstrom-gray-600: #6B7280;
+      --nordstrom-gray-400: #9CA3AF;
+      --nordstrom-gray-200: #E5E7EB;
+      --nordstrom-gray-100: #F3F4F6;
+      --nordstrom-gray-50: #F9FAFB;
+      --nordstrom-border: #E5E7EB;
+      --nordstrom-sale: #DC2626;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--nordstrom-bg);
+      color: var(--nordstrom-black);
+      line-height: 1.6;
+    }
+
+    .serif {
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    /* Top Banner */
+    .top-banner {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .top-banner a {
+      color: var(--nordstrom-white);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    /* Site Header */
+    .site-header {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .site-logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .site-search {
+      flex: 1;
+      max-width: 640px;
+    }
+
+    .site-search-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--nordstrom-gray-200);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--nordstrom-gray-50);
+      transition: all 0.2s;
+    }
+
+    .site-search-input:focus {
+      outline: none;
+      border-color: var(--nordstrom-black);
+      background: var(--nordstrom-white);
+    }
+
+    .site-actions {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .site-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--nordstrom-black);
+      font-size: 13px;
+      font-weight: 500;
+      transition: opacity 0.2s;
+      cursor: pointer;
+    }
+
+    .site-action:hover {
+      opacity: 0.7;
+    }
+
+    .site-action-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .site-action-text {
+      line-height: 1.3;
+    }
+
+    /* Main Navigation */
+    .main-nav {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      padding: 14px 40px;
+    }
+
+    .main-nav-link {
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      transition: opacity 0.2s;
+      position: relative;
+    }
+
+    .main-nav-link:hover {
+      opacity: 0.6;
+    }
+
+    .main-nav-link.sale {
+      color: var(--nordstrom-sale);
+    }
+
+    /* Account Layout */
+    .account-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 180px);
+    }
+
+    /* Account Sidebar */
+    .account-sidebar {
+      background: #f9fafb;
+      border-right: 1px solid var(--nordstrom-border);
+      padding: 32px 0;
+      overflow-y: auto;
+    }
+
+    .account-header {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid var(--nordstrom-border);
+      margin-bottom: 8px;
+    }
+
+    .account-header-title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--nordstrom-black);
+    }
+
+    .account-section {
+      margin: 20px 0;
+    }
+
+    .account-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--nordstrom-gray-600);
+      padding: 8px 24px;
+      margin-top: 20px;
+    }
+
+    .account-nav-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 24px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      transition: background 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .account-nav-item:hover {
+      background: #f3f4f6;
+    }
+
+    .account-nav-item.active {
+      background: var(--nordstrom-white);
+      border-left-color: var(--nordstrom-black);
+      padding-left: 21px;
+    }
+
+    .account-nav-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .account-nav-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .account-nav-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.4;
+      margin-bottom: 2px;
+    }
+
+    .account-nav-item.active .account-nav-title {
+      font-weight: 600;
+    }
+
+    .account-nav-subtitle {
+      font-size: 12px;
+      color: var(--nordstrom-gray-600);
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .account-help {
+      padding: 24px 24px;
+      margin-top: 28px;
+      border-top: 1px solid var(--nordstrom-border);
+    }
+
+    .account-help-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      color: var(--nordstrom-gray-600);
+    }
+
+    .account-help-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      transition: opacity 0.2s;
+    }
+
+    .account-help-link:hover {
+      opacity: 0.7;
+    }
+
+    /* Content Area */
+    .account-content {
+      padding: 0;
+      background: var(--nordstrom-bg);
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 80px 40px 60px;
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+    }
+
+    .hero-title {
+      font-size: 52px;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      font-weight: 350;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title .pillar-name {
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      color: var(--nordstrom-gray-600);
+      margin-bottom: 48px;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      margin-top: 48px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 56px;
+      font-weight: 300;
+      display: block;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--nordstrom-gray-600);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    /* Content Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* Section */
+    .section {
+      padding: 64px 0;
+    }
+
+    .section-title {
+      font-size: 36px;
+      margin-bottom: 48px;
+      font-weight: 350;
+      letter-spacing: -0.01em;
+    }
+
+    /* Pillar Cards */
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .pillar-card {
+      background: var(--nordstrom-white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .pillar-card-image {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      display: block;
+    }
+
+    .pillar-card-content {
+      padding: 28px;
+    }
+
+    .pillar-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .pillar-card-name {
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .pillar-card-percentage {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .pillar-card-description {
+      font-size: 14px;
+      color: var(--nordstrom-gray-600);
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+
+    .pillar-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .pillar-tag {
+      padding: 6px 14px;
+      background: var(--nordstrom-gray-100);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--nordstrom-gray-900);
+      font-weight: 500;
+    }
+
+    .pillar-card-strength {
+      height: 5px;
+      background: var(--nordstrom-gray-100);
+      border-radius: 3px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .pillar-card-strength-fill {
+      height: 100%;
+      background: var(--nordstrom-black);
+      border-radius: 3px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .pillar-card-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      border: 2px solid var(--nordstrom-black);
+    }
+
+    .btn-primary:hover {
+      background: #000;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--nordstrom-black);
+      border: 2px solid var(--nordstrom-black);
+    }
+
+    .btn-secondary:hover {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+    }
+
+    /* Advanced View Link */
+    .advanced-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: 2px solid var(--nordstrom-border);
+      transition: all 0.2s;
+      position: absolute;
+      top: 28px;
+      right: 40px;
+    }
+
+    .advanced-link:hover {
+      border-color: var(--nordstrom-black);
+      background: var(--nordstrom-gray-50);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .account-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .account-sidebar {
+        display: none;
+      }
+
+      .pillar-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        gap: 40px;
+      }
+
+      .stat-value {
+        font-size: 40px;
+      }
+
+      .advanced-link {
+        position: static;
+        margin: 20px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Site Header Component Container -->
+  <div id="site-header-container"></div>
+  <div id="main-nav-container"></div>
+
+  <!-- Account Layout -->
+  <div class="account-layout">
+    <!-- Account Sidebar -->
+    <div id="account-nav-container"></div>
+
+    <!-- Account Content -->
+    <main class="account-content">
+      <!-- Hero Section -->
+      <section class="hero" style="position: relative;">
+        <a href="style-profile-advanced.html" class="advanced-link">
+          Advanced View →
+        </a>
+
+        <div class="container">
+          <h1 class="hero-title serif">
+            Your style is <span class="pillar-name">Classic</span><br>
+            with <span class="pillar-name">Romantic</span> influences
+          </h1>
+          <p class="hero-subtitle">
+            Based on 47 saved outfits, 23 purchased items, and your Style Quiz<br>
+            Last updated: April 22, 2026
+          </p>
+
+          <div class="hero-stats">
+            <div class="stat">
+              <span class="stat-value">3</span>
+              <span class="stat-label">Core Pillars</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">6</span>
+              <span class="stat-label">Sub-Terms</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">2024</span>
+              <span class="stat-label">Since</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pillar Cards -->
+      <section class="section">
+        <div class="container">
+          <h2 class="section-title serif">The pillars that define your style</h2>
+
+          <div class="pillar-grid">
+            <!-- Classic Card -->
+            <div class="pillar-card">
+              <img src="https://images.unsplash.com/photo-1507680434567-5739c80be1ac?w=800&q=80"
+                   alt="Classic style"
+                   class="pillar-card-image">
+              <div class="pillar-card-content">
+                <div class="pillar-card-header">
+                  <div class="pillar-card-name">● Classic</div>
+                  <div class="pillar-card-percentage">68%</div>
+                </div>
+                <p class="pillar-card-description">
+                  Timeless, polished pieces that transcend seasons
+                </p>
+                <div class="pillar-card-tags">
+                  <span class="pillar-tag">Tailored</span>
+                  <span class="pillar-tag">Sophisticated</span>
+                  <span class="pillar-tag">Timeless</span>
+                </div>
+                <div class="pillar-card-strength">
+                  <div class="pillar-card-strength-fill" style="width: 68%"></div>
+                </div>
+                <div class="pillar-card-actions">
+                  <a href="#" class="btn btn-primary">Shop Classic</a>
+                  <a href="#" class="btn btn-secondary">See Outfits</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Romantic Card -->
+            <div class="pillar-card">
+              <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80"
+                   alt="Romantic style"
+                   class="pillar-card-image">
+              <div class="pillar-card-content">
+                <div class="pillar-card-header">
+                  <div class="pillar-card-name">● Romantic</div>
+                  <div class="pillar-card-percentage">22%</div>
+                </div>
+                <p class="pillar-card-description">
+                  Soft, feminine details with flowing silhouettes
+                </p>
+                <div class="pillar-card-tags">
+                  <span class="pillar-tag">Delicate</span>
+                  <span class="pillar-tag">Feminine</span>
+                </div>
+                <div class="pillar-card-strength">
+                  <div class="pillar-card-strength-fill" style="width: 22%"></div>
+                </div>
+                <div class="pillar-card-actions">
+                  <a href="#" class="btn btn-primary">Shop Romantic</a>
+                  <a href="#" class="btn btn-secondary">See Outfits</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Minimal Card -->
+            <div class="pillar-card">
+              <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80"
+                   alt="Minimal style"
+                   class="pillar-card-image">
+              <div class="pillar-card-content">
+                <div class="pillar-card-header">
+                  <div class="pillar-card-name">● Minimal</div>
+                  <div class="pillar-card-percentage">10%</div>
+                </div>
+                <p class="pillar-card-description">
+                  Clean lines and understated elegance
+                </p>
+                <div class="pillar-card-tags">
+                  <span class="pillar-tag">Understated</span>
+                </div>
+                <div class="pillar-card-strength">
+                  <div class="pillar-card-strength-fill" style="width: 10%"></div>
+                </div>
+                <div class="pillar-card-actions">
+                  <a href="#" class="btn btn-primary">Shop Minimal</a>
+                  <a href="#" class="btn btn-secondary">See Outfits</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Initialize Components -->
+  <script type="module">
+    import { initSiteHeader } from './components/site-header.js';
+    import { initAccountNav } from './components/account-nav.js';
+
+    // Initialize site header with navigation
+    initSiteHeader({
+      userName: 'Brian',
+      userStatus: 'Member',
+      storeName: 'Michigan Avenue',
+      bannerMessage: 'Mother\'s Day is coming! Find something special for every budget. <a href="#">Mother\'s Day Gifts</a>',
+      showBanner: true,
+      links: [
+        { text: 'New & Now', href: '#', className: '' },
+        { text: 'Sale', href: '#', className: 'sale' },
+        { text: 'Women', href: '#', className: '' },
+        { text: 'Men', href: '#', className: '' },
+        { text: 'Beauty', href: '#', className: '' },
+        { text: 'Shoes', href: '#', className: '' },
+        { text: 'Accessories', href: '#', className: '' },
+        { text: 'Kids', href: '#', className: '' },
+        { text: 'Designer', href: '#', className: '' },
+        { text: 'Home', href: '#', className: '' },
+        { text: 'Gifts', href: '#', className: '' },
+        { text: 'Services', href: '#', className: '' }
+      ]
+    });
+
+    // Initialize account navigation (Your Style is active)
+    initAccountNav({
+      activeItem: 'your-style',
+      userName: 'Brian',
+      rewardsAmount: '$9.91',
+      lastPaymentDigits: '5687',
+      primaryAddress: 'USA My Adrs Pl',
+      storeName: 'Nordstrom Michigan Avenue'
+    });
+  </script>
+
+  <script>
+    // Animate strength bars on load
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(() => {
+        document.querySelectorAll('.pillar-card-strength-fill').forEach(fill => {
+          fill.style.width = fill.style.width;
+        });
+      }, 300);
+    });
+  </script>
+</body>
+</html>

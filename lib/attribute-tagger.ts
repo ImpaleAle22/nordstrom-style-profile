@@ -61,6 +61,128 @@ const AXIS_CONFIDENCE_THRESHOLDS = {
 const STYLE_VIBE_CONFIDENCE_THRESHOLD = 0.65;
 
 // ============================================================================
+// SMART CONFIDENCE SCORING
+// ============================================================================
+
+/**
+ * Keyword strength mapping - how reliable each keyword is for style identification
+ * 1.0 = strong signal, 0.75 = medium signal, 0.5 = weak signal
+ */
+const KEYWORD_STRENGTH: Record<string, number> = {
+  // Strong keywords (1.0) - highly specific, reliable indicators
+  'running': 1.0, 'yoga': 1.0, 'gym': 1.0, 'workout': 1.0, 'performance': 1.0,
+  'blazer': 1.0, 'trench coat': 1.0, 'oxford': 1.0, 'suit': 1.0,
+  'cargo': 1.0, 'military': 1.0, 'tactical': 1.0,
+  'hoodie': 1.0, 'sneakers': 1.0, 'jogger': 1.0,
+  'lace': 1.0, 'ruffle': 1.0, 'floral print': 1.0,
+
+  // Medium keywords (0.75) - good indicators but less specific
+  'athletic': 0.75, 'sport': 0.75, 'active': 0.75,
+  'tailored': 0.75, 'crisp': 0.75, 'polished': 0.75,
+  'minimal': 0.75, 'sleek': 0.75, 'modern': 0.75,
+  'utility': 0.75, 'workwear': 0.75,
+  'streetwear': 0.75, 'urban': 0.75,
+  'romantic': 0.75, 'feminine': 0.75, 'delicate': 0.75,
+
+  // Weak keywords (0.5) - too generic, need visual confirmation
+  'basic': 0.5, 'simple': 0.5, 'casual': 0.5, 'classic': 0.5,
+};
+
+/**
+ * Pillar identification difficulty - how easy it is to identify each pillar from text alone
+ */
+const PILLAR_DIFFICULTY: Record<string, number> = {
+  'Athletic': 0.95,      // Very distinct keywords and departments
+  'Classic': 0.90,       // Clear product type signals
+  'Utility': 0.85,       // Distinct materials and details
+  'Streetwear': 0.85,    // Clear style markers
+  'Romantic': 0.80,      // Good but context-dependent
+  'Minimal': 0.75,       // Harder - often needs visual judgment
+  'Bohemian': 0.70,      // Very subjective, visual-dependent
+  'Maximal': 0.65,       // Needs visual judgment of "more is more"
+};
+
+/**
+ * Calculate smart confidence score for outfit style pillar detection
+ *
+ * Takes into account:
+ * - Match percentage (how many items match the pattern)
+ * - Outfit size (larger outfits need stronger evidence)
+ * - Keyword strength (quality of matching keywords)
+ * - Reinforcement (multiple signals per item)
+ * - Pillar difficulty (how hard it is to identify this pillar)
+ */
+function calculateOutfitConfidence(params: {
+  matchCount: number;
+  totalItems: number;
+  keywords: string[];           // All matched keywords
+  reinforcementScore: number;   // Average signals per matching item
+  pillarType: string;
+}): number {
+  const { matchCount, totalItems, keywords, reinforcementScore, pillarType } = params;
+
+  // 1. Base confidence from match percentage (0-100 scale)
+  const matchPercentage = matchCount / totalItems;
+  let confidence = matchPercentage * 100;
+
+  // 2. Outfit size adjustment (larger outfits need more evidence)
+  if (totalItems >= 6) {
+    confidence *= 0.95;  // Slight penalty for 6+ items
+  } else if (totalItems <= 3) {
+    confidence *= 1.05;  // Slight boost for 3 or fewer items
+  }
+
+  // 3. Keyword strength multiplier
+  // Average the strength of all matched keywords
+  let avgKeywordStrength = 0.75; // Default if no keywords found
+  if (keywords.length > 0) {
+    const strengthSum = keywords.reduce((sum, kw) => {
+      return sum + (KEYWORD_STRENGTH[kw] || 0.65);
+    }, 0);
+    avgKeywordStrength = strengthSum / keywords.length;
+  }
+
+  // Apply keyword strength: weak (0.85x) to strong (1.15x)
+  const strengthMultiplier = 0.85 + (avgKeywordStrength * 0.30);
+  confidence *= strengthMultiplier;
+
+  // 4. Reinforcement bonus (multiple signals per item)
+  // If items average 2+ signals each, boost confidence
+  if (reinforcementScore > 1) {
+    const bonus = Math.min(10, (reinforcementScore - 1) * 5);
+    confidence += bonus;
+  }
+
+  // 5. Pillar difficulty adjustment
+  const difficultyMultiplier = PILLAR_DIFFICULTY[pillarType] || 0.80;
+  confidence *= difficultyMultiplier;
+
+  // 6. Cap at 95% (never 100% for rules) and floor at 30%
+  return Math.min(95, Math.max(30, Math.round(confidence))) / 100;
+}
+
+/**
+ * Analyze a product for style signals
+ * Returns count of supporting signals (keywords, department, materials, etc.)
+ */
+function analyzeProductSignals(productTitle: string, productDept: string, keywords: string[]): number {
+  let signalCount = 0;
+  const titleLower = productTitle.toLowerCase();
+  const deptLower = productDept.toLowerCase();
+
+  // Count keyword matches
+  signalCount += keywords.filter(kw => titleLower.includes(kw)).length;
+
+  // Department match adds 1 signal
+  const relevantDepts = ['sportswear', 'activewear', 'workwear', 'outerwear', 'athletic apparel'];
+  if (relevantDepts.some(d => deptLower.includes(d))) {
+    signalCount += 1;
+  }
+
+  return signalCount;
+}
+
+// ============================================================================
 // MAIN TAGGING FUNCTION (4-AXIS SYSTEM)
 // ============================================================================
 
@@ -290,103 +412,216 @@ function generateRulesBasedHints(outfit: StoredOutfit): AttributeHints {
 
   // Athletic: All items have sport/active keywords
   const athleticKeywords = ['athletic', 'sport', 'gym', 'running', 'yoga', 'workout', 'sweat', 'jogger', 'track', 'tennis', 'bra', 'legging', 'tight', 'seamless', 'performance'];
-  const athleticCount = productTypes.filter(p =>
-    athleticKeywords.some(kw => p.title.includes(kw)) ||
-    // Add specific athletic departments
-    ['sportswear', 'activewear', 'athletic apparel'].includes(p.department)
-  ).length;
-  if (athleticCount === outfit.items.length) {
-    hints.stylePillarHints.push({
-      pillar: 'Athletic',
-      confidence: 0.9,
-      reason: 'All items have athletic/sport keywords or department'
+  const athleticMatches: string[] = [];
+  let athleticSignalTotal = 0;
+  const athleticCount = productTypes.filter(p => {
+    const matchedKeywords = athleticKeywords.filter(kw => p.title.includes(kw));
+    const deptMatch = ['sportswear', 'activewear', 'athletic apparel'].includes(p.department);
+
+    if (matchedKeywords.length > 0 || deptMatch) {
+      athleticMatches.push(...matchedKeywords);
+      athleticSignalTotal += analyzeProductSignals(p.title, p.department, athleticKeywords);
+      return true;
+    }
+    return false;
+  }).length;
+
+  if (athleticCount >= outfit.items.length * 0.5) {
+    const confidence = calculateOutfitConfidence({
+      matchCount: athleticCount,
+      totalItems: outfit.items.length,
+      keywords: athleticMatches,
+      reinforcementScore: athleticCount > 0 ? athleticSignalTotal / athleticCount : 1,
+      pillarType: 'Athletic',
     });
-  } else if (athleticCount >= outfit.items.length * 0.75) {
+
     hints.stylePillarHints.push({
       pillar: 'Athletic',
-      confidence: 0.7,
-      reason: 'Most items have athletic/sport keywords or department'
+      confidence,
+      reason: `${athleticCount}/${outfit.items.length} items have athletic keywords (${Math.round(confidence * 100)}% confidence)`
     });
   }
 
   // Utility: Workwear, military, outdoor keywords
   const utilityKeywords = ['cargo', 'utility', 'work', 'military', 'tactical', 'hiking', 'outdoor', 'field', 'safari', 'parachute', 'gorpcore'];
-  const utilityCount = productTypes.filter(p =>
-    utilityKeywords.some(kw => p.title.includes(kw)) ||
-    // Add specific utility departments
-    ['workwear', 'outerwear', 'utility wear'].includes(p.department)
-  ).length;
+  const utilityMatches: string[] = [];
+  let utilitySignalTotal = 0;
+  const utilityCount = productTypes.filter(p => {
+    const matchedKeywords = utilityKeywords.filter(kw => p.title.includes(kw));
+    const deptMatch = ['workwear', 'outerwear', 'utility wear'].includes(p.department);
+
+    if (matchedKeywords.length > 0 || deptMatch) {
+      utilityMatches.push(...matchedKeywords);
+      utilitySignalTotal += analyzeProductSignals(p.title, p.department, utilityKeywords);
+      return true;
+    }
+    return false;
+  }).length;
+
   if (utilityCount >= outfit.items.length * 0.5) {
+    const confidence = calculateOutfitConfidence({
+      matchCount: utilityCount,
+      totalItems: outfit.items.length,
+      keywords: utilityMatches,
+      reinforcementScore: utilityCount > 0 ? utilitySignalTotal / utilityCount : 1,
+      pillarType: 'Utility',
+    });
+
     hints.stylePillarHints.push({
       pillar: 'Utility',
-      confidence: 0.75,
-      reason: 'Multiple items have utility/workwear keywords or department'
+      confidence,
+      reason: `${utilityCount}/${outfit.items.length} items have utility keywords (${Math.round(confidence * 100)}% confidence)`
     });
   }
 
   // Minimal: Sleek, monochromatic, modern keywords
   const minimalKeywords = ['minimal', 'sleek', 'modern', 'clean', 'simple', 'monochrome', 'basic', 'essential', 'sculptural', 'architectural'];
-  const minimalCount = productTypes.filter(p =>
-    minimalKeywords.some(kw => p.title.includes(kw))
-  ).length;
+  const minimalMatches: string[] = [];
+  let minimalSignalTotal = 0;
+  const minimalCount = productTypes.filter(p => {
+    const matchedKeywords = minimalKeywords.filter(kw => p.title.includes(kw));
+    if (matchedKeywords.length > 0) {
+      minimalMatches.push(...matchedKeywords);
+      minimalSignalTotal += analyzeProductSignals(p.title, p.department, minimalKeywords);
+      return true;
+    }
+    return false;
+  }).length;
+
   if (minimalCount >= outfit.items.length * 0.5) {
+    const confidence = calculateOutfitConfidence({
+      matchCount: minimalCount,
+      totalItems: outfit.items.length,
+      keywords: minimalMatches,
+      reinforcementScore: minimalCount > 0 ? minimalSignalTotal / minimalCount : 1,
+      pillarType: 'Minimal',
+    });
+
     hints.stylePillarHints.push({
       pillar: 'Minimal',
-      confidence: 0.65,
-      reason: 'Multiple items have minimal/modern keywords'
+      confidence,
+      reason: `${minimalCount}/${outfit.items.length} items have minimal keywords (${Math.round(confidence * 100)}% confidence)`
     });
   }
 
   // Classic: Tailored, polished, timeless keywords
   const classicKeywords = ['blazer', 'tailored', 'classic', 'trench', 'oxford', 'loafer', 'pump', 'suit', 'vest', 'crisp', 'button-down', 'polo shirt', 'chinos', 'brogues', 'derby', 'peacoat', 'trench coat'];
-  const classicCount = productTypes.filter(p =>
-    classicKeywords.some(kw => p.title.includes(kw))
-  ).length;
+  const classicMatches: string[] = [];
+  let classicSignalTotal = 0;
+  const classicCount = productTypes.filter(p => {
+    const matchedKeywords = classicKeywords.filter(kw => p.title.includes(kw));
+    if (matchedKeywords.length > 0) {
+      classicMatches.push(...matchedKeywords);
+      classicSignalTotal += analyzeProductSignals(p.title, p.department, classicKeywords);
+      return true;
+    }
+    return false;
+  }).length;
+
   if (classicCount >= outfit.items.length * 0.5) {
+    const confidence = calculateOutfitConfidence({
+      matchCount: classicCount,
+      totalItems: outfit.items.length,
+      keywords: classicMatches,
+      reinforcementScore: classicCount > 0 ? classicSignalTotal / classicCount : 1,
+      pillarType: 'Classic',
+    });
+
     hints.stylePillarHints.push({
       pillar: 'Classic',
-      confidence: 0.7,
-      reason: 'Multiple items have classic/tailored keywords'
+      confidence,
+      reason: `${classicCount}/${outfit.items.length} items have classic keywords (${Math.round(confidence * 100)}% confidence)`
     });
   }
 
   // Romantic: Feminine, delicate, soft keywords
   const romanticKeywords = ['romantic', 'feminine', 'lace', 'floral', 'ruffle', 'delicate', 'soft', 'flowing', 'chiffon', 'silk', 'satin', 'bow', 'puff sleeve', 'frill'];
-  const romanticCount = productTypes.filter(p =>
-    romanticKeywords.some(kw => p.title.includes(kw))
-  ).length;
+  const romanticMatches: string[] = [];
+  let romanticSignalTotal = 0;
+  const romanticCount = productTypes.filter(p => {
+    const matchedKeywords = romanticKeywords.filter(kw => p.title.includes(kw));
+    if (matchedKeywords.length > 0) {
+      romanticMatches.push(...matchedKeywords);
+      romanticSignalTotal += analyzeProductSignals(p.title, p.department, romanticKeywords);
+      return true;
+    }
+    return false;
+  }).length;
+
   if (romanticCount >= outfit.items.length * 0.5) {
+    const confidence = calculateOutfitConfidence({
+      matchCount: romanticCount,
+      totalItems: outfit.items.length,
+      keywords: romanticMatches,
+      reinforcementScore: romanticCount > 0 ? romanticSignalTotal / romanticCount : 1,
+      pillarType: 'Romantic',
+    });
+
     hints.stylePillarHints.push({
       pillar: 'Romantic',
-      confidence: 0.7,
-      reason: 'Multiple items have romantic/feminine keywords'
+      confidence,
+      reason: `${romanticCount}/${outfit.items.length} items have romantic keywords (${Math.round(confidence * 100)}% confidence)`
     });
   }
 
   // Bohemian: Earthy, textural, vintage keywords
   const bohemianKeywords = ['boho', 'bohemian', 'vintage', 'crochet', 'embroidered', 'fringe', 'tie-dye', 'paisley', 'ikat', 'tribal', 'ethnic', 'suede', 'velvet', 'velour', 'kimono', 'maxi dress', 'peasant'];
-  const bohemianCount = productTypes.filter(p =>
-    bohemianKeywords.some(kw => p.title.includes(kw))
-  ).length;
+  const bohemianMatches: string[] = [];
+  let bohemianSignalTotal = 0;
+  const bohemianCount = productTypes.filter(p => {
+    const matchedKeywords = bohemianKeywords.filter(kw => p.title.includes(kw));
+    if (matchedKeywords.length > 0) {
+      bohemianMatches.push(...matchedKeywords);
+      bohemianSignalTotal += analyzeProductSignals(p.title, p.department, bohemianKeywords);
+      return true;
+    }
+    return false;
+  }).length;
+
   if (bohemianCount >= outfit.items.length * 0.5) {
+    const confidence = calculateOutfitConfidence({
+      matchCount: bohemianCount,
+      totalItems: outfit.items.length,
+      keywords: bohemianMatches,
+      reinforcementScore: bohemianCount > 0 ? bohemianSignalTotal / bohemianCount : 1,
+      pillarType: 'Bohemian',
+    });
+
     hints.stylePillarHints.push({
       pillar: 'Bohemian',
-      confidence: 0.7,
-      reason: 'Multiple items have bohemian/vintage keywords'
+      confidence,
+      reason: `${bohemianCount}/${outfit.items.length} items have bohemian keywords (${Math.round(confidence * 100)}% confidence)`
     });
   }
 
   // Streetwear: Trend-aware, urban, edgy, directional
   const streetwearKeywords = ['street', 'urban', 'edgy', 'oversized', 'crop', 'graphic', 'logo', 'distressed', 'ripped', 'chain', 'platform', 'chunky', 'dad', 'mom', 'baggy', 'wide leg', 'oversized', 'cropped', 'cut-off', 'utility jacket', 'bomber jacket', 'varsity jacket', 'racer jacket', 'anorak', 'puffer jacket', 'track jacket', 'windbreaker', 'cargo pants', 'parachute pants', 'chelsea boot', 'chukka boot', 'loafer', 'sneaker', 'platform shoe', 'chunky sneaker', 'dad sneaker', 'combat boot', 'moto jacket', 'biker jacket'];
-  const streetwearCount = productTypes.filter(p =>
-    streetwearKeywords.some(kw => p.title.includes(kw))
-  ).length;
+  const streetwearMatches: string[] = [];
+  let streetwearSignalTotal = 0;
+  const streetwearCount = productTypes.filter(p => {
+    const matchedKeywords = streetwearKeywords.filter(kw => p.title.includes(kw));
+    if (matchedKeywords.length > 0) {
+      streetwearMatches.push(...matchedKeywords);
+      streetwearSignalTotal += analyzeProductSignals(p.title, p.department, streetwearKeywords);
+      return true;
+    }
+    return false;
+  }).length;
+
   if (streetwearCount >= outfit.items.length * 0.4) {
     // Lower threshold (40%) since streetwear mixing is common
+    const confidence = calculateOutfitConfidence({
+      matchCount: streetwearCount,
+      totalItems: outfit.items.length,
+      keywords: streetwearMatches,
+      reinforcementScore: streetwearCount > 0 ? streetwearSignalTotal / streetwearCount : 1,
+      pillarType: 'Streetwear',
+    });
+
     hints.stylePillarHints.push({
       pillar: 'Streetwear',
-      confidence: 0.65,
-      reason: 'Multiple items have streetwear/trend-forward keywords'
+      confidence,
+      reason: `${streetwearCount}/${outfit.items.length} items have streetwear keywords (${Math.round(confidence * 100)}% confidence)`
     });
   }
 
@@ -395,9 +630,17 @@ function generateRulesBasedHints(outfit: StoredOutfit): AttributeHints {
 
   // Maximal: Bold, statement pieces, high visual impact, bright/contrasting colors
   const maximalKeywords = ['statement', 'bold', 'tropical', 'glam', 'sequin', 'metallic', 'dramatic', 'embellished', 'bright', 'neon', 'vibrant', 'leopard', 'animal print', 'print', 'pattern', 'multi-color', 'color block', 'graphic', 'bold print', 'statement piece', 'oversized print', 'bold pattern'];
-  const maximalCount = productTypes.filter(p =>
-    maximalKeywords.some(kw => p.title.includes(kw))
-  ).length;
+  const maximalMatches: string[] = [];
+  let maximalSignalTotal = 0;
+  const maximalCount = productTypes.filter(p => {
+    const matchedKeywords = maximalKeywords.filter(kw => p.title.includes(kw));
+    if (matchedKeywords.length > 0) {
+      maximalMatches.push(...matchedKeywords);
+      maximalSignalTotal += analyzeProductSignals(p.title, p.department, maximalKeywords);
+      return true;
+    }
+    return false;
+  }).length;
 
   // Check for bright/contrasting colors as signal for Maximal
   const maximalBrightColors = ['red', 'orange', 'yellow', 'pink', 'purple', 'green', 'blue', 'multi', 'print', 'pattern', 'hot pink', 'electric blue', 'royal blue', 'emerald green', 'fuchsia', 'cobalt blue', 'vibrant', 'bold'];
@@ -406,17 +649,28 @@ function generateRulesBasedHints(outfit: StoredOutfit): AttributeHints {
   ).length;
 
   if (maximalCount >= outfit.items.length * 0.5) {
+    // Use reinforcement from keywords + color signals
+    const colorSignalBonus = maximalBrightColorCount >= 2 ? 0.5 : 0;
+    const confidence = calculateOutfitConfidence({
+      matchCount: maximalCount,
+      totalItems: outfit.items.length,
+      keywords: maximalMatches,
+      reinforcementScore: (maximalCount > 0 ? maximalSignalTotal / maximalCount : 1) + colorSignalBonus,
+      pillarType: 'Maximal',
+    });
+
     hints.stylePillarHints.push({
       pillar: 'Maximal',
-      confidence: 0.7,
-      reason: 'Multiple items have bold/statement keywords'
+      confidence,
+      reason: `${maximalCount}/${outfit.items.length} items have bold keywords + ${maximalBrightColorCount} bright colors (${Math.round(confidence * 100)}% confidence)`
     });
   } else if (maximalBrightColorCount >= 3) {
-    // Bright/contrasting colors can indicate Maximal even without keywords
+    // Bright/contrasting colors can indicate Maximal even without keywords (but lower confidence)
+    const confidence = Math.min(0.60, 0.45 + (maximalBrightColorCount * 0.05));
     hints.stylePillarHints.push({
       pillar: 'Maximal',
-      confidence: 0.55,
-      reason: 'Multiple bright/contrasting colors suggest bold aesthetic'
+      confidence,
+      reason: `${maximalBrightColorCount} bright/contrasting colors suggest bold aesthetic (${Math.round(confidence * 100)}% confidence - needs visual confirmation)`
     });
   }
 

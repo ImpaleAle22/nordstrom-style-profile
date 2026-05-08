@@ -94,14 +94,148 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
       meta: {},
     };
 
-    try {
-      await supabase.from('swipe_sessions').insert(sessionData);
-      console.log('✓ Session saved:', sessionData.session_id);
-    } catch (error) {
-      console.error('Failed to save session:', error);
+    // Check if this is a demo user (starts with "demo_")
+    const isDemoUser = customerId.startsWith('demo_');
+
+    if (isDemoUser) {
+      // Save to localStorage for instant UI feedback
+      const localKey = `demo_swipes_${customerId}`;
+      const existingSessions = JSON.parse(localStorage.getItem(localKey) || '[]');
+      existingSessions.push(sessionData);
+      localStorage.setItem(localKey, JSON.stringify(existingSessions));
+      console.log('✓ Demo session saved to localStorage');
+
+      // Update profile data locally
+      updateDemoProfile(customerId, sessionData);
+
+      // ALSO save to database for analytics
+      await saveDemoToDatabase(customerId, sessionData);
+    } else {
+      // Save to Supabase for real users
+      try {
+        await supabase.from('swipe_sessions').insert(sessionData);
+        console.log('✓ Session saved:', sessionData.session_id);
+      } catch (error) {
+        console.error('Failed to save session:', error);
+      }
     }
 
     setIsComplete(true);
+  };
+
+  const updateDemoProfile = (userId: string, sessionData: any) => {
+    const profileKey = `demo_profile_${userId}`;
+    const existingProfile = JSON.parse(localStorage.getItem(profileKey) || '{}');
+
+    // Calculate style pillars from liked cards
+    const likedCards = sessionData.cards.filter((c: any) => c.verdict === 'yes');
+    const pillarCounts: { [key: string]: number } = { ...existingProfile.pillars };
+
+    likedCards.forEach((card: any) => {
+      if (card.tags?.pillars) {
+        card.tags.pillars.forEach((pillar: string) => {
+          pillarCounts[pillar] = (pillarCounts[pillar] || 0) + 1;
+        });
+      }
+    });
+
+    // Convert to percentages
+    const totalPillars = Object.values(pillarCounts).reduce((a: number, b: number) => a + b, 0);
+    const pillars: Record<string, number> = {};
+    Object.entries(pillarCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5)
+      .forEach(([name, count]) => {
+        pillars[name] = totalPillars > 0 ? Math.round((count / totalPillars) * 100) : 0;
+      });
+
+    // Update profile (merge with existing to preserve name, userId, etc)
+    const updatedProfile = {
+      ...existingProfile,
+      name: existingProfile.name || localStorage.getItem('demo_user_name'),
+      userId: userId,
+      pillars,
+      confidenceScore: Math.min(0.9, ((existingProfile.sessionsCompleted || 0) + 1) * 0.15),
+      sessionsCompleted: (existingProfile.sessionsCompleted || 0) + 1,
+      totalSwipes: (existingProfile.totalSwipes || 0) + sessionData.cards_viewed,
+      lastActivity: new Date().toISOString(),
+    };
+
+    localStorage.setItem(profileKey, JSON.stringify(updatedProfile));
+    console.log('✓ Demo profile updated:', updatedProfile);
+  };
+
+  const saveDemoToDatabase = async (userId: string, sessionData: any) => {
+    try {
+      // Get user name from localStorage
+      const userName = localStorage.getItem('demo_user_name') || 'Demo User';
+
+      // 1. Create interaction in API format
+      const interaction = {
+        interaction_id: sessionData.session_id,
+        customer_id: userId,
+        interaction_type: 'style_swipe',
+        timestamp: sessionData.completed_at,
+        source: 'web_app',
+        session_id: sessionData.session_id,
+        data: {
+          stack_id: sessionData.stack_id,
+          stack_type: sessionData.stack_type,
+          stack_recipe: sessionData.stack_recipe,
+          completion_type: sessionData.completion_type,
+          completion_percentage: 100,
+          cards: sessionData.cards.map((card: any) => ({
+            card_id: card.cardId,
+            card_type: card.cardType,
+            position: sessionData.cards.indexOf(card) + 1,
+            verdict: card.verdict,
+            dwell_ms: card.dwellMs,
+            saved: card.saved,
+            mini_pdp_opened: card.miniPdpOpened,
+            content_tags: card.tags,
+          })),
+        },
+      };
+
+      // 2. Save interaction to database
+      const saveResponse = await fetch('/api/interactions/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ interaction }),
+      });
+
+      if (!saveResponse.ok) {
+        throw new Error('Failed to save interaction');
+      }
+
+      console.log('✓ Demo interaction saved to database');
+
+      // 3. Fetch all interactions for this user
+      const interactionsResponse = await fetch(`/api/interactions/${userId}`);
+      const { interactions } = await interactionsResponse.json();
+
+      // 4. Process through Profile Brain
+      const processResponse = await fetch('/api/profile/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerId: userId,
+          customerName: userName,
+          interactions: interactions,
+          mode: 'incremental',
+        }),
+      });
+
+      if (!processResponse.ok) {
+        throw new Error('Failed to process profile');
+      }
+
+      const { profile } = await processResponse.json();
+      console.log('✓ Demo profile processed in database:', profile);
+    } catch (error) {
+      console.error('Failed to save demo to database:', error);
+      // Don't block user experience if database save fails
+    }
   };
 
   const backToSelector = () => {
@@ -147,6 +281,9 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
 
   // Stack Selector
   if (!selectedStack) {
+    const isDemoUser = customerId.startsWith('demo_');
+    const profileUrl = isDemoUser ? `/demo/interactive/activities` : `/profile/${customerId}`;
+
     return (
       <div className="min-h-screen bg-[#FAF9F5]">
         <header className="bg-white border-b border-gray-200 px-8 py-4">
@@ -154,7 +291,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
             <Link href="/" className="text-2xl font-bold tracking-[3px]">
               NORDSTROM
             </Link>
-            <Link href={`/profile/${customerId}`} className="text-sm hover:opacity-60">
+            <Link href={profileUrl} className="text-sm hover:opacity-60">
               Back to Profile
             </Link>
           </div>
@@ -195,13 +332,19 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
   if (isComplete) {
     const yesCount = swipeHistory.filter((s) => s.verdict === 'yes').length;
     const noCount = swipeHistory.filter((s) => s.verdict === 'no').length;
+    const isDemoUser = customerId.startsWith('demo_');
+    const profileUrl = isDemoUser ? `/demo/interactive/activities` : `/profile/${customerId}`;
 
     return (
       <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center px-6">
         <div className="text-center max-w-lg">
           <div className="text-6xl mb-6">✨</div>
           <h2 className="text-3xl font-serif font-light mb-2">Stack Complete!</h2>
-          <p className="text-gray-600 mb-8">Thanks for sharing your style preferences</p>
+          <p className="text-gray-600 mb-8">
+            {isDemoUser
+              ? "Your profile has been updated with your preferences!"
+              : "Thanks for sharing your style preferences"}
+          </p>
 
           <div className="bg-white rounded-xl p-6 mb-6 text-left">
             <div className="text-sm text-gray-500 mb-2">Session Summary</div>
@@ -229,7 +372,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
               Browse More Stacks
             </button>
             <Link
-              href={`/profile/${customerId}`}
+              href={profileUrl}
               className="block w-full bg-white border border-gray-300 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
               View Your Profile

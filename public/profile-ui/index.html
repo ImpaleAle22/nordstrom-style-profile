@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Style Profile</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style-space-map.css">
+  <link rel="stylesheet" href="design-tabs.css">
+  <link rel="stylesheet" href="nordstrom-nav.css">
+</head>
+<body>
+  <div class="split-layout">
+
+    <!-- Left Sidebar: Demo Controls -->
+    <aside class="demo-sidebar">
+      <div class="demo-header">
+        <h3>🎮 Demo Controls</h3>
+        <span class="demo-badge">Internal Use Only</span>
+      </div>
+
+      <!-- Current Persona Card -->
+      <div class="demo-section persona-card-section">
+        <div class="current-persona-card">
+          <div class="persona-card-header-compact">
+            <div class="persona-avatar-small" id="personaAvatar"></div>
+            <div class="persona-info-compact">
+              <div class="persona-name-compact" id="currentPersonaName">No Persona</div>
+              <div class="persona-type-compact" id="currentPersonaType">—</div>
+            </div>
+          </div>
+          <div class="persona-stats-compact">
+            <div class="stat-compact">
+              <span class="stat-label-compact">Sessions:</span>
+              <span class="stat-value-compact" id="sessionsCount">0</span>
+            </div>
+            <div class="stat-compact">
+              <span class="stat-label-compact">Gender:</span>
+              <span class="stat-value-compact" id="customerGender">—</span>
+            </div>
+          </div>
+          <button class="change-persona-btn" id="changePersonaBtn">
+            Change Persona
+          </button>
+        </div>
+      </div>
+
+      <!-- Session Navigation -->
+      <div class="demo-section session-nav-section">
+        <div class="session-scrubber-compact">
+          <button class="scrubber-btn-compact" id="prevBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M12 4l-8 6 8 6V4z"/>
+            </svg>
+          </button>
+
+          <div class="session-info-compact">
+            <div class="session-label-compact">
+              Session <span id="currentSession">0</span> / <span id="totalSessions">0</span>
+            </div>
+            <div class="session-date-compact" id="sessionDate">—</div>
+          </div>
+
+          <button class="scrubber-btn-compact" id="nextBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M8 4v12l8-6-8-6z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="demo-section">
+        <h4>Activity This Session</h4>
+        <div class="activity-feed" id="activityFeed">
+          <div class="activity-placeholder">No session selected</div>
+        </div>
+      </div>
+
+      <!-- Keyboard Shortcuts (Sticky Bottom) -->
+      <div class="keyboard-shortcuts-sticky">
+        <kbd>←</kbd> Previous <span class="shortcut-divider">•</span> <kbd>→</kbd> Next
+      </div>
+    </aside>
+
+    <!-- Right Main Content: Customer View -->
+    <main class="customer-view">
+      <!-- Top Banner -->
+      <div class="top-banner">
+        Free shipping on orders $89+. <a href="#">See Details</a>
+      </div>
+
+      <!-- Site Header -->
+      <header class="site-header">
+        <a href="#" class="site-logo">NORDSTROM</a>
+
+        <div class="site-search">
+          <input type="text" class="site-search-input" placeholder="Search for products and brands">
+          <svg class="site-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </div>
+
+        <div class="site-actions">
+          <a href="#" class="site-action">
+            <svg class="site-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="site-action-text" id="siteHeaderName">Sign in</span>
+          </a>
+
+          <a href="#" class="site-action">
+            <svg class="site-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span class="site-action-text">Stores</span>
+          </a>
+
+          <a href="#" class="site-action">
+            <svg class="site-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span class="site-action-text">Purchases</span>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Navigation -->
+      <nav class="main-nav">
+        <a href="#" class="main-nav-link sale">Sale</a>
+        <a href="#" class="main-nav-link">Women</a>
+        <a href="#" class="main-nav-link">Men</a>
+        <a href="#" class="main-nav-link">Kids</a>
+        <a href="#" class="main-nav-link">Designer</a>
+        <a href="#" class="main-nav-link">Brands</a>
+        <a href="#" class="main-nav-link">Young Adult</a>
+        <a href="#" class="main-nav-link">Activewear</a>
+        <a href="#" class="main-nav-link">Home</a>
+        <a href="#" class="main-nav-link">Beauty</a>
+        <a href="#" class="main-nav-link">Gifts</a>
+      </nav>
+
+      <!-- Account Layout -->
+      <div class="account-layout">
+        <!-- Account Sidebar -->
+        <aside class="account-sidebar">
+          <div class="account-header">
+            <h2 class="account-header-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12ZM3.64743 17.5006C2.60612 15.9226 2 14.0321 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 14.0324 21.3937 15.9232 20.3521 17.5014C19.9802 16.9365 19.5511 16.4095 19.0706 15.9289C18.142 15.0003 17.0396 14.2638 15.8263 13.7612C15.3993 13.5843 14.9614 13.4376 14.516 13.3218C16.0017 12.455 17 10.8441 17 9C17 6.23858 14.7614 4 12 4C9.23859 4 7.00002 6.23858 7.00002 9C7.00002 10.844 7.99821 12.4548 9.48373 13.3216C9.03806 13.4375 8.59996 13.5842 8.17266 13.7612C6.9594 14.2638 5.85701 15.0003 4.92842 15.9289C4.44812 16.4092 4.01919 16.936 3.64743 17.5006ZM4.99451 19.136C6.79873 20.9075 9.27178 22 12 22C14.7279 22 17.2007 20.9077 19.0048 19.1367C18.6425 18.4797 18.1889 17.8757 17.6563 17.3431C16.9135 16.6003 16.0316 16.011 15.061 15.609C14.0904 15.2069 13.0501 15 11.9995 15C10.9489 15 9.90863 15.2069 8.93802 15.609C7.96742 16.011 7.08551 16.6003 6.34264 17.3431C5.81024 17.8755 5.35674 18.4794 4.99451 19.136ZM12 6C10.3432 6 9.00002 7.34315 9.00002 9C9.00002 10.6569 10.3432 12 12 12C13.6569 12 15 10.6569 15 9C15 7.34315 13.6569 6 12 6Z" fill="currentColor"/>
+              </svg>
+              <span id="accountHeaderName">Brian's Account</span>
+            </h2>
+          </div>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_account_info_idx)">
+                <g clip-path="url(#clip1_account_info_idx)">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12ZM3.64743 17.5006C2.60612 15.9226 2 14.0321 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 14.0324 21.3937 15.9232 20.3521 17.5014C19.9802 16.9365 19.5511 16.4095 19.0706 15.9289C18.142 15.0003 17.0396 14.2638 15.8263 13.7612C15.3993 13.5843 14.9614 13.4376 14.516 13.3218C16.0017 12.455 17 10.8441 17 9C17 6.23858 14.7614 4 12 4C9.23859 4 7.00002 6.23858 7.00002 9C7.00002 10.844 7.99821 12.4548 9.48373 13.3216C9.03806 13.4375 8.59996 13.5842 8.17266 13.7612C6.9594 14.2638 5.85701 15.0003 4.92842 15.9289C4.44812 16.4092 4.01919 16.936 3.64743 17.5006ZM4.99451 19.136C6.79873 20.9075 9.27178 22 12 22C14.7279 22 17.2007 20.9077 19.0048 19.1367C18.6425 18.4797 18.1889 17.8757 17.6563 17.3431C16.9135 16.6003 16.0316 16.011 15.061 15.609C14.0904 15.2069 13.0501 15 11.9995 15C10.9489 15 9.90863 15.2069 8.93802 15.609C7.96742 16.011 7.08551 16.6003 6.34264 17.3431C5.81024 17.8755 5.35674 18.4794 4.99451 19.136ZM12 6C10.3432 6 9.00002 7.34315 9.00002 9C9.00002 10.6569 10.3432 12 12 12C13.6569 12 15 10.6569 15 9C15 7.34315 13.6569 6 12 6Z" fill="currentColor"/>
+                </g>
+              </g>
+              <defs>
+                <clipPath id="clip0_account_info_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+                <clipPath id="clip1_account_info_idx">
+                  <rect width="24" height="24" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <span class="account-nav-title">Account Info</span>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_purchases_idx)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.1877 1.26662C11.7049 1.03678 12.2951 1.03678 12.8123 1.26662L22.4061 5.53055C22.7673 5.69106 23 6.04918 23 6.44437V16.9056C23 17.696 22.5345 18.4122 21.8123 18.7332L12.8123 22.7332C12.2951 22.9631 11.7049 22.9631 11.1877 22.7332L2.18772 18.7332C1.46547 18.4122 1 17.696 1 16.9056V6.44437C1 6.04918 1.23273 5.69106 1.59386 5.53055L11.1877 1.26662ZM3 16.9056L11 20.4612V11.6373L3 7.91115V16.9056ZM4.52642 6.41583L6.97136 7.55468L14.3272 4.12854L12 3.09424L4.52642 6.41583ZM16.7511 5.20584L9.33984 8.65781L12 9.89677L19.4735 6.4158L16.7511 5.20584ZM21 7.91111L13 11.6373V20.4612L21 16.9056V7.91111Z" fill="currentColor"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_purchases_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Purchases</span>
+              <span class="account-nav-subtitle">Track, Manage & Return</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_wishlists_idx)">
+                <g clip-path="url(#clip1_wishlists_idx)">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M0.000244141 8.75C0.000244141 5.02208 3.02232 2 6.75024 2C8.87178 2 10.7634 2.9787 12.0002 4.5073C13.2371 2.9787 15.1287 2 17.2502 2C20.9782 2 24.0002 5.02208 24.0002 8.75C24.0002 12.7009 21.1472 16.1603 18.4721 18.5682C15.7458 21.0223 12.9324 22.6252 12.531 22.8492C12.3988 22.923 12.218 22.9884 12.0002 22.9884C11.7825 22.9884 11.6017 22.923 11.4695 22.8492C11.0681 22.6252 8.25466 21.0223 5.52836 18.5682C2.85324 16.1603 0.000244141 12.7009 0.000244141 8.75ZM6.75024 4C4.12689 4 2.00024 6.12665 2.00024 8.75C2.00024 11.7828 4.25066 14.7272 6.8664 17.0817C8.93547 18.9442 11.0698 20.2922 12.0002 20.8457C12.9307 20.2922 15.065 18.9442 17.1341 17.0817C19.7498 14.7272 22.0002 11.7828 22.0002 8.75C22.0002 6.12665 19.8736 4 17.2502 4C15.3196 4 13.6558 5.15193 12.9128 6.81019C12.7517 7.16983 12.3943 7.4013 12.0002 7.4013C11.6061 7.4013 11.2488 7.16983 11.0877 6.81019C10.3447 5.15193 8.6809 4 6.75024 4Z" fill="currentColor"/>
+                </g>
+              </g>
+              <defs>
+                <clipPath id="clip0_wishlists_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+                <clipPath id="clip1_wishlists_idx">
+                  <rect width="24" height="24" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Wish Lists</span>
+              <span class="account-nav-subtitle">Create & manage lists</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_nordy_club_idx)">
+                <g clip-path="url(#clip1_nordy_club_idx)">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0ZM2 12C2 6.47715 6.47715 2 12 2C14.5096 2 16.8033 2.92445 18.5591 4.4514C18.0955 4.99164 17.5982 5.66343 17.0882 6.40203C16.2983 7.54606 15.4312 8.92042 14.549 10.368C13.6793 11.795 12.8147 13.2591 11.9848 14.6641C11.599 15.3175 11.2206 15.9582 10.8528 16.5764C11.2075 12.9895 11.8885 8.44051 12.5638 5.52508C12.715 4.87213 12.3631 4.30234 11.8746 4.06143C11.3747 3.81486 10.6823 3.89332 10.2693 4.46045C7.8582 7.77167 4.86819 13.5212 3.42236 17.1434C2.5193 15.6406 2 13.8809 2 12ZM4.86164 19.0031C6.67634 20.8527 9.20418 22 12 22C17.5228 22 22 17.5228 22 12C22 9.71183 21.2315 7.60316 19.9385 5.91802C19.5884 6.34198 19.184 6.88665 18.734 7.5384C17.9762 8.63603 17.132 9.97281 16.2569 11.4088C15.4359 12.7559 14.5677 14.2248 13.7266 15.6481C12.8127 17.1944 11.9307 18.6866 11.1759 19.91C10.4461 21.0929 8.56689 20.6018 8.64568 19.1242C8.79162 16.3871 9.29842 12.223 9.90484 8.68386C7.80079 12.2133 5.68751 16.5877 4.86164 19.0031Z" fill="currentColor"/>
+                </g>
+              </g>
+              <defs>
+                <clipPath id="clip0_nordy_club_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+                <clipPath id="clip1_nordy_club_idx">
+                  <rect width="24" height="24" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Nordy Club Rewards</span>
+              <span class="account-nav-subtitle">$9.91 available towards...</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_payment_idx)">
+                <path d="M7.85443 17.25C7.70443 17.25 7.56943 17.115 7.56943 16.965V6.87C7.56943 6.72 7.70443 6.6 7.85443 6.6H8.07943C8.18443 6.6 8.25943 6.63 8.33443 6.705L14.4544 13.23H14.4844V7.035C14.4844 6.885 14.6044 6.75 14.7694 6.75H16.1494C16.2994 6.75 16.4344 6.885 16.4344 7.035V17.13C16.4344 17.28 16.2994 17.4 16.1494 17.4H15.9394C15.8344 17.4 15.7594 17.37 15.6844 17.295L9.53443 10.515H9.50443V16.965C9.50443 17.115 9.38443 17.25 9.21943 17.25H7.85443Z" fill="currentColor"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M3 3C1.34315 3 0 4.34315 0 6V18C0 19.6569 1.34314 21 3 21H21C22.6569 21 24 19.6569 24 18V6C24 4.34315 22.6569 3 21 3H3ZM2 6C2 5.44772 2.44772 5 3 5H21C21.5523 5 22 5.44771 22 6V18C22 18.5523 21.5523 19 21 19H3C2.44772 19 2 18.5523 2 18V6Z" fill="currentColor"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_payment_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Payment Methods</span>
+              <span class="account-nav-subtitle">Nordstrom Visa 5687</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_shipping_idx)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 5C9.79086 5 8 6.79086 8 9C8 11.2091 9.79086 13 12 13C14.2091 13 16 11.2091 16 9C16 6.79086 14.2091 5 12 5ZM10 9C10 7.89543 10.8954 7 12 7C13.1046 7 14 7.89543 14 9C14 10.1046 13.1046 11 12 11C10.8954 11 10 10.1046 10 9Z" fill="currentColor"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C7.02944 0 3 4.02944 3 9C3 10.9547 3.6243 12.7665 4.68422 14.2431L10.3583 22.3927C11.1541 23.5357 12.8452 23.5357 13.641 22.3928L19.3059 14.2569C20.3718 12.7778 21 10.9608 21 9C21 4.02944 16.9706 0 12 0ZM5 9C5 5.13401 8.13401 2 12 2C15.866 2 19 5.13401 19 9C19 10.5298 18.5104 11.9422 17.6793 13.0932L17.6693 13.1072L11.9997 21.2499L6.32134 13.0943L6.31253 13.0818C5.48634 11.9329 5 10.5247 5 9Z" fill="currentColor"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_shipping_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Shipping Addresses</span>
+              <span class="account-nav-subtitle">USA My Adrs Pl</span>
+            </div>
+          </a>
+
+          <div class="account-section-title">Settings</div>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_personal_info_idx)">
+                <g clip-path="url(#clip1_personal_info_idx)">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12ZM3.64743 17.5006C2.60612 15.9226 2 14.0321 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 14.0324 21.3937 15.9232 20.3521 17.5014C19.9802 16.9365 19.5511 16.4095 19.0706 15.9289C18.142 15.0003 17.0396 14.2638 15.8263 13.7612C15.3993 13.5843 14.9614 13.4376 14.516 13.3218C16.0017 12.455 17 10.8441 17 9C17 6.23858 14.7614 4 12 4C9.23859 4 7.00002 6.23858 7.00002 9C7.00002 10.844 7.99821 12.4548 9.48373 13.3216C9.03806 13.4375 8.59996 13.5842 8.17266 13.7612C6.9594 14.2638 5.85701 15.0003 4.92842 15.9289C4.44812 16.4092 4.01919 16.936 3.64743 17.5006ZM4.99451 19.136C6.79873 20.9075 9.27178 22 12 22C14.7279 22 17.2007 20.9077 19.0048 19.1367C18.6425 18.4797 18.1889 17.8757 17.6563 17.3431C16.9135 16.6003 16.0316 16.011 15.061 15.609C14.0904 15.2069 13.0501 15 11.9995 15C10.9489 15 9.90863 15.2069 8.93802 15.609C7.96742 16.011 7.08551 16.6003 6.34264 17.3431C5.81024 17.8755 5.35674 18.4794 4.99451 19.136ZM12 6C10.3432 6 9.00002 7.34315 9.00002 9C9.00002 10.6569 10.3432 12 12 12C13.6569 12 15 10.6569 15 9C15 7.34315 13.6569 6 12 6Z" fill="currentColor"/>
+                </g>
+              </g>
+              <defs>
+                <clipPath id="clip0_personal_info_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+                <clipPath id="clip1_personal_info_idx">
+                  <rect width="24" height="24" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Personal Info</span>
+              <span class="account-nav-subtitle">Password, email, mobile & more</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_communications_idx)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M3 3C1.34315 3 0 4.34315 0 6V18C0 19.6569 1.34314 21 3 21H21C22.6569 21 24 19.6569 24 18V6C24 4.34315 22.6569 3 21 3H3ZM2 17.5858L7.91601 11.6698L2 6.34536V17.5858ZM9.40466 13.0096L3.41421 19H20.5858L14.5953 13.0096L13.3379 14.1412C12.5773 14.8258 11.4227 14.8258 10.6621 14.1412L9.40466 13.0096ZM22 6.34536V17.5858L16.084 11.6698L22 6.34536ZM3.49485 5L12 12.6546L20.5052 5H3.49485Z" fill="currentColor"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_communications_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Communications</span>
+              <span class="account-nav-subtitle">Email & mail preferences</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <g clip-path="url(#clip0_your_store_idx)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 5C9.79086 5 8 6.79086 8 9C8 11.2091 9.79086 13 12 13C14.2091 13 16 11.2091 16 9C16 6.79086 14.2091 5 12 5ZM10 9C10 7.89543 10.8954 7 12 7C13.1046 7 14 7.89543 14 9C14 10.1046 13.1046 11 12 11C10.8954 11 10 10.1046 10 9Z" fill="currentColor"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C7.02944 0 3 4.02944 3 9C3 10.9547 3.6243 12.7665 4.68422 14.2431L10.3583 22.3927C11.1541 23.5357 12.8452 23.5357 13.641 22.3928L19.3059 14.2569C20.3718 12.7778 21 10.9608 21 9C21 4.02944 16.9706 0 12 0ZM5 9C5 5.13401 8.13401 2 12 2C15.866 2 19 5.13401 19 9C19 10.5298 18.5104 11.9422 17.6793 13.0932L17.6693 13.1072L11.9997 21.2499L6.32134 13.0943L6.31253 13.0818C5.48634 11.9329 5 10.5247 5 9Z" fill="currentColor"/>
+              </g>
+              <defs>
+                <clipPath id="clip0_your_store_idx">
+                  <rect width="24" height="24" rx="5" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Your Store</span>
+              <span class="account-nav-subtitle">Nordstrom Michigan Avenue</span>
+            </div>
+          </a>
+
+          <div class="account-section-title">Profile</div>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z" fill="currentColor"/>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Your Brands</span>
+              <span class="account-nav-subtitle">Save the brands you shop</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z" fill="currentColor"/>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Your Sizes</span>
+              <span class="account-nav-subtitle">Set the sizes you shop</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item active">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M1.10793 11.4381C-0.104173 11.0086 -0.104174 9.29447 1.10793 8.86498L6.11561 7.09059L7.89 2.08291C8.31949 0.870801 10.0337 0.870803 10.4632 2.08291L12.2376 7.09059L17.2452 8.86498C18.4573 9.29447 18.4573 11.0086 17.2452 11.4381L12.2376 13.2125L10.4632 18.2202C10.0337 19.4323 8.31949 19.4323 7.89 18.2202L6.11561 13.2125L1.10793 11.4381ZM11.5696 11.3274C11.0011 11.5288 10.5538 11.976 10.3524 12.5446L9.17658 15.8629L8.00077 12.5446C7.79933 11.976 7.35209 11.5288 6.78359 11.3274L3.46521 10.1516L6.78359 8.97574C7.35209 8.7743 7.79933 8.32707 8.00077 7.75856L9.17658 4.44018L10.3524 7.75856C10.5538 8.32707 11.0011 8.7743 11.5696 8.97574L14.888 10.1516L11.5696 11.3274Z" fill="currentColor"/>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M19.9555 14.3029L20.8427 16.8068L23.3466 17.694C23.9526 17.9087 23.9526 18.7658 23.3466 18.9805L20.8427 19.8677L19.9555 22.3716C19.7408 22.9776 18.8837 22.9776 18.6689 22.3716L17.7817 19.8677L15.2779 18.9805C14.6719 18.7658 14.6719 17.9087 15.2779 17.694L17.7817 16.8068L18.6689 14.3029C18.8837 13.6969 19.7408 13.6969 19.9555 14.3029ZM20.5087 18.9252C20.2245 19.0259 20.0009 19.2495 19.9001 19.5338L19.3122 21.1929L18.7243 19.5338C18.6236 19.2495 18.4 19.0259 18.1157 18.9252L16.4565 18.3373L18.1157 17.7493C18.4 17.6486 18.6236 17.425 18.7243 17.1408L19.3122 15.4816L19.9001 17.1408C20.0009 17.425 20.2245 17.6486 20.5087 17.7493L22.1679 18.3373L20.5087 18.9252Z" fill="currentColor"/>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Your Style</span>
+              <span class="account-nav-subtitle">Take a quiz to find your style</span>
+            </div>
+          </a>
+
+          <div class="account-section-title">Styling & Services</div>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M7 2C6.44772 2 6 2.44772 6 3V4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4H18V3C18 2.44772 17.5523 2 17 2C16.4477 2 16 2.44772 16 3V4H8V3C8 2.44772 7.55228 2 7 2ZM6 8V6H5V8H6ZM8 8V6H16V8H8ZM18 8V6H19V8H18ZM19 10H5V20H19V10Z" fill="currentColor"/>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Your Appointments</span>
+              <span class="account-nav-subtitle">Book & manage</span>
+            </div>
+          </a>
+
+          <a href="#" class="account-nav-item">
+            <svg class="account-nav-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
+            </svg>
+            <div class="account-nav-content">
+              <span class="account-nav-title">Your Stylists</span>
+              <span class="account-nav-subtitle">Personalized looks</span>
+            </div>
+          </a>
+
+          <div class="account-help">
+            <div class="account-help-title">We're here to help, 24/7</div>
+            <a href="#" class="account-help-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" fill="currentColor"/>
+              </svg>
+              <span>Customer Service</span>
+            </a>
+          </div>
+        </aside>
+
+        <!-- Account Content -->
+        <main class="account-content">
+          <!-- Profile View -->
+          <div class="customer-content view-content active" id="profileView">
+            <!-- Data Page Link (Top Right) -->
+            <a href="#" class="data-page-link" onclick="switchView('data'); return false;" title="View Style Data">
+              <svg class="beaker-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.5 1.5H10.5M6.5 1.5V6L3.5 11.5C3.16667 12.1667 3.33333 13 4 13.5H12C12.6667 13 12.8333 12.1667 12.5 11.5L9.5 6V1.5M8 9.5L9.5 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Style Data</span>
+            </a>
+        <!-- Editorial Hero Section -->
+        <div class="editorial-hero">
+          <div class="editorial-hero-text">
+            <h1 class="hero-headline" id="heroHeadline">
+              <span class="hero-headline-display">Your style is</span>
+              <span class="hero-headline-emphasis">refined, intentional,</span>
+              <span class="hero-headline-display">and built on</span>
+              <span class="hero-headline-emphasis">timeless foundations.</span>
+            </h1>
+            <p class="hero-supporting-text" id="heroSupportingText">
+              You gravitate toward pieces that feel effortless yet considered,
+              with a clear point of view that balances simplicity and sophistication.
+            </p>
+
+            <div class="hero-stats-row">
+              <div class="hero-stat">
+                <div class="hero-stat-value">68%</div>
+                <div class="hero-stat-label">Classic</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-value">47</div>
+                <div class="hero-stat-label">Saved Outfits</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-value">3</div>
+                <div class="hero-stat-label">Style Pillars</div>
+              </div>
+            </div>
+          </div>
+          <div class="editorial-hero-image">
+            <div class="hero-image-cluster">
+              <div class="hero-image-card hero-image-large">
+                <img src="https://images.pexels.com/photos/8483769/pexels-photo-8483769.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Classic style">
+                <div class="hero-image-label">Classic</div>
+              </div>
+              <div class="hero-image-stack">
+                <div class="hero-image-card hero-image-small">
+                  <img src="https://images.pexels.com/photos/36888252/pexels-photo-36888252.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Romantic style">
+                  <div class="hero-image-label">Romantic</div>
+                </div>
+                <div class="hero-image-card hero-image-small">
+                  <img src="https://images.pexels.com/photos/15758653/pexels-photo-15758653.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Minimal style">
+                  <div class="hero-image-label">Minimal</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Style Profile Overview (Two Column Layout) -->
+        <div class="style-profile-section">
+          <div class="style-profile-header">
+            <h3 class="style-profile-header-title">Your Style Profile</h3>
+            <div class="style-profile-header-subtitle">Top style pillars and recommendations</div>
+          </div>
+
+          <div class="style-profile-overview">
+            <div class="style-profile-left">
+              <!-- Radar Chart -->
+              <div id="styleRadarChart"></div>
+            </div>
+            <div class="style-profile-right">
+              <!-- Top Pillars List -->
+              <div id="topPillarsList">
+                <!-- Populated by app.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar Cards -->
+        <section class="profile-section">
+          <div class="profile-container">
+            <h2 class="profile-section-title profile-serif">The pillars that define your style</h2>
+
+            <div class="pillar-grid">
+              <!-- Classic Card -->
+              <div class="pillar-card">
+                <img src="https://images.unsplash.com/photo-1526632503813-6f479409d7bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MzIyNTd8MHwxfHNlYXJjaHwyfHxzb3BoaXN0aWNhdGVkJTIwbWVuJTIwc3R5bGV8ZW58MHwxfHx8MTc3Njg2NzU4NXww&ixlib=rb-4.1.0&q=80&w=1080"
+                     alt="Classic style"
+                     class="pillar-card-image">
+                <div class="pillar-card-content">
+                  <div class="pillar-card-header">
+                    <div class="pillar-card-name">● Classic</div>
+                    <div class="pillar-card-percentage">68%</div>
+                  </div>
+                  <p class="pillar-card-description">
+                    Timeless, polished pieces that transcend seasons
+                  </p>
+                  <div class="pillar-card-tags">
+                    <span class="pillar-tag">Tailored</span>
+                    <span class="pillar-tag">Sophisticated</span>
+                    <span class="pillar-tag">Timeless</span>
+                  </div>
+                  <div class="pillar-card-strength">
+                    <div class="pillar-card-strength-fill" style="width: 68%"></div>
+                  </div>
+                  <div class="pillar-card-actions">
+                    <a href="#" class="profile-btn profile-btn-primary">Shop Classic</a>
+                    <a href="#" class="profile-btn profile-btn-secondary">See Outfits</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Romantic Card -->
+              <div class="pillar-card">
+                <img src="https://images.unsplash.com/photo-1631217314772-ef77ccb186f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MzIyNTd8MHwxfHNlYXJjaHwxfHxmZW1pbmluZSUyMGRyZXNzJTIwZmFzaGlvbnxlbnwwfDF8fHwxNzc2ODY3NTYwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+                     alt="Romantic style"
+                     class="pillar-card-image">
+                <div class="pillar-card-content">
+                  <div class="pillar-card-header">
+                    <div class="pillar-card-name">● Romantic</div>
+                    <div class="pillar-card-percentage">22%</div>
+                  </div>
+                  <p class="pillar-card-description">
+                    Soft, feminine details with flowing silhouettes
+                  </p>
+                  <div class="pillar-card-tags">
+                    <span class="pillar-tag">Delicate</span>
+                    <span class="pillar-tag">Feminine</span>
+                  </div>
+                  <div class="pillar-card-strength">
+                    <div class="pillar-card-strength-fill" style="width: 22%"></div>
+                  </div>
+                  <div class="pillar-card-actions">
+                    <a href="#" class="profile-btn profile-btn-primary">Shop Romantic</a>
+                    <a href="#" class="profile-btn profile-btn-secondary">See Outfits</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Minimal Card -->
+              <div class="pillar-card">
+                <img src="https://images.unsplash.com/photo-1638781125056-cc4c5d641ff6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MzIyNTd8MHwxfHNlYXJjaHwyfHxzbGVlayUyMG1vZGVybiUyMHdvbWVuJTIwc3R5bGV8ZW58MHwxfHx8MTc3Njg2NzU4OHww&ixlib=rb-4.1.0&q=80&w=1080"
+                     alt="Minimal style"
+                     class="pillar-card-image">
+                <div class="pillar-card-content">
+                  <div class="pillar-card-header">
+                    <div class="pillar-card-name">● Minimal</div>
+                    <div class="pillar-card-percentage">10%</div>
+                  </div>
+                  <p class="pillar-card-description">
+                    Clean lines and understated elegance
+                  </p>
+                  <div class="pillar-card-tags">
+                    <span class="pillar-tag">Understated</span>
+                  </div>
+                  <div class="pillar-card-strength">
+                    <div class="pillar-card-strength-fill" style="width: 10%"></div>
+                  </div>
+                  <div class="pillar-card-actions">
+                    <a href="#" class="profile-btn profile-btn-primary">Shop Minimal</a>
+                    <a href="#" class="profile-btn profile-btn-secondary">See Outfits</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Style Patterns -->
+        <section class="profile-section">
+          <div class="profile-container">
+            <h2 class="profile-section-title profile-serif">Style patterns we've noticed</h2>
+
+            <div class="insights-grid">
+              <div class="insight-card">
+                <span class="insight-icon">👔</span>
+                <h3 class="insight-title">Smart Casual</h3>
+                <p class="insight-description">
+                  Most of your saved outfits are polished but relaxed
+                </p>
+                <div class="insight-data">73% of favorites</div>
+              </div>
+
+              <div class="insight-card">
+                <span class="insight-icon">🎨</span>
+                <h3 class="insight-title">Neutral with Pops</h3>
+                <p class="insight-description">
+                  You prefer neutral bases with colorful accents
+                </p>
+                <div class="insight-colors">
+                  <div class="color-swatch" style="background: #1a1a2e"></div>
+                  <div class="color-swatch" style="background: #000000"></div>
+                  <div class="color-swatch" style="background: #C8B89C"></div>
+                  <div class="color-swatch" style="background: #6B7280"></div>
+                </div>
+              </div>
+
+              <div class="insight-card">
+                <span class="insight-icon">📐</span>
+                <h3 class="insight-title">Tailored & Structured</h3>
+                <p class="insight-description">
+                  You consistently choose fitted, defined shapes
+                </p>
+                <div class="insight-data">Top fit: Tailored</div>
+              </div>
+
+              <div class="insight-card">
+                <span class="insight-icon">💼</span>
+                <h3 class="insight-title">Workwear Focused</h3>
+                <p class="insight-description">
+                  You shop most for professional occasions
+                </p>
+                <div class="insight-data">18 blazers saved</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cross Links -->
+        <section class="profile-section">
+          <div class="profile-container">
+            <h2 class="profile-section-title profile-serif">More ways to explore your style</h2>
+
+            <div class="cross-links">
+              <a href="#" class="cross-link-card">
+                <span class="cross-link-icon">💾</span>
+                <div class="cross-link-title">Saved Outfits</div>
+                <div class="cross-link-count">47 outfits</div>
+              </a>
+
+              <a href="#" class="cross-link-card">
+                <span class="cross-link-icon">❤️</span>
+                <div class="cross-link-title">Favorites</div>
+                <div class="cross-link-count">89 items</div>
+              </a>
+
+              <a href="#" class="cross-link-card">
+                <span class="cross-link-icon">🎨</span>
+                <div class="cross-link-title">Style Quiz</div>
+                <div class="cross-link-count">Taken 2x</div>
+              </a>
+
+              <a href="#" class="cross-link-card">
+                <span class="cross-link-icon">📦</span>
+                <div class="cross-link-title">Recent Orders</div>
+                <div class="cross-link-count">12 items</div>
+              </a>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /profileView -->
+
+      <!-- Data View (Advanced) -->
+      <div class="customer-content view-content" id="dataView" style="display: none;">
+        <div class="content-wrapper-advanced">
+          <!-- Back Link -->
+          <a href="#" class="back-link" onclick="switchView('profile'); return false;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back to Profile
+          </a>
+
+          <!-- Page Header -->
+          <div class="page-header-advanced">
+            <h1 class="page-title-advanced profile-serif">How we understand your style</h1>
+            <p class="page-subtitle-advanced">
+              Detailed breakdown of your style profile data and the signals we use to personalize your experience
+            </p>
+            <p class="page-intro-advanced">
+              Your Style Profile is built from multiple data sources: your Style Quiz responses,
+              shopping behavior, saved outfits, favorited items, and interactions with our platform.
+              This page shows you exactly what we're seeing and how confident we are in each insight.
+              <br><br>
+              All data is private and used only to improve your Nordstrom experience.
+              You can adjust your privacy settings at any time.
+            </p>
+          </div>
+
+          <!-- ========================================
+               SECTION 1: PROFILE METRICS & SCORES
+               ======================================== -->
+          <div class="data-section-group">
+            <h2 class="data-section-group-title">Profile Metrics & Scores</h2>
+
+            <!-- Pillar Distribution -->
+            <section class="profile-section">
+              <div class="profile-container">
+                <h3 class="profile-section-subtitle profile-serif">Your style pillar distribution</h3>
+
+                <div class="pillar-list-advanced">
+                  <div class="pillar-item-advanced">
+                    <div class="pillar-item-header-advanced">
+                      <div class="pillar-item-name-advanced">Classic</div>
+                      <div class="pillar-item-percentage-advanced">68%</div>
+                    </div>
+                    <div class="pillar-item-bar-advanced">
+                      <div class="pillar-item-bar-fill-advanced" style="width: 68%"></div>
+                    </div>
+                    <div class="pillar-item-tags-advanced">
+                      <span class="pillar-tag">Tailored</span>
+                      <span class="pillar-tag">Sophisticated</span>
+                      <span class="pillar-tag">Timeless</span>
+                    </div>
+                    <a href="#" class="pillar-item-link-advanced">See Details →</a>
+                  </div>
+
+                  <div class="pillar-item-advanced">
+                    <div class="pillar-item-header-advanced">
+                      <div class="pillar-item-name-advanced">Romantic</div>
+                      <div class="pillar-item-percentage-advanced">22%</div>
+                    </div>
+                    <div class="pillar-item-bar-advanced">
+                      <div class="pillar-item-bar-fill-advanced" style="width: 22%"></div>
+                    </div>
+                    <div class="pillar-item-tags-advanced">
+                      <span class="pillar-tag">Delicate</span>
+                      <span class="pillar-tag">Feminine</span>
+                    </div>
+                    <a href="#" class="pillar-item-link-advanced">See Details →</a>
+                  </div>
+
+                  <div class="pillar-item-advanced">
+                    <div class="pillar-item-header-advanced">
+                      <div class="pillar-item-name-advanced">Minimal</div>
+                      <div class="pillar-item-percentage-advanced">10%</div>
+                    </div>
+                    <div class="pillar-item-bar-advanced">
+                      <div class="pillar-item-bar-fill-advanced" style="width: 10%"></div>
+                    </div>
+                    <div class="pillar-item-tags-advanced">
+                      <span class="pillar-tag">Understated</span>
+                    </div>
+                    <a href="#" class="pillar-item-link-advanced">See Details →</a>
+                  </div>
+
+                  <p class="pillar-note-advanced">
+                    Other pillars analyzed but below 10% threshold
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Profile Panel -->
+            <section class="profile-section">
+              <div class="profile-container">
+                <div id="profilePanel">
+                  <!-- Populated by profile-panel.js -->
+                </div>
+              </div>
+            </section>
+
+            <!-- Brain Panel -->
+            <section class="profile-section">
+              <div class="profile-container">
+                <div id="brainPanel">
+                  <!-- Populated by brain-panel.js -->
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ========================================
+               SECTION 2: VISUAL ANALYSIS & PATTERNS
+               ======================================== -->
+          <div class="data-section-group">
+            <h2 class="data-section-group-title">Visual Analysis & Patterns</h2>
+
+            <!-- Style Brain Visualizations -->
+            <section class="profile-section">
+              <div class="profile-container">
+                <div class="viz-container">
+                  <section class="viz-section">
+                    <h3 class="viz-title">color preference map</h3>
+                    <div id="viz-color-wheel" style="width:100%;max-width:480px;margin:0 auto;"></div>
+                  </section>
+
+                  <section class="viz-section">
+                    <h3 class="viz-title">color dna</h3>
+                    <div id="viz-color-dna"></div>
+                  </section>
+
+                  <section class="viz-section">
+                    <h3 class="viz-title">outfit harmony</h3>
+                    <div id="viz-outfit-chord" style="width:100%;max-width:420px;margin:0 auto;"></div>
+                  </section>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ========================================
+               SECTION 3: DATA SOURCES & SIGNALS
+               ======================================== -->
+          <div class="data-section-group">
+            <h2 class="data-section-group-title">Data Sources & Signals</h2>
+
+            <section class="profile-section">
+              <div class="profile-container">
+                <h3 class="profile-section-subtitle profile-serif">What signals inform your profile</h3>
+
+                <div class="data-sources-table-advanced">
+                <div class="data-source-row-advanced data-source-header-advanced">
+                  <div>Data Source</div>
+                  <div>Weight</div>
+                  <div>Last Updated</div>
+                </div>
+                <div class="data-source-row-advanced">
+                  <div>Style Quiz Responses</div>
+                  <div>35%</div>
+                  <div>January 15, 2024</div>
+                </div>
+                <div class="data-source-row-advanced">
+                  <div>Saved Outfits</div>
+                  <div>25%</div>
+                  <div>Updated daily</div>
+                </div>
+                <div class="data-source-row-advanced">
+                  <div>Purchase History</div>
+                  <div>20%</div>
+                  <div>Last purchase: Apr 20</div>
+                </div>
+                <div class="data-source-row-advanced">
+                  <div>Favorited Items</div>
+                  <div>15%</div>
+                  <div>Updated real-time</div>
+                </div>
+                <div class="data-source-row-advanced">
+                  <div>Browse & Engagement</div>
+                  <div>5%</div>
+                  <div>Updated real-time</div>
+                </div>
+              </div>
+
+              <!-- Accordion for detailed evidence -->
+              <div class="accordion-advanced">
+                <div class="accordion-item-advanced">
+                  <div class="accordion-header-advanced" onclick="toggleAccordionAdvanced(this)">
+                    <div class="accordion-title-advanced">Style Quiz (35% weight)</div>
+                    <div class="accordion-icon-advanced">▼</div>
+                  </div>
+                  <div class="accordion-content-advanced">
+                    <div class="accordion-body-advanced">
+                      <p style="margin-bottom: 16px;">
+                        <strong>Taken:</strong> January 15, 2024<br>
+                        Responses that influence your profile:
+                      </p>
+
+                      <div class="quiz-qa-advanced">
+                        <div class="quiz-q-advanced">Q: How would you describe your ideal outfit?</div>
+                        <div class="quiz-a-advanced">A: "Polished and put-together" → Classic +30pts</div>
+                      </div>
+
+                      <div class="quiz-qa-advanced">
+                        <div class="quiz-q-advanced">Q: What's most important in your wardrobe?</div>
+                        <div class="quiz-a-advanced">A: "Timeless pieces that last" → Classic +25pts</div>
+                      </div>
+
+                      <div class="quiz-qa-advanced">
+                        <div class="quiz-q-advanced">Q: How do you feel about patterns?</div>
+                        <div class="quiz-a-advanced">A: "I prefer subtle patterns or solids" → Classic +15pts, Minimal +10pts</div>
+                      </div>
+
+                      <p style="margin-top: 16px;">
+                        <a href="#" style="color: var(--nordstrom-black); font-weight: 600;">Retake Style Quiz →</a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item-advanced">
+                  <div class="accordion-header-advanced" onclick="toggleAccordionAdvanced(this)">
+                    <div class="accordion-title-advanced">Saved Outfits (25% weight)</div>
+                    <div class="accordion-icon-advanced">▼</div>
+                  </div>
+                  <div class="accordion-content-advanced">
+                    <div class="accordion-body-advanced">
+                      <p>
+                        <strong>47 outfits saved</strong><br>
+                        Last saved: April 18, 2026
+                      </p>
+                      <p style="margin-top: 16px;">
+                        Pillar distribution of saved outfits:<br>
+                        - Classic: 32 outfits (68%)<br>
+                        - Romantic: 11 outfits (23%)<br>
+                        - Minimal: 4 outfits (9%)
+                      </p>
+                      <p style="margin-top: 16px;">
+                        <a href="#" style="color: var(--nordstrom-black); font-weight: 600;">View All Saved Outfits →</a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item-advanced">
+                  <div class="accordion-header-advanced" onclick="toggleAccordionAdvanced(this)">
+                    <div class="accordion-title-advanced">Purchase History (20% weight)</div>
+                    <div class="accordion-icon-advanced">▼</div>
+                  </div>
+                  <div class="accordion-content-advanced">
+                    <div class="accordion-body-advanced">
+                      <p>
+                        <strong>23 items purchased</strong> (last 12 months)<br>
+                        Last purchase: April 20, 2026
+                      </p>
+                      <p style="margin-top: 16px;">
+                        Category breakdown:<br>
+                        - Blazers & Jackets: 6 items → Classic +strong<br>
+                        - Dresses: 5 items → 3 Classic, 2 Romantic<br>
+                        - Tops & Blouses: 7 items → Mixed Classic/Romantic<br>
+                        - Bottoms: 5 items → Classic tailored
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ========================================
+               SECTION 4: PRIVACY & CONTROLS
+               ======================================== -->
+          <div class="data-section-group">
+            <h2 class="data-section-group-title">Privacy & Controls</h2>
+
+            <section class="profile-section">
+              <div class="profile-container">
+                <h3 class="profile-section-subtitle profile-serif">Your data & privacy controls</h3>
+
+              <div class="privacy-section-advanced">
+                <div class="privacy-intro-advanced">
+                  Your Style Profile uses data from your Nordstrom account to personalize
+                  your shopping experience. We use this data to:
+
+                  <ul class="privacy-list-advanced">
+                    <li>Recommend products that match your aesthetic</li>
+                    <li>Curate collections tailored to your style</li>
+                    <li>Provide relevant styling advice and content</li>
+                    <li>Improve product discovery and search results</li>
+                  </ul>
+
+                  We DO NOT:<br>
+                  - Share your style data with third parties<br>
+                  - Use your data for advertising outside Nordstrom<br>
+                  - Sell or monetize your personal information
+                </div>
+
+                <div class="checkboxes-advanced">
+                  <div class="checkbox-item-advanced">
+                    <input type="checkbox" id="use-purchases" checked>
+                    <label for="use-purchases">Allow Style Profile to use my purchase history</label>
+                  </div>
+                  <div class="checkbox-item-advanced">
+                    <input type="checkbox" id="use-outfits" checked>
+                    <label for="use-outfits">Allow Style Profile to use my saved outfits</label>
+                  </div>
+                  <div class="checkbox-item-advanced">
+                    <input type="checkbox" id="use-favorites" checked>
+                    <label for="use-favorites">Allow Style Profile to use my favorites/wishlist</label>
+                  </div>
+                  <div class="checkbox-item-advanced">
+                    <input type="checkbox" id="use-browsing" checked>
+                    <label for="use-browsing">Allow Style Profile to use my browsing behavior</label>
+                  </div>
+                  <div class="checkbox-item-advanced">
+                    <input type="checkbox" id="show-recommendations" checked>
+                    <label for="show-recommendations">Show personalized recommendations based on my profile</label>
+                  </div>
+                </div>
+
+                <button class="profile-btn profile-btn-primary">Save Preferences</button>
+
+                <div class="privacy-actions-advanced">
+                  <div class="privacy-action-group-advanced">
+                    <div class="privacy-action-title-advanced">Reset Your Style Profile</div>
+                    <div class="privacy-action-description-advanced">
+                      If you'd like to start fresh, you can reset your Style Profile. This will clear
+                      all learned preferences and you'll need to retake the Style Quiz.
+                    </div>
+                    <button class="profile-btn profile-btn-secondary">Reset Profile</button>
+                  </div>
+
+                  <div class="privacy-action-group-advanced">
+                    <div class="privacy-action-title-advanced">Download Your Data</div>
+                    <div class="privacy-action-description-advanced">
+                      You can download a complete export of your Style Profile data at any time.
+                    </div>
+                    <button class="profile-btn profile-btn-secondary">Download My Style Data</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </div>
+        <div style="height: 100px;"></div>
+      </div><!-- /dataView -->
+
+      <!-- Refined Brand Design -->
+      <div class="customer-content" id="currentDesign" style="display: none;">
+        <!-- This is the old currentDesign content, now hidden -->
+      </div>
+
+      <div class="customer-content" id="refinedDesign" style="display: none;">
+        <!-- Hero Section with Editorial Typography -->
+        <section class="refined-hero">
+          <div class="refined-hero-text">
+            <h1 class="refined-display-script">Your Style</h1>
+            <div class="refined-customer-name" id="identityNameRefined">Sarah K.</div>
+            <div class="refined-style-label" id="identityLabelRefined">Minimal / Classic</div>
+          </div>
+          <div class="refined-hero-visual">
+            <div class="refined-texture-overlay"></div>
+          </div>
+        </section>
+
+        <!-- Style Space Map Section -->
+        <section class="refined-section refined-map-section">
+          <div class="refined-section-label">Style Journey</div>
+          <div id="styleSpaceMapContainerRefined" class="refined-map-container"></div>
+        </section>
+
+        <!-- Profile Insights Grid -->
+        <section class="refined-section">
+          <div class="refined-section-label">Profile Insights</div>
+          <div class="refined-insights-grid">
+            <div class="refined-insight-card">
+              <div class="refined-insight-metric" id="refinedSessionCount">0</div>
+              <div class="refined-insight-label">Sessions</div>
+            </div>
+            <div class="refined-insight-card">
+              <div class="refined-insight-metric" id="refinedConfidence">—</div>
+              <div class="refined-insight-label">Confidence</div>
+            </div>
+            <div class="refined-insight-card">
+              <div class="refined-insight-metric" id="refinedTopPillar">—</div>
+              <div class="refined-insight-label">Primary Style</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Color Preferences Section -->
+        <section class="refined-section refined-color-section">
+          <div class="refined-section-header">
+            <h2 class="refined-section-title">Color Story</h2>
+            <p class="refined-section-subtitle">The palette that defines your aesthetic</p>
+          </div>
+          <div class="refined-viz-wrapper">
+            <div id="viz-color-wheel-refined" class="refined-viz"></div>
+          </div>
+        </section>
+
+        <!-- Style Territory Section -->
+        <section class="refined-section refined-territory-section">
+          <div class="refined-section-header">
+            <h2 class="refined-section-title">Style Territory</h2>
+            <p class="refined-section-subtitle">Where you naturally gravitate in the style landscape</p>
+          </div>
+          <div class="refined-viz-wrapper">
+            <div id="viz-pillar-heatmap-refined" class="refined-viz"></div>
+          </div>
+        </section>
+
+        <!-- Outfit Harmony Section -->
+        <section class="refined-section">
+          <div class="refined-section-header">
+            <h2 class="refined-section-title">Outfit Harmony</h2>
+            <p class="refined-section-subtitle">How different styles blend in your wardrobe</p>
+          </div>
+          <div class="refined-viz-wrapper">
+            <div id="viz-outfit-chord-refined" class="refined-viz"></div>
+          </div>
+        </section>
+
+        <!-- Profile Panel Data -->
+        <section class="refined-section">
+          <div id="profilePanelRefined" class="refined-profile-data"></div>
+        </section>
+
+        <!-- Footer -->
+        <section class="refined-footer">
+          <div class="refined-footer-content">
+            <div class="refined-ornament">✦ ✦ ✦</div>
+            <p class="refined-footer-text">Your style journey continues to evolve with every interaction</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Editorial Design -->
+      <div class="customer-content" id="editorialDesign" style="display: none;">
+        <div class="style-identity-header">
+          <h1 class="identity-heading">
+            <span class="identity-name" id="identityNameEditorial">Sarah K.</span>
+            <span class="identity-divider">|</span>
+            <span class="identity-label" id="identityLabelEditorial">Minimal / Classic</span>
+          </h1>
+        </div>
+        <div class="design-placeholder">
+          <h2>Editorial Design</h2>
+          <p>Cooler architectural palette (dusty slate blue, muted sage green, deep plum)</p>
+          <p>Magazine layout with breathing room</p>
+          <p>Tight portrait crops, direct gazes, aspirational mood</p>
+        </div>
+      </div>
+
+      <!-- Minimal Design -->
+      <div class="customer-content" id="minimalDesign" style="display: none;">
+        <div class="style-identity-header">
+          <h1 class="identity-heading">
+            <span class="identity-name" id="identityNameMinimal">Sarah K.</span>
+            <span class="identity-divider">|</span>
+            <span class="identity-label" id="identityLabelMinimal">Minimal / Classic</span>
+          </h1>
+        </div>
+        <div class="design-placeholder">
+          <h2>Minimal Design</h2>
+          <p>One large photographic element anchored against open negative space</p>
+          <p>Sparse content with wide leading</p>
+          <p>Luxury through restraint</p>
+        </div>
+      </div>
+
+        </main><!-- /account-content -->
+      </div><!-- /account-layout -->
+    </main><!-- /customer-view -->
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="vector-space.js"></script>
+  <script src="brain-panel.js"></script>
+  <script src="profile-panel.js"></script>
+  <script src="visualizations.js"></script>
+  <script src="hud-card.js"></script>
+  <script src="style-space-map.js"></script>
+  <script src="style-radar-chart.js"></script>
+  <script src="persona-modal.js"></script>
+  <script src="change-summary-bar.js"></script>
+  <script src="app.js"></script>
+  <script src="iframe-adapter.js"></script>
+
+  <script>
+    // Section Labeling System (Toggle with Shift+L) - DISABLED
+    /*
+    let labelsVisible = false;
+
+    function toggleSectionLabels() {
+      labelsVisible = !labelsVisible;
+
+      if (labelsVisible) {
+        // Profile View sections
+        addLabelBySelector('#profileView .editorial-hero', 'Editorial Hero');
+        addLabelBySelector('#profileView .style-profile-section', 'Style Profile Overview');
+        addLabelBySelector('#profileView #styleRadarChart', 'Style Radar Chart');
+        addLabelBySelector('#profileView #topPillarsList', 'Top Pillars List');
+
+        // Profile sections (Pillar Cards, Style Patterns, etc.)
+        document.querySelectorAll('#profileView .profile-section').forEach((section, index) => {
+          const title = section.querySelector('.profile-section-title');
+          if (title) {
+            const id = `profile-section-${index}`;
+            section.setAttribute('data-section-id', id);
+            addLabel(id, title.textContent.trim(), section);
+          }
+        });
+
+        // Data View sections
+        addLabelBySelector('.page-header-advanced', 'Data View Header');
+        addLabelBySelector('#dataView #profilePanel', 'Profile Panel');
+        addLabelBySelector('#dataView #brainPanel', 'Brain Panel');
+
+        document.querySelectorAll('#dataView .viz-section').forEach((section, index) => {
+          const title = section.querySelector('.viz-title');
+          if (title) {
+            addLabel(`data-viz-${index}`, title.textContent.trim(), section);
+          }
+        });
+
+        document.querySelectorAll('#dataView .profile-section').forEach((section, index) => {
+          const title = section.querySelector('.profile-section-title');
+          if (title) {
+            const id = `data-section-${index}`;
+            section.setAttribute('data-section-id', id);
+            addLabel(id, title.textContent.trim(), section);
+          }
+        });
+
+        // Footer CTA
+        addLabelBySelector('.footer-cta', 'Footer CTA (Dive Deeper)');
+
+        // Log all section names to console for easy copying
+        const allSections = [];
+        document.querySelectorAll('.section-label-overlay').forEach(label => {
+          allSections.push(label.textContent);
+        });
+        console.log('📋 All Section Names (copy from here):');
+        console.log(allSections.join('\n'));
+
+        // Show notification
+        showNotification('Section labels ON (Shift+L to toggle)');
+      } else {
+        // Remove all labels
+        document.querySelectorAll('.section-label-overlay').forEach(label => label.remove());
+        showNotification('Section labels OFF');
+      }
+    }
+
+    function addLabelBySelector(selector, labelText) {
+      const element = document.querySelector(selector);
+      if (element) {
+        addLabel(selector, labelText, element);
+      }
+    }
+
+    function addLabel(elementId, labelText, element = null) {
+      const target = element || document.getElementById(elementId);
+      if (!target) return;
+
+      const label = document.createElement('div');
+      label.className = 'section-label-overlay';
+      label.textContent = labelText;
+      label.setAttribute('data-label-for', elementId || 'unknown');
+      label.style.cursor = 'pointer';
+      label.style.pointerEvents = 'all';
+
+      // Click to copy
+      label.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navigator.clipboard.writeText(labelText).then(() => {
+          showNotification(`Copied: "${labelText}"`);
+        });
+      });
+
+      // Position relative to target
+      target.style.position = 'relative';
+      target.appendChild(label);
+    }
+
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'label-notification';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 10);
+
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    }
+
+    // Keyboard shortcut: Shift+L
+    document.addEventListener('keydown', function(e) {
+      if (e.shiftKey && e.key === 'L') {
+        e.preventDefault();
+        toggleSectionLabels();
+      }
+    });
+    */
+
+    // View switching functionality
+    function switchView(viewName) {
+      // Hide all views
+      document.querySelectorAll('.view-content').forEach(view => {
+        view.style.display = 'none';
+        view.classList.remove('active');
+      });
+
+      // Remove active class from all tabs
+      document.querySelectorAll('.filing-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      // Show selected view
+      const targetView = viewName === 'profile' ? 'profileView' : 'dataView';
+      const viewElement = document.getElementById(targetView);
+      if (viewElement) {
+        viewElement.style.display = 'block';
+        viewElement.classList.add('active');
+      }
+
+      // Add active class to clicked tab
+      const activeTab = document.querySelector(`.filing-tab[data-view="${viewName}"]`);
+      if (activeTab) {
+        activeTab.classList.add('active');
+      }
+
+      // Scroll to top
+      const accountContent = document.querySelector('.account-content');
+      if (accountContent) {
+        accountContent.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Quick function for the "Dive Deeper" button
+    function switchToDataView() {
+      switchView('data');
+    }
+
+    // Tab click handlers
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.filing-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          const viewName = this.getAttribute('data-view');
+          switchView(viewName);
+        });
+      });
+    });
+
+    // Accordion toggle for advanced view
+    function toggleAccordionAdvanced(header) {
+      const item = header.parentElement;
+      const wasOpen = item.classList.contains('open');
+
+      // Close all items
+      document.querySelectorAll('.accordion-item-advanced').forEach(i => {
+        i.classList.remove('open');
+      });
+
+      // Open clicked item if it wasn't open
+      if (!wasOpen) {
+        item.classList.add('open');
+      }
+    }
+
+    // Animate bars on view switch
+    document.addEventListener('DOMContentLoaded', function() {
+      // Observe when dataView becomes visible
+      const dataView = document.getElementById('dataView');
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+            if (dataView.style.display === 'block') {
+              setTimeout(() => {
+                document.querySelectorAll('.pillar-item-bar-fill-advanced').forEach(fill => {
+                  const targetWidth = fill.style.width;
+                  fill.style.width = '0%';
+                  setTimeout(() => {
+                    fill.style.width = targetWidth;
+                  }, 100);
+                });
+              }, 100);
+            }
+          }
+        });
+      });
+
+      if (dataView) {
+        observer.observe(dataView, { attributes: true });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
+'use client';
+
 import { Inter } from "next/font/google";
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from '@/lib/theme';
 import AppNav from '@/components/admin/AppNav';
+import { usePathname } from 'next/navigation';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -11,25 +13,23 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-export const metadata: Metadata = {
-  title: "Recipe Builder - Nordstrom Edit Engine",
-  description: "Internal tool for creating and managing content recipes",
-};
-
-export default function RootLayout({
+export default function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isAdminDashboard = pathname === '/admin';
+  const isLifestyleImages = pathname === '/admin/lifestyle-images';
+  const isSwipeStacks = pathname === '/admin/swipe-stacks';
+
   return (
-    <html lang="en">
-      <body className={inter.variable}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <AppNav />
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <div className={inter.variable}>
+        {!isAdminDashboard && !isLifestyleImages && !isSwipeStacks && <AppNav />}
+        {children}
+      </div>
+    </ThemeProvider>
   );
 }

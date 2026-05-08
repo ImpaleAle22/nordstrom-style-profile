@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Image Selector</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #FAF9F5;
+      color: #0C0C0C;
+    }
+
+    .header {
+      background: white;
+      border-bottom: 1px solid #EDECEB;
+      padding: 32px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #8E8A82;
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .main-action {
+      background: linear-gradient(135deg, #0C0C0C 0%, #2c2c2c 100%);
+      padding: 32px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      text-align: center;
+      border: 1px solid #EDECEB;
+    }
+
+    .main-action h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .main-action p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .btn-hero {
+      padding: 16px 40px;
+      background: white;
+      color: #0C0C0C;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-hero:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-hero:disabled {
+      background: #EDECEB;
+      color: #8E8A82;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .progress-section {
+      background: #EDECEB;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      display: none;
+    }
+
+    .progress-section.active {
+      display: block;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: #0C0C0C;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #FAF9F5;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0C0C0C, #2c2c2c);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-detail {
+      font-size: 12px;
+      color: #8E8A82;
+      margin-top: 8px;
+    }
+
+    .manual-search {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid #EDECEB;
+    }
+
+    .manual-search h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #8E8A82;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .form-group {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #8E8A82;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #EDECEB;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #0C0C0C;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #0C0C0C;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2c2c2c;
+    }
+
+    .btn-primary:disabled {
+      background: #EDECEB;
+      color: #8E8A82;
+      cursor: not-allowed;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #0C0C0C;
+      border: 2px solid #EDECEB;
+    }
+
+    .btn-secondary:hover {
+      border-color: #B4B1A9;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: #FAF9F5;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border: 1px solid #EDECEB;
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #8E8A82;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #0C0C0C;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    #status {
+      margin-left: 12px;
+      font-size: 14px;
+      color: #8E8A82;
+      font-weight: 600;
+      align-self: center;
+    }
+
+    .content {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .image-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      border: 3px solid transparent;
+      cursor: pointer;
+    }
+
+    .image-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-card.selected {
+      border-color: #10b981;
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: #EDECEB;
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .select-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      transition: all 0.2s;
+      backdrop-filter: blur(8px);
+    }
+
+    .image-card.selected .select-badge {
+      background: #10b981;
+      color: white;
+    }
+
+    .source-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(8px);
+    }
+
+    .image-info {
+      padding: 12px;
+    }
+
+    .image-alt {
+      font-size: 12px;
+      color: #8E8A82;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .photographer {
+      font-size: 10px;
+      color: #B4B1A9;
+    }
+
+    .photographer a {
+      color: #0C0C0C;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .photographer a:hover {
+      text-decoration: underline;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 40px;
+      color: #8E8A82;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 80px;
+      color: #8E8A82;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid #EDECEB;
+      border-top: 3px solid #0C0C0C;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 32px;
+    }
+
+    .page-btn {
+      padding: 10px 18px;
+      border: 2px solid #EDECEB;
+      background: white;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #0C0C0C;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: #0C0C0C;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Stock Image Selector</h1>
+    <p class="subtitle">
+      Automatically find high-quality fashion editorial images with clean backgrounds
+    </p>
+
+    <div class="main-action">
+      <h2>🎯 Find Images For Me</h2>
+      <p>Automatically search across Pexels and Unsplash for professional fashion photography<br>covering all 9 style pillars with clean, simple backgrounds</p>
+      <button class="btn-hero" onclick="autoSearch()" id="autoSearchBtn">Find Images Automatically</button>
+    </div>
+
+    <div class="progress-section" id="progressSection">
+      <div class="progress-text" id="progressText">Searching...</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-detail" id="progressDetail">Preparing search queries...</div>
+    </div>
+
+    <div class="manual-search">
+      <h3>Or Search Manually</h3>
+      <div class="search-row">
+        <div class="form-group" style="flex: 2;">
+          <label for="searchQuery">Search Query</label>
+          <input type="text" id="searchQuery" placeholder="e.g., minimal women fashion studio">
+        </div>
+        <div class="form-group">
+          <label for="apiSource">API Source</label>
+          <select id="apiSource">
+            <option value="both">Both APIs</option>
+            <option value="pexels">Pexels Only</option>
+            <option value="unsplash">Unsplash Only</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="manualSearch()" id="searchBtn" style="align-self: end;">Search</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Results</div>
+        <div class="stat-value" id="resultsCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Selected</div>
+        <div class="stat-value" id="selectedCount">0</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-success" onclick="exportSelected()" id="exportBtn" disabled>Export Selected JSON</button>
+      <button class="btn btn-secondary" onclick="clearSelection()">Clear Selection</button>
+      <button class="btn btn-secondary" onclick="clearResults()">Clear Results</button>
+      <span id="status"></span>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="resultsContainer">
+      <div class="empty-state">Click "Find Images For Me" to automatically search for fashion editorial images</div>
+    </div>
+    <div id="pagination"></div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let currentResults = [];
+    let selectedImages = new Set();
+    let currentPage = 1;
+    const IMAGES_PER_PAGE = 48;
+
+    // Curated search queries for each pillar
+    const PILLAR_QUERIES = {
+      romantic: {
+        womenswear: [
+          'romantic dress fashion studio white background',
+          'feminine elegant dress portrait clean background',
+          'delicate floral dress model simple background'
+        ],
+        menswear: [
+          'elegant men fashion portrait white background',
+          'sophisticated menswear studio clean background'
+        ]
+      },
+      bohemian: {
+        womenswear: [
+          'bohemian women fashion clean background',
+          'boho dress model white background studio',
+          'earthy natural women style simple background'
+        ],
+        menswear: [
+          'bohemian men fashion clean background',
+          'casual men linen outfit white background'
+        ]
+      },
+      minimal: {
+        womenswear: [
+          'minimal fashion women white background studio',
+          'monochrome women outfit clean background',
+          'modern minimal dress portrait simple background'
+        ],
+        menswear: [
+          'minimal men fashion white background studio',
+          'monochrome menswear clean background portrait'
+        ]
+      },
+      classic: {
+        womenswear: [
+          'classic elegant women fashion white background',
+          'tailored women suit studio clean background',
+          'sophisticated dress portrait simple background'
+        ],
+        menswear: [
+          'classic men suit white background studio',
+          'tailored menswear portrait clean background',
+          'business casual men simple background'
+        ]
+      },
+      maximal: {
+        womenswear: [
+          'bold fashion women white background studio',
+          'colorful dress model clean background',
+          'statement outfit portrait simple background'
+        ],
+        menswear: [
+          'bold men fashion white background studio',
+          'colorful menswear clean background'
+        ]
+      },
+      fashion_forward: {
+        womenswear: [
+          'streetwear women fashion white background',
+          'urban fashion model clean background studio',
+          'contemporary women outfit simple background'
+        ],
+        menswear: [
+          'streetwear men fashion white background studio',
+          'urban menswear portrait clean background',
+          'contemporary men outfit simple background'
+        ]
+      },
+      athletic: {
+        womenswear: [
+          'athleisure women fashion white background',
+          'sportswear model clean background studio',
+          'activewear women simple background'
+        ],
+        menswear: [
+          'athleisure men fashion white background',
+          'sportswear men clean background studio'
+        ]
+      },
+      utility: {
+        womenswear: [
+          'utility fashion women white background',
+          'workwear women outfit clean background studio'
+        ],
+        menswear: [
+          'utility men fashion white background studio',
+          'workwear menswear clean background portrait',
+          'rugged outdoor menswear simple background'
+        ]
+      },
+      casual: {
+        womenswear: [
+          'casual women fashion white background studio',
+          'everyday outfit women clean background',
+          'relaxed women style simple background'
+        ],
+        menswear: [
+          'casual men fashion white background studio',
+          'everyday menswear clean background portrait',
+          'smart casual men simple background'
+        ]
+      }
+    };
+
+    async function autoSearch() {
+      const btn = document.getElementById('autoSearchBtn');
+      const progressSection = document.getElementById('progressSection');
+      const progressText = document.getElementById('progressText');
+      const progressFill = document.getElementById('progressFill');
+      const progressDetail = document.getElementById('progressDetail');
+
+      btn.disabled = true;
+      btn.textContent = 'Searching...';
+      progressSection.classList.add('active');
+
+      // Collect all queries
+      const allQueries = [];
+      Object.entries(PILLAR_QUERIES).forEach(([pillar, genders]) => {
+        Object.entries(genders).forEach(([gender, queries]) => {
+          queries.forEach(query => {
+            allQueries.push({ query, pillar, gender });
+          });
+        });
+      });
+
+      const totalQueries = allQueries.length;
+      let completed = 0;
+      const allResults = [];
+
+      progressText.textContent = `Searching ${totalQueries} queries across Pexels and Unsplash...`;
+
+      for (const { query, pillar, gender } of allQueries) {
+        try {
+          progressDetail.textContent = `Searching: ${query.substring(0, 50)}...`;
+
+          const response = await fetch('/api/search-stock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, source: 'both' })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // Tag results with pillar and gender
+            const taggedResults = data.results.map(img => ({
+              ...img,
+              suggestedPillar: pillar,
+              suggestedGender: gender
+            }));
+            allResults.push(...taggedResults);
+          }
+
+          completed++;
+          const progress = Math.round((completed / totalQueries) * 100);
+          progressFill.style.width = `${progress}%`;
+          progressText.textContent = `Searching... ${completed}/${totalQueries} queries complete`;
+
+          // Small delay to avoid rate limits
+          await new Promise(resolve => setTimeout(resolve, 300));
+        } catch (error) {
+          console.error('Search error:', error);
+        }
+      }
+
+      // Deduplicate by imageId
+      const uniqueResults = [];
+      const seenIds = new Set();
+      allResults.forEach(img => {
+        if (!seenIds.has(img.id)) {
+          seenIds.add(img.id);
+          uniqueResults.push(img);
+        }
+      });
+
+      // Shuffle for variety
+      currentResults = uniqueResults.sort(() => Math.random() - 0.5);
+      currentPage = 1;
+
+      progressSection.classList.remove('active');
+      btn.disabled = false;
+      btn.textContent = 'Find Images Automatically';
+
+      renderResults();
+      showStatus(`✓ Found ${currentResults.length} unique images`, '#10b981');
+    }
+
+    async function manualSearch() {
+      const query = document.getElementById('searchQuery').value.trim();
+      if (!query) {
+        showStatus('Please enter a search query', '#dc2626');
+        return;
+      }
+
+      const source = document.getElementById('apiSource').value;
+      const searchBtn = document.getElementById('searchBtn');
+
+      searchBtn.disabled = true;
+      searchBtn.textContent = 'Searching...';
+
+      document.getElementById('resultsContainer').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Searching ${source === 'both' ? 'Pexels & Unsplash' : source}...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch('/api/search-stock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, source })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Search failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        currentResults = data.results || [];
+        currentPage = 1;
+
+        renderResults();
+        showStatus(`✓ Found ${currentResults.length} images`, '#10b981');
+      } catch (error) {
+        console.error('Search error:', error);
+        document.getElementById('resultsContainer').innerHTML = `
+          <div class="empty-state">Search failed: ${error.message}</div>
+        `;
+        showStatus('Search failed', '#dc2626');
+      } finally {
+        searchBtn.disabled = false;
+        searchBtn.textContent = 'Search';
+      }
+    }
+
+    function renderResults() {
+      const container = document.getElementById('resultsContainer');
+
+      if (currentResults.length === 0) {
+        container.innerHTML = '<div class="empty-state">No results found</div>';
+        updateStats();
+        return;
+      }
+
+      const startIdx = (currentPage - 1) * IMAGES_PER_PAGE;
+      const endIdx = startIdx + IMAGES_PER_PAGE;
+      const pageResults = currentResults.slice(startIdx, endIdx);
+
+      const html = `
+        <div class="results-grid">
+          ${pageResults.map(img => `
+            <div class="image-card ${selectedImages.has(img.id) ? 'selected' : ''}"
+                 onclick="toggleImage('${img.id}')"
+                 data-id="${img.id}">
+              <div class="image-wrapper">
+                <div class="select-badge">${selectedImages.has(img.id) ? '✓' : ''}</div>
+                <div class="source-badge">${img.source}</div>
+                <img src="${img.thumbnail}" alt="${img.alt}" loading="lazy">
+              </div>
+              <div class="image-info">
+                <div class="image-alt">${img.alt}</div>
+                <div class="photographer">
+                  Photo by <a href="${img.photographerUrl}" target="_blank">${img.photographer}</a>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      container.innerHTML = html;
+      renderPagination();
+      updateStats();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(currentResults.length / IMAGES_PER_PAGE);
+      if (totalPages <= 1) {
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+
+      const html = `
+        <div class="pagination">
+          <button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+            Previous
+          </button>
+          <button class="page-btn" disabled>
+            Page ${currentPage} of ${totalPages}
+          </button>
+          <button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+            Next
+          </button>
+        </div>
+      `;
+
+      document.getElementById('pagination').innerHTML = html;
+    }
+
+    function goToPage(page) {
+      const totalPages = Math.ceil(currentResults.length / IMAGES_PER_PAGE);
+      if (page < 1 || page > totalPages) return;
+
+      currentPage = page;
+      renderResults();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleImage(imageId) {
+      const img = currentResults.find(r => r.id === imageId);
+      if (!img) return;
+
+      if (selectedImages.has(imageId)) {
+        selectedImages.delete(imageId);
+      } else {
+        selectedImages.add(imageId);
+      }
+
+      const card = document.querySelector(`.image-card[data-id="${imageId}"]`);
+      if (card) {
+        card.classList.toggle('selected');
+        const badge = card.querySelector('.select-badge');
+        badge.textContent = selectedImages.has(imageId) ? '✓' : '';
+      }
+
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById('resultsCount').textContent = currentResults.length;
+      document.getElementById('selectedCount').textContent = selectedImages.size;
+      document.getElementById('exportBtn').disabled = selectedImages.size === 0;
+    }
+
+    function clearSelection() {
+      selectedImages.clear();
+      document.querySelectorAll('.image-card').forEach(card => {
+        card.classList.remove('selected');
+        card.querySelector('.select-badge').textContent = '';
+      });
+      updateStats();
+      showStatus('Selection cleared', '#8E8A82');
+    }
+
+    function clearResults() {
+      if (currentResults.length === 0) return;
+      if (!confirm('Clear all search results?')) return;
+
+      currentResults = [];
+      selectedImages.clear();
+      currentPage = 1;
+      document.getElementById('resultsContainer').innerHTML = '<div class="empty-state">Click "Find Images For Me" to automatically search for fashion editorial images</div>';
+      document.getElementById('pagination').innerHTML = '';
+      updateStats();
+      showStatus('Results cleared', '#8E8A82');
+    }
+
+    function exportSelected() {
+      if (selectedImages.size === 0) {
+        showStatus('No images selected', '#dc2626');
+        return;
+      }
+
+      const selectedData = currentResults.filter(img => selectedImages.has(img.id));
+
+      const exportData = {
+        exportedAt: new Date().toISOString(),
+        source: 'stock-image-selector',
+        imageCount: selectedData.length,
+        images: selectedData.map(img => ({
+          imageId: img.id,
+          imageUrl: img.url,
+          thumbnailUrl: img.thumbnail,
+          source: img.source,
+          alt: img.alt,
+          photographer: img.photographer,
+          photographerUrl: img.photographerUrl,
+          originalUrl: img.originalUrl,
+          suggestedPillar: img.suggestedPillar,
+          suggestedGender: img.suggestedGender
+        }))
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `selected-images-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showStatus(`✓ Exported ${selectedData.length} images`, '#10b981');
+    }
+
+    function showStatus(message, color) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.style.color = color;
+      setTimeout(() => {
+        status.textContent = '';
+      }, 3000);
+    }
+
+    // Allow Enter key to search
+    document.getElementById('searchQuery').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        manualSearch();
+      }
+    });
+  </script>
+</body>
+</html>

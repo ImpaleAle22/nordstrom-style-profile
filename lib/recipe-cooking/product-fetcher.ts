@@ -6,8 +6,7 @@ import type { ClipProduct, IngredientWithProducts } from './types';
 import type { OutfitRole } from '../role-mappings';
 import { sanityClient } from '../sanity-client';
 import { extractColorsFromQuery } from './color-extraction';
-
-const CLIP_API_URL = 'http://localhost:5002';
+import { CLIP_API_URL } from '../clip-config';
 
 interface ClipSearchResponse {
   results: Array<{
@@ -123,14 +122,39 @@ function isHosieryRequested(query: string): boolean {
 }
 
 /**
+ * Check if product is a tech/non-fashion accessory (phone case, AirPods case, etc.)
+ */
+function isTechAccessory(product: ClipProduct): boolean {
+  const title = product.title.toLowerCase();
+  const techKeywords = [
+    'phone case', 'phone shell', 'phone necklace',
+    'airpod', 'air pod', 'earbud',
+    'charger', 'cable', 'adapter',
+    'screen protector', 'phone grip',
+    'pop socket', 'popsocket',
+    'phone holder', 'phone stand',
+  ];
+
+  return techKeywords.some(keyword => title.includes(keyword));
+}
+
+/**
  * Filter products based on role and query intent
- * Removes "explicit-only" items (hair accessories, socks) unless explicitly requested
+ * Removes "explicit-only" items (hair accessories, socks) and non-fashion items
  */
 function filterExplicitOnlyItems(
   products: ClipProduct[],
   role: OutfitRole,
   searchQuery: string
 ): ClipProduct[] {
+  // Filter out tech accessories (phone cases, AirPods cases, etc.)
+  const beforeTechFilter = products.length;
+  products = products.filter(p => !isTechAccessory(p));
+  const techFiltered = beforeTechFilter - products.length;
+  if (techFiltered > 0) {
+    console.log(`   🔍 Filtered out ${techFiltered} tech accessories (phone cases, etc.)`);
+  }
+
   // For accessories role, filter out hair accessories unless explicitly requested
   if (role === 'accessories' && !isHairAccessoryRequested(searchQuery)) {
     products = products.filter(p => p.productType2 !== 'Hair Accessories');
@@ -261,7 +285,8 @@ export async function fetchProductsForIngredient(
 ): Promise<IngredientWithProducts> {
   try {
     // Auto-extract colors from query (NEW - Color Filtering System)
-    const autoColors = extractColorsFromQuery(searchQuery);
+    // NOTE: Disabled by default - too aggressive, AI can handle color coordination
+    const autoColors = []; // extractColorsFromQuery(searchQuery);
     const explicitColors = filters?.colors || [];
     const colorMatchMode = filters?.colorMatchMode || (autoColors.length > 0 ? 'strict' : 'none');
 
@@ -285,9 +310,12 @@ export async function fetchProductsForIngredient(
       if (type === 'Bags') type = 'Accessories'; // Bags are under Accessories in CLIP
       params.append('type', type); // CLIP API expects single type
     }
-    if (filters?.productType2 && filters.productType2.length > 0) {
-      params.append('type2', filters.productType2[0]); // CLIP API expects single type2
-    }
+    // NOTE: productType2 filtering disabled - data quality issue
+    // Many products lack fine-grained type2 tags (e.g., "Jewelry", "Belts")
+    // Better to let CLIP semantic search + AI handle specificity
+    // if (filters?.productType2 && filters.productType2.length > 0) {
+    //   params.append('type2', filters.productType2[0]); // CLIP API expects single type2
+    // }
     if (filters?.department) {
       params.append('department', filters.department);
     }
@@ -297,11 +325,16 @@ export async function fetchProductsForIngredient(
       params.append('colors', JSON.stringify(colorsToFilter));
     }
 
-    const response = await fetch(`${CLIP_API_URL}/search?${params.toString()}`, {
+    const fullUrl = `${CLIP_API_URL}/search?${params.toString()}`;
+    console.log(`   🔍 Calling CLIP API: ${fullUrl}`);
+
+    const response = await fetch(fullUrl, {
       method: 'GET',
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`   ❌ CLIP API error (${response.status}): ${errorText}`);
       throw new Error(`CLIP API error: ${response.status} ${response.statusText}`);
     }
 
@@ -392,13 +425,13 @@ export async function fetchProductsForIngredient(
       console.error(`   ❌ FAILED TO PARSE PRODUCTS for "${ingredientTitle}"!`);
     }
 
-    // Filter out "explicit-only" items unless explicitly requested
+    // Filter out non-outfit items (tech accessories, hair accessories, socks)
     const beforeFilter = products.length;
     const filteredProducts = filterExplicitOnlyItems(products, role, searchQuery);
     const filtered = beforeFilter - filteredProducts.length;
 
     if (filtered > 0) {
-      console.log(`   🔍 Filtered out ${filtered} explicit-only items (hair accessories, socks)`);
+      console.log(`   🔍 Filtered out ${filtered} non-outfit items (total)`);
     }
 
     // Color filter fallback: If strict color filtering returned 0 results, retry without color filter

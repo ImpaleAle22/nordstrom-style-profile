@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Style Swipes</title>
+  <style>
+    /* Nordstrom Brand Colors */
+    :root {
+      --nordstrom-bg: #FAF9F5;
+      --nordstrom-white: #FFFFFF;
+      --nordstrom-black: #191A1B;
+      --nordstrom-gray-600: #6B7280;
+      --nordstrom-border: #E5E7EB;
+      --nordstrom-sale: #DC2626;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #FAF9F5;
+      color: #0C0C0C;
+      overflow: hidden;
+      height: 100vh;
+      touch-action: pan-y;
+    }
+
+    /* Site Header Styles */
+    .top-banner {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .top-banner a {
+      color: var(--nordstrom-white);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    .site-header {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .site-logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .site-search {
+      flex: 1;
+      max-width: 600px;
+    }
+
+    .site-search-input {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1px solid var(--nordstrom-gray-600);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .site-actions {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .site-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--nordstrom-black);
+      font-size: 13px;
+    }
+
+    .site-action-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .site-action-text {
+      white-space: nowrap;
+    }
+
+    .main-nav {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      padding: 12px 40px;
+      display: flex;
+      gap: 32px;
+    }
+
+    .main-nav-link {
+      text-decoration: none;
+      color: var(--nordstrom-black);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .main-nav-link:hover,
+    .main-nav-link.active {
+      border-bottom-color: var(--nordstrom-black);
+    }
+
+    .main-nav-link.sale {
+      color: var(--nordstrom-sale);
+    }
+
+    /* Swipe Container Adjustments */
+    .swipe-wrapper {
+      height: calc(100vh - 140px); /* Account for header height */
+      overflow: hidden;
+    }
+
+    /* Stack Selector Screen */
+    .stack-selector {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .stack-selector h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .stack-selector .subtitle {
+      color: #8E8A82;
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+
+    .stack-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stack-item {
+      background: white;
+      border: 2px solid #EDECEB;
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .stack-item:hover {
+      border-color: #0C0C0C;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .stack-item-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .stack-item-meta {
+      font-size: 13px;
+      color: #8E8A82;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #8E8A82;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    /* Swipe Container */
+    .swipe-container {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      position: relative;
+      background: #FAF9F5;
+    }
+
+    .swipe-container.active {
+      display: flex;
+    }
+
+    /* Header */
+    .swipe-header {
+      padding: 16px 20px;
+      background: white;
+      border-bottom: 1px solid #EDECEB;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    .stack-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #FAF9F5;
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: #EDECEB;
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+      height: 3px;
+      background: #EDECEB;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #0C0C0C;
+      transition: width 0.3s ease;
+    }
+
+    /* Card Stack Area */
+    .card-stack {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .card {
+      position: absolute;
+      width: 100%;
+      max-width: 400px;
+      height: 70vh;
+      max-height: 600px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .card:active {
+      cursor: grabbing;
+    }
+
+    .card.swiping {
+      transition: none;
+    }
+
+    .card.swipe-out-left {
+      animation: swipeLeft 0.4s ease-out forwards;
+    }
+
+    .card.swipe-out-right {
+      animation: swipeRight 0.4s ease-out forwards;
+    }
+
+    @keyframes swipeLeft {
+      to {
+        transform: translateX(-150%) rotate(-20deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes swipeRight {
+      to {
+        transform: translateX(150%) rotate(20deg);
+        opacity: 0;
+      }
+    }
+
+    .card-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    /* Swipe Indicators */
+    .swipe-indicators {
+      position: absolute;
+      top: 32px;
+      left: 32px;
+      right: 32px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .swipe-indicator {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 700;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.2s;
+    }
+
+    .swipe-indicator.no {
+      background: rgba(220, 38, 38, 0.95);
+      color: white;
+    }
+
+    .swipe-indicator.yes {
+      background: rgba(16, 185, 129, 0.95);
+      color: white;
+    }
+
+    .swipe-indicator.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Save Button */
+    .save-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid transparent;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+
+    .save-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .save-btn.saved {
+      background: #0C0C0C;
+      color: white;
+      border-color: #0C0C0C;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: white;
+      border-top: 1px solid #EDECEB;
+    }
+
+    .action-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    .action-btn.no {
+      background: #dc2626;
+      color: white;
+    }
+
+    .action-btn.yes {
+      background: #10b981;
+      color: white;
+    }
+
+    .action-btn.info {
+      background: #FAF9F5;
+      color: #0C0C0C;
+      font-size: 20px;
+    }
+
+    /* Mini PDP Sheet */
+    .mini-pdp {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 24px;
+      max-height: 60vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      z-index: 200;
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .mini-pdp.active {
+      transform: translateY(0);
+    }
+
+    .mini-pdp-handle {
+      width: 40px;
+      height: 4px;
+      background: #EDECEB;
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .mini-pdp-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .mini-pdp-meta {
+      color: #8E8A82;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .mini-pdp-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .mini-pdp-btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mini-pdp-btn.primary {
+      background: #0C0C0C;
+      color: white;
+    }
+
+    .mini-pdp-btn.secondary {
+      background: #FAF9F5;
+      color: #0C0C0C;
+      border: 2px solid #EDECEB;
+    }
+
+    .mini-pdp-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Completion Screen */
+    .completion-screen {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .completion-screen.active {
+      display: flex;
+    }
+
+    .completion-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+
+    .completion-title {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .completion-text {
+      font-size: 16px;
+      color: #8E8A82;
+      margin-bottom: 32px;
+      max-width: 400px;
+    }
+
+    .insight-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #EDECEB;
+      max-width: 400px;
+    }
+
+    .insight-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #8E8A82;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .insight-text {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #0C0C0C;
+      font-style: italic;
+    }
+
+    .completion-stats {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 32px;
+      border: 1px solid #EDECEB;
+      min-width: 280px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #EDECEB;
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      color: #8E8A82;
+      font-size: 14px;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .completion-btn {
+      padding: 16px 32px;
+      background: #0C0C0C;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .completion-btn:hover {
+      background: #2c2c2c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Helper text */
+    .help-text {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 300;
+    }
+
+    .help-text.show {
+      opacity: 1;
+    }
+
+    /* Desktop adjustments */
+    @media (min-width: 768px) {
+      .card-stack {
+        padding: 40px;
+      }
+
+      .card {
+        max-width: 450px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Site Header Component Container -->
+  <div id="site-header-container"></div>
+  <div id="main-nav-container"></div>
+
+  <!-- Swipe Content Wrapper -->
+  <div class="swipe-wrapper">
+    <!-- Profile Setup Screen -->
+    <div class="stack-selector" id="profileSetup" style="display: none;">
+    <h1>Welcome to Style Swipes</h1>
+    <p class="subtitle">Tell us which department you shop</p>
+    <div style="max-width: 500px; margin: 40px auto;">
+      <div style="display: flex; gap: 16px;">
+        <div class="stack-item" onclick="setCustomerDepartment('womenswear')" style="flex: 1; text-align: center; padding: 40px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">👗</div>
+          <div style="font-size: 20px; font-weight: 600;">Womenswear</div>
+        </div>
+        <div class="stack-item" onclick="setCustomerDepartment('menswear')" style="flex: 1; text-align: center; padding: 40px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">👔</div>
+          <div style="font-size: 20px; font-weight: 600;">Menswear</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stack Selector Screen -->
+  <div class="stack-selector" id="stackSelector" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <h1>Style Swipes</h1>
+      <button onclick="changeCustomerDepartment()" style="background: #FAF9F5; border: 1px solid #EDECEB; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer;">
+        Change Department
+      </button>
+    </div>
+    <p class="subtitle" id="stackSelectorSubtitle">Choose a stack to begin swiping</p>
+    <div class="stack-list" id="stackList">
+      <div class="empty-state">
+        <div class="empty-state-icon">📦</div>
+        <div>Loading stacks...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Swipe Container -->
+  <div class="swipe-container" id="swipeContainer">
+    <div class="swipe-header">
+      <div class="stack-title" id="stackTitle">Loading...</div>
+      <button class="close-btn" onclick="exitStack()" title="Exit">×</button>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="card-stack" id="cardStack">
+      <!-- Cards rendered here -->
+    </div>
+    <div class="action-buttons">
+      <button class="action-btn no" onclick="swipeNo()" title="Pass">✕</button>
+      <button class="action-btn info" onclick="openMiniPDP()" title="Details">ℹ</button>
+      <button class="action-btn yes" onclick="swipeYes()" title="Like">✓</button>
+    </div>
+  </div>
+
+  <!-- Mini PDP Sheet -->
+  <div class="mini-pdp" id="miniPDP">
+    <div class="mini-pdp-handle"></div>
+    <div class="mini-pdp-title" id="pdpTitle">Card Details</div>
+    <div class="mini-pdp-meta" id="pdpMeta"></div>
+    <div class="mini-pdp-actions">
+      <button class="mini-pdp-btn secondary" onclick="closeMiniPDP()">Close</button>
+      <button class="mini-pdp-btn primary" onclick="addToWishlist()">Add to Wishlist</button>
+    </div>
+  </div>
+
+  <!-- Completion Screen -->
+  <div class="completion-screen" id="completionScreen">
+    <div class="completion-icon">✨</div>
+    <div class="completion-title">Stack Complete!</div>
+    <div class="completion-text">Thanks for sharing your style preferences</div>
+    <div class="insight-card" id="insightCard">
+      <div class="insight-label">Your Style Insight</div>
+      <div class="insight-text" id="insightText">Loading...</div>
+    </div>
+    <div class="completion-stats" id="completionStats"></div>
+    <button class="completion-btn" onclick="backToSelector()">Browse More Stacks</button>
+  </div>
+
+  <!-- Help Text -->
+  <div class="help-text" id="helpText"></div>
+  </div><!-- End swipe-wrapper -->
+
+  <!-- Initialize Components -->
+  <script type="module">
+    import { initSiteHeader } from './components/site-header.js';
+
+    // Initialize site header with navigation
+    initSiteHeader({
+      userName: 'Brian',
+      userStatus: 'Member',
+      storeName: 'Michigan Avenue',
+      showBanner: true,
+      links: [
+        { text: 'New & Now', href: '#', className: '' },
+        { text: 'Sale', href: '#', className: 'sale' },
+        { text: 'Women', href: '#', className: '' },
+        { text: 'Men', href: '#', className: '' },
+        { text: 'Beauty', href: '#', className: '' },
+        { text: 'Shoes', href: '#', className: '' },
+        { text: 'Accessories', href: '#', className: '' },
+        { text: 'Kids', href: '#', className: '' },
+        { text: 'Designer', href: '#', className: '' },
+        { text: 'Home', href: '#', className: '' },
+        { text: 'Gifts', href: '#', className: '' },
+        { text: 'Services', href: '#', className: '' }
+      ]
+    });
+  </script>
+
+  <script>
+    // State
+    let currentStack = null;
+    let currentCardIndex = 0;
+    let sessionData = null;
+    let cardStartTime = null;
+    let swipeInProgress = false;
+    let customerProfile = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCustomerProfile();
+      setupKeyboardControls();
+    });
+
+    function loadCustomerProfile() {
+      const stored = localStorage.getItem('customer-profile');
+      if (stored) {
+        customerProfile = JSON.parse(stored);
+        console.log('👤 Customer profile:', customerProfile);
+        showStackSelector();
+      } else {
+        // Show profile setup
+        document.getElementById('profileSetup').style.display = 'flex';
+      }
+    }
+
+    function setCustomerDepartment(department) {
+      customerProfile = {
+        customerId: 'test',
+        department: department,
+        createdAt: new Date().toISOString()
+      };
+      localStorage.setItem('customer-profile', JSON.stringify(customerProfile));
+      console.log('✓ Department set:', department);
+
+      document.getElementById('profileSetup').style.display = 'none';
+      showStackSelector();
+    }
+
+    function changeCustomerDepartment() {
+      if (confirm('Change your department preference? This will return you to the setup screen.')) {
+        document.getElementById('stackSelector').style.display = 'none';
+        document.getElementById('profileSetup').style.display = 'flex';
+      }
+    }
+
+    function showStackSelector() {
+      const dept = customerProfile.department === 'womenswear' ? 'Womenswear' : 'Menswear';
+      document.getElementById('stackSelectorSubtitle').textContent = `${dept} stacks`;
+      document.getElementById('stackSelector').style.display = 'flex';
+      loadAvailableStacks();
+    }
+
+    // Load available stacks from localStorage
+    async function loadAvailableStacks() {
+      if (!customerProfile) {
+        showEmptyState();
+        return;
+      }
+
+      try {
+        // Load from localStorage (built by Stack Builder UI)
+        const stored = localStorage.getItem('built-stacks');
+        if (stored) {
+          const allStacks = JSON.parse(stored);
+          // Filter by customer department
+          const filteredStacks = allStacks.filter(stack =>
+            stack.department === customerProfile.department ||
+            stack.meta?.department === customerProfile.department
+          );
+
+          if (filteredStacks.length > 0) {
+            console.log(`✓ Loaded ${filteredStacks.length} ${customerProfile.department} stacks`);
+            renderStackList(filteredStacks);
+            return;
+          }
+        }
+
+        // Fallback: try loading from server files
+        const response = await fetch('/api/list-stacks');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.stacks && data.stacks.length > 0) {
+            renderStackList(data.stacks);
+            return;
+          }
+        }
+
+        showEmptyState();
+      } catch (error) {
+        console.error('Failed to load stacks:', error);
+        showEmptyState();
+      }
+    }
+
+    function showEmptyState() {
+      const dept = customerProfile ? customerProfile.department : 'your department';
+      const deptLabel = dept === 'womenswear' ? 'Womenswear' :
+                         dept === 'menswear' ? 'Menswear' : 'your department';
+
+      document.getElementById('stackList').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📦</div>
+          <div>No ${deptLabel} stacks available</div>
+          <div style="font-size: 13px; color: #8E8A82; margin-top: 8px;">
+            Build a ${deptLabel} stack in the <a href="/stack-builder" style="color: #0C0C0C; font-weight: 600;">Stack Builder</a>
+          </div>
+        </div>
+      `;
+    }
+
+    async function renderStackList(stacksOrUrls) {
+      const stackList = document.getElementById('stackList');
+      stackList.innerHTML = '';
+
+      for (const stackOrUrl of stacksOrUrls) {
+        try {
+          let stack;
+
+          // Check if it's already a stack object or a URL
+          if (typeof stackOrUrl === 'string') {
+            // It's a URL, fetch it
+            const response = await fetch(stackOrUrl);
+            stack = await response.json();
+          } else {
+            // It's already a stack object from localStorage
+            stack = stackOrUrl;
+          }
+
+          const item = document.createElement('div');
+          item.className = 'stack-item';
+          item.onclick = () => loadStackDirect(stack);
+          item.innerHTML = `
+            <div class="stack-item-title">${stack.title || stack.stackId}</div>
+            <div class="stack-item-meta">
+              ${stack.stackType} • ${stack.cardCount} cards • ${new Date(stack.assembledAt).toLocaleDateString()}
+            </div>
+          `;
+          stackList.appendChild(item);
+        } catch (error) {
+          console.error('Failed to load stack:', stackOrUrl, error);
+        }
+      }
+    }
+
+    // Load and start a stack from URL (legacy file-based)
+    async function loadStack(stackUrl) {
+      try {
+        const response = await fetch(stackUrl);
+        currentStack = await response.json();
+        initializeSession();
+      } catch (error) {
+        console.error('Failed to load stack:', error);
+        alert('Failed to load stack');
+      }
+    }
+
+    // Load and start a stack directly (from localStorage)
+    function loadStackDirect(stack) {
+      currentStack = stack;
+      initializeSession();
+    }
+
+    // Initialize session data
+    function initializeSession() {
+      sessionData = {
+        type: 'swipe_session',
+        sessionId: `swipe_${customerProfile.customerId}_${currentStack.stackId}_${Date.now()}`,
+        customerId: customerProfile.customerId,
+        stackId: currentStack.stackId,
+        stackType: currentStack.stackType,
+        stackRecipe: currentStack.stackRecipe,
+        department: currentStack.department || currentStack.meta?.department,
+        completedAt: null,
+        completionType: null,
+        cardCount: currentStack.cardCount,
+        cardsViewed: 0,
+        cards: [],
+        sessionSignals: {},
+        rewardActions: {},
+        meta: {
+          customerDepartment: customerProfile.department,
+          stackDepartment: currentStack.department || currentStack.meta?.department,
+          profileSnapshotVersion: currentStack.meta?.profileSnapshotVersion || 0,
+          sequencingStrategy: currentStack.meta?.sequencingStrategy || 'unknown',
+          wildcardTriggered: false,
+          stackAbandonReason: null,
+          priorStacksTotal: 0,
+          priorSwipesTotal: 0,
+          coldStart: true
+        }
+      };
+
+      currentCardIndex = 0;
+      startSwipeSession();
+    }
+
+    function startSwipeSession() {
+      document.getElementById('stackSelector').style.display = 'none';
+      document.getElementById('swipeContainer').classList.add('active');
+      document.getElementById('stackTitle').textContent = currentStack.title;
+
+      renderCurrentCard();
+      updateProgress();
+
+      showHelpText('Swipe right to like, left to pass, or use arrow keys');
+    }
+
+    function renderCurrentCard() {
+      if (currentCardIndex >= currentStack.cards.length) {
+        completeStack();
+        return;
+      }
+
+      const card = currentStack.cards[currentCardIndex];
+      const cardStack = document.getElementById('cardStack');
+
+      cardStack.innerHTML = '';
+
+      // Create card element
+      const cardEl = document.createElement('div');
+      cardEl.className = 'card';
+      cardEl.innerHTML = `
+        <img src="${card.imageUrl}" alt="${card.cardId}" class="card-image"
+             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22600%22%3E%3Crect fill=%22%23EDECEB%22 width=%22400%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%238E8A82%22 font-family=%22sans-serif%22 font-size=%2216%22 text-anchor=%22middle%22%3EImage unavailable%3C/text%3E%3C/svg%3E'">
+        <div class="swipe-indicators">
+          <div class="swipe-indicator no">✕</div>
+          <div class="swipe-indicator yes">✓</div>
+        </div>
+        <button class="save-btn" onclick="toggleSave(event)" title="Save">+</button>
+      `;
+
+      cardStack.appendChild(cardEl);
+
+      // Setup swipe gestures
+      setupSwipeGestures(cardEl);
+
+      // Start dwell timer
+      cardStartTime = Date.now();
+    }
+
+    function setupSwipeGestures(cardEl) {
+      let startX = 0;
+      let startY = 0;
+      let currentX = 0;
+      let isDragging = false;
+
+      const onStart = (e) => {
+        if (swipeInProgress) return;
+        isDragging = true;
+        startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+        cardEl.classList.add('swiping');
+      };
+
+      const onMove = (e) => {
+        if (!isDragging || swipeInProgress) return;
+        currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        const deltaX = currentX - startX;
+        const deltaY = (e.type.includes('mouse') ? e.clientY : e.touches[0].clientY) - startY;
+
+        // Apply transform
+        const rotation = deltaX * 0.05;
+        cardEl.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
+
+        // Show indicators
+        const noIndicator = cardEl.querySelector('.swipe-indicator.no');
+        const yesIndicator = cardEl.querySelector('.swipe-indicator.yes');
+
+        if (deltaX < -50) {
+          noIndicator.classList.add('active');
+          yesIndicator.classList.remove('active');
+        } else if (deltaX > 50) {
+          yesIndicator.classList.add('active');
+          noIndicator.classList.remove('active');
+        } else {
+          noIndicator.classList.remove('active');
+          yesIndicator.classList.remove('active');
+        }
+      };
+
+      const onEnd = (e) => {
+        if (!isDragging || swipeInProgress) return;
+        isDragging = false;
+        cardEl.classList.remove('swiping');
+
+        const deltaX = currentX - startX;
+
+        if (Math.abs(deltaX) > 120) {
+          // Swipe threshold met
+          if (deltaX < 0) {
+            executeSwipe('no');
+          } else {
+            executeSwipe('yes');
+          }
+        } else {
+          // Reset card
+          cardEl.style.transform = '';
+          cardEl.querySelector('.swipe-indicator.no').classList.remove('active');
+          cardEl.querySelector('.swipe-indicator.yes').classList.remove('active');
+        }
+      };
+
+      cardEl.addEventListener('mousedown', onStart);
+      cardEl.addEventListener('touchstart', onStart);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('touchmove', onMove);
+      document.addEventListener('mouseup', onEnd);
+      document.addEventListener('touchend', onEnd);
+    }
+
+    function executeSwipe(verdict) {
+      if (swipeInProgress) return;
+      swipeInProgress = true;
+
+      const cardEl = document.querySelector('.card');
+      const dwellMs = Date.now() - cardStartTime;
+      const swipeVelocity = dwellMs < 400 ? 'fast' : dwellMs < 1200 ? 'medium' : 'slow';
+
+      // Animation
+      cardEl.classList.add(verdict === 'yes' ? 'swipe-out-right' : 'swipe-out-left');
+
+      // Record interaction
+      const card = currentStack.cards[currentCardIndex];
+      const saved = cardEl.querySelector('.save-btn').classList.contains('saved');
+
+      sessionData.cards.push({
+        cardId: card.cardId,
+        cardType: card.cardType,
+        position: currentCardIndex + 1,
+        verdict: verdict,
+        dwellMs: dwellMs,
+        swipeVelocity: swipeVelocity,
+        saved: saved,
+        miniPdpOpened: false,
+        miniPdpAction: null,
+        tags: card.tags || {}
+      });
+
+      sessionData.cardsViewed++;
+
+      // Next card after animation
+      setTimeout(() => {
+        currentCardIndex++;
+        swipeInProgress = false;
+        renderCurrentCard();
+        updateProgress();
+      }, 400);
+    }
+
+    function swipeYes() {
+      executeSwipe('yes');
+    }
+
+    function swipeNo() {
+      executeSwipe('no');
+    }
+
+    function toggleSave(event) {
+      event.stopPropagation();
+      const btn = event.currentTarget;
+      btn.classList.toggle('saved');
+
+      if (btn.classList.contains('saved')) {
+        btn.textContent = '✓';
+        showHelpText('Saved!');
+      } else {
+        btn.textContent = '+';
+      }
+    }
+
+    function openMiniPDP() {
+      const card = currentStack.cards[currentCardIndex];
+      const pdp = document.getElementById('miniPDP');
+
+      document.getElementById('pdpTitle').textContent = card.cardType === 'lifestyle'
+        ? 'Lifestyle Inspiration'
+        : 'Product Details';
+
+      const tags = card.tags || {};
+      const meta = [];
+      if (tags.pillars) meta.push(`Style: ${tags.pillars.join(', ')}`);
+      if (tags.subDimension) meta.push(tags.subDimension);
+      if (tags.formality) meta.push(tags.formality);
+      if (card.brandAdherenceScore) meta.push(`Brand Score: ${card.brandAdherenceScore}`);
+
+      document.getElementById('pdpMeta').textContent = meta.join(' • ');
+
+      pdp.classList.add('active');
+
+      // Record in session data
+      const lastCard = sessionData.cards[sessionData.cards.length - 1];
+      if (lastCard && lastCard.position === currentCardIndex + 1) {
+        lastCard.miniPdpOpened = true;
+      }
+    }
+
+    function closeMiniPDP() {
+      document.getElementById('miniPDP').classList.remove('active');
+    }
+
+    function addToWishlist() {
+      showHelpText('Added to wishlist!');
+
+      // Record action in session data
+      const lastCard = sessionData.cards[sessionData.cards.length - 1];
+      if (lastCard && lastCard.position === currentCardIndex + 1) {
+        lastCard.miniPdpAction = 'add_to_wishlist';
+      }
+
+      closeMiniPDP();
+    }
+
+    function updateProgress() {
+      const progress = (currentCardIndex / currentStack.cardCount) * 100;
+      document.getElementById('progressFill').style.width = `${progress}%`;
+    }
+
+    function completeStack() {
+      sessionData.completedAt = new Date().toISOString();
+      sessionData.completionType = 'full';
+
+      // Calculate basic session signals (simplified for MVP)
+      sessionData.sessionSignals = calculateSessionSignals();
+
+      // Save session to localStorage (in production, would POST to API)
+      saveSession();
+
+      // Show completion screen
+      showCompletionScreen();
+    }
+
+    function calculateSessionSignals() {
+      const signals = {
+        pillarVotes: {},
+        sessionStats: {
+          avgDwellMs: 0,
+          fastSwipes: 0,
+          slowSwipes: 0,
+          savedCount: 0,
+          miniPdpOpenCount: 0,
+          strongYesCount: 0,
+          strongNoCount: 0
+        }
+      };
+
+      let totalDwell = 0;
+
+      sessionData.cards.forEach(card => {
+        totalDwell += card.dwellMs;
+
+        if (card.swipeVelocity === 'fast') signals.sessionStats.fastSwipes++;
+        if (card.swipeVelocity === 'slow') signals.sessionStats.slowSwipes++;
+        if (card.saved) signals.sessionStats.savedCount++;
+        if (card.miniPdpOpened) signals.sessionStats.miniPdpOpenCount++;
+
+        // Pillar votes
+        const pillars = card.tags.pillars || [];
+        const weight = card.verdict === 'yes' ? 1 : -1;
+        pillars.forEach(pillar => {
+          signals.pillarVotes[pillar] = (signals.pillarVotes[pillar] || 0) + weight;
+        });
+
+        // Strong signals
+        if (card.verdict === 'yes' && card.dwellMs > 2000) {
+          signals.sessionStats.strongYesCount++;
+        }
+        if (card.verdict === 'no' && card.swipeVelocity === 'fast') {
+          signals.sessionStats.strongNoCount++;
+        }
+      });
+
+      signals.sessionStats.avgDwellMs = Math.round(totalDwell / sessionData.cards.length);
+
+      return signals;
+    }
+
+    function saveSession() {
+      const key = `swipe_session_${sessionData.sessionId}`;
+      localStorage.setItem(key, JSON.stringify(sessionData, null, 2));
+      console.log('Session saved:', sessionData);
+    }
+
+    function showCompletionScreen() {
+      document.getElementById('swipeContainer').classList.remove('active');
+      document.getElementById('completionScreen').classList.add('active');
+
+      const stats = sessionData.sessionSignals.sessionStats;
+      const yesCount = sessionData.cards.filter(c => c.verdict === 'yes').length;
+      const noCount = sessionData.cards.filter(c => c.verdict === 'no').length;
+
+      // Generate placeholder insight
+      const insight = generatePlaceholderInsight();
+      document.getElementById('insightText').textContent = insight;
+
+      document.getElementById('completionStats').innerHTML = `
+        <div class="stat-row">
+          <span class="stat-label">Cards Viewed</span>
+          <span class="stat-value">${sessionData.cardsViewed}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Liked</span>
+          <span class="stat-value" style="color: #10b981">${yesCount}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Passed</span>
+          <span class="stat-value" style="color: #dc2626">${noCount}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Saved</span>
+          <span class="stat-value">${stats.savedCount}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Avg Time per Card</span>
+          <span class="stat-value">${(stats.avgDwellMs / 1000).toFixed(1)}s</span>
+        </div>
+      `;
+    }
+
+    function generatePlaceholderInsight() {
+      // TODO: Replace with actual Claude Haiku API call
+      // This is a placeholder that mimics what the real insight would look like
+
+      const pillarVotes = sessionData.sessionSignals.pillarVotes;
+      const stats = sessionData.sessionSignals.sessionStats;
+
+      // Find top yes and no pillars
+      const sortedPillars = Object.entries(pillarVotes).sort((a, b) => b[1] - a[1]);
+      const topYes = sortedPillars.filter(([p, v]) => v > 0).slice(0, 2);
+      const topNo = sortedPillars.filter(([p, v]) => v < 0).slice(-2).reverse();
+
+      // Generate insight based on session patterns
+      const insights = [];
+
+      if (topYes.length > 0) {
+        const pillars = topYes.map(([p]) => p).join(' and ');
+        insights.push(`You're drawn to ${pillars} pieces with clean lines and intentional styling.`);
+        insights.push(`${pillars.charAt(0).toUpperCase() + pillars.slice(1)} aesthetics are resonating strongly with you today.`);
+        insights.push(`Your preferences lean toward ${pillars} sensibilities.`);
+      }
+
+      if (topNo.length > 0 && topNo[0][1] < -1) {
+        const pillar = topNo[0][0];
+        insights.push(`${pillar.charAt(0).toUpperCase() + pillar.slice(1)} isn't speaking to you right now.`);
+        insights.push(`You're passing on bolder, more ${pillar} expressions.`);
+      }
+
+      if (stats.savedCount > 0) {
+        insights.push(`You found ${stats.savedCount} piece${stats.savedCount > 1 ? 's' : ''} worth saving—strong signals emerging.`);
+      }
+
+      if (stats.avgDwellMs > 3000) {
+        insights.push(`You're taking your time, considering each piece thoughtfully.`);
+      } else if (stats.avgDwellMs < 1500) {
+        insights.push(`Quick, decisive swipes—you know what you like.`);
+      }
+
+      if (insights.length === 0) {
+        insights.push(`Interesting mix of preferences coming through.`);
+      }
+
+      // Return random insight
+      return insights[Math.floor(Math.random() * insights.length)];
+    }
+
+    function exitStack() {
+      if (confirm('Exit this stack? Progress will not be saved.')) {
+        backToSelector();
+      }
+    }
+
+    function backToSelector() {
+      document.getElementById('swipeContainer').classList.remove('active');
+      document.getElementById('completionScreen').classList.remove('active');
+      document.getElementById('stackSelector').style.display = 'flex';
+      currentStack = null;
+      currentCardIndex = 0;
+      sessionData = null;
+    }
+
+    function setupKeyboardControls() {
+      document.addEventListener('keydown', (e) => {
+        if (!currentStack || swipeInProgress) return;
+
+        if (e.key === 'ArrowLeft') {
+          swipeNo();
+        } else if (e.key === 'ArrowRight') {
+          swipeYes();
+        } else if (e.key === 'ArrowUp') {
+          toggleSave({ currentTarget: document.querySelector('.save-btn'), stopPropagation: () => {} });
+        } else if (e.key === 'i' || e.key === 'I') {
+          openMiniPDP();
+        } else if (e.key === 'Escape') {
+          closeMiniPDP();
+        }
+      });
+    }
+
+    function showHelpText(text) {
+      const helpEl = document.getElementById('helpText');
+      helpEl.textContent = text;
+      helpEl.classList.add('show');
+      setTimeout(() => {
+        helpEl.classList.remove('show');
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

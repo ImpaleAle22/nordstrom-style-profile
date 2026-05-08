@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lifestyle Image Browser</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+    }
+
+    .header {
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 24px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #4a5568;
+    }
+
+    .stat-value.live {
+      color: #10b981;
+    }
+
+    .stat-value.candidate {
+      color: #3b82f6;
+    }
+
+    .stat-value.rejected {
+      color: #dc2626;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #6b7280;
+      border: 1px solid #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-danger {
+      background: #fee;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fecaca;
+    }
+
+    #saveStatus {
+      margin-left: 12px;
+      font-size: 13px;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .content {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-badge {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .section-badge.live {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .section-badge.candidate {
+      background: #dbeafe;
+      color: #1e3a8a;
+    }
+
+    .pillar-section {
+      margin-bottom: 32px;
+    }
+
+    .pillar-header {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px 8px 0 0;
+      border-left: 4px solid;
+      margin-bottom: 0;
+    }
+
+    .pillar-header.romantic { border-left-color: #e8a5c5; }
+    .pillar-header.bohemian { border-left-color: #d4a574; }
+    .pillar-header.casual { border-left-color: #7fb3d5; }
+    .pillar-header.classic { border-left-color: #2c3e50; }
+    .pillar-header.minimal { border-left-color: #95a5a6; }
+    .pillar-header.maximal { border-left-color: #f39c12; }
+    .pillar-header.fashion_forward { border-left-color: #e74c3c; }
+    .pillar-header.athletic { border-left-color: #27ae60; }
+    .pillar-header.utility { border-left-color: #8b6f47; }
+
+    .pillar-title {
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: capitalize;
+      margin-bottom: 4px;
+    }
+
+    .pillar-stats {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .image-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      border: 3px solid transparent;
+    }
+
+    .image-card.live {
+      border-color: #10b981;
+    }
+
+    .image-card.candidate {
+      border-color: #3b82f6;
+    }
+
+    .image-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.live {
+      background: #10b981;
+      color: white;
+    }
+
+    .status-badge.candidate {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .gender-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+    }
+
+    .image-info {
+      padding: 12px;
+    }
+
+    .image-id {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 8px;
+      font-family: monospace;
+    }
+
+    .subterms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 12px;
+      min-height: 28px;
+    }
+
+    .subterm-tag {
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      background: #f3f4f6;
+      color: #6b7280;
+      cursor: pointer;
+      border: 1px solid #e5e7eb;
+      transition: all 0.15s ease;
+    }
+
+    .subterm-tag:hover {
+      border-color: #2563eb;
+      color: #2563eb;
+    }
+
+    .subterm-tag.selected {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
+
+    .subterm-selector {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .subterm-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .image-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn.promote {
+      background: #10b981;
+      color: white;
+    }
+
+    .action-btn.promote:hover {
+      background: #059669;
+    }
+
+    .action-btn.demote {
+      background: #dc2626;
+      color: white;
+    }
+
+    .action-btn.demote:hover {
+      background: #b91c1c;
+    }
+
+    .action-btn.remove {
+      background: #f3f4f6;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .action-btn.remove:hover {
+      background: #fee;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 64px;
+      color: #999;
+      background: white;
+      border-radius: 8px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 64px;
+      color: #666;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .filter-tab {
+      padding: 8px 16px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: #2563eb;
+    }
+
+    .filter-tab.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Lifestyle Image Browser</h1>
+    <p class="subtitle">Manage your live profile images and candidate images in one place</p>
+
+    <div class="stats">
+      <div class="stat">
+        <span>🟢 Live:</span>
+        <span class="stat-value live" id="liveCount">0</span>
+      </div>
+      <div class="stat">
+        <span>🔵 Candidates:</span>
+        <span class="stat-value candidate" id="candidateCount">0</span>
+      </div>
+      <div class="stat">
+        <span>🔴 Rejected:</span>
+        <span class="stat-value rejected" id="rejectedCount">0</span>
+      </div>
+      <div class="stat">
+        <span>📝 Tagged:</span>
+        <span class="stat-value" id="taggedCount">0</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-success" onclick="downloadData()">💾 Download Updated JSON</button>
+      <button class="btn btn-primary" onclick="showRefillDialog()">🔄 Add New Candidates</button>
+      <button class="btn btn-secondary" onclick="loadFromFile()">📂 Load from File</button>
+      <span id="saveStatus"></span>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-gender="all" onclick="filterGender('all')">All</button>
+      <button class="filter-tab" data-gender="womenswear" onclick="filterGender('womenswear')">Womenswear</button>
+      <button class="filter-tab" data-gender="menswear" onclick="filterGender('menswear')">Menswear</button>
+    </div>
+
+    <!-- Live Images Section -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <span>Live Images</span>
+          <span class="section-badge live">Active in Profile</span>
+        </div>
+      </div>
+      <div id="liveContent">
+        <div class="loading">Loading images...</div>
+      </div>
+    </div>
+
+    <!-- Candidate Images Section -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <span>Candidate Images</span>
+          <span class="section-badge candidate">Under Review</span>
+        </div>
+      </div>
+      <div id="candidateContent">
+        <div class="empty">No candidates yet. Click "Add New Candidates" to search for images.</div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="handleFileLoad(event)">
+
+  <script>
+    let imageData = null;
+    let subTermSelections = {};
+    let currentGenderFilter = 'all';
+
+    const PILLAR_SUBTERMS = {
+      classic: ['Timeless Classic', 'Sophisticated', 'Polished', 'Classic Chic', 'Dressy', 'Chic', 'Tailored', 'Timeless', 'Menswear-inspired', 'Heritage', 'Preppy', 'Nautical'],
+      minimal: ['Modern Minimal', 'Sleek', 'Modern', 'Monochromatic', 'Elegant', 'Architectural', 'Refined', 'Understated', 'Romantic Minimal'],
+      romantic: ['Effortless Romantic', 'Ladylike', 'Delicate', 'Ethereal', 'Feminine', 'Whimsical', 'Free-spirited'],
+      bohemian: ['Natural', 'Hippie', 'Worldly', 'Vintage-inspired', 'Beachy', 'Artisanal', 'Eclectic', 'Artistic', 'Tropical'],
+      maximal: ['Daring Maximal', 'Vibrant', 'Exotic', 'Bold', 'Glam', 'Quirky'],
+      fashion_forward: ['Edgy', 'Urban', 'Streetwear', 'Tomboy', 'Military'],
+      utility: ['Utility Streetwear', 'Workwear', 'Utility Workwear', 'Rugged', 'Safari', 'Outdoorsy', 'Western'],
+      athletic: ['Sportswear', 'Athleisure', 'Sporty Casual'],
+      casual: ['Pragmatic Casual', 'Smart Casual', 'Relaxed Classic']
+    };
+
+    // Load data
+    async function loadData() {
+      try {
+        const response = await fetch('../data/lifestyle-images.json');
+        const data = await response.json();
+
+        // Ensure all images have a status field (default to 'live' for existing images)
+        imageData = {
+          ...data,
+          results: data.results.map(img => ({
+            ...img,
+            status: img.status || 'live'
+          }))
+        };
+
+        // Load sub-term selections from localStorage
+        const stored = localStorage.getItem('image-subterms');
+        if (stored) {
+          subTermSelections = JSON.parse(stored);
+        }
+
+        renderAll();
+        updateStats();
+      } catch (error) {
+        console.error('Failed to load data:', error);
+        document.getElementById('liveContent').innerHTML = '<div class="empty">Failed to load images</div>';
+      }
+    }
+
+    // Render all content
+    function renderAll() {
+      renderSection('live', 'liveContent');
+      renderSection('candidate', 'candidateContent');
+    }
+
+    // Render a specific section
+    function renderSection(status, containerId) {
+      const container = document.getElementById(containerId);
+
+      // Group images by pillar
+      const imagesByPillar = {};
+      imageData.results
+        .filter(img => img.status === status)
+        .filter(img => currentGenderFilter === 'all' || img.gender === currentGenderFilter)
+        .forEach(img => {
+          const pillar = img.finalPillar || 'uncategorized';
+          if (!imagesByPillar[pillar]) {
+            imagesByPillar[pillar] = [];
+          }
+          imagesByPillar[pillar].push(img);
+        });
+
+      if (Object.keys(imagesByPillar).length === 0) {
+        container.innerHTML = `<div class="empty">No ${status} images</div>`;
+        return;
+      }
+
+      const html = Object.entries(imagesByPillar).map(([pillar, images]) => {
+        const womenCount = images.filter(img => img.gender === 'womenswear').length;
+        const menCount = images.filter(img => img.gender === 'menswear').length;
+
+        return `
+          <div class="pillar-section">
+            <div class="pillar-header ${pillar}">
+              <div class="pillar-title">${pillar.replace('_', ' ')}</div>
+              <div class="pillar-stats">${images.length} images · ${womenCount} women · ${menCount} men</div>
+            </div>
+            <div class="image-grid">
+              ${images.map(img => renderImageCard(img, status)).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = html;
+    }
+
+    // Render a single image card
+    function renderImageCard(image, status) {
+      const genderLabel = image.gender === 'womenswear' ? '♀️ Women' : '♂️ Men';
+      const selectedSubTerms = subTermSelections[image.imageId] || [];
+      const pillarSubTerms = PILLAR_SUBTERMS[image.finalPillar] || [];
+
+      return `
+        <div class="image-card ${status}" data-id="${image.imageId}">
+          <div class="image-wrapper">
+            <div class="status-badge ${status}">${status}</div>
+            <div class="gender-badge">${genderLabel}</div>
+            <img src="${image.imageUrl}" alt="${image.imageId}" loading="lazy">
+          </div>
+          <div class="image-info">
+            <div class="image-id">${image.imageId}</div>
+
+            <div class="subterms">
+              ${selectedSubTerms.map(term =>
+                `<div class="subterm-tag selected">${term}</div>`
+              ).join('') || '<span style="font-size: 11px; color: #ccc;">No sub-terms tagged</span>'}
+            </div>
+
+            ${pillarSubTerms.length > 0 ? `
+              <div class="subterm-selector">
+                <div class="subterm-label">Tag Sub-Terms (up to 3)</div>
+                <div class="subterms">
+                  ${pillarSubTerms.map(term => `
+                    <div class="subterm-tag ${selectedSubTerms.includes(term) ? 'selected' : ''}"
+                         onclick="toggleSubTerm('${image.imageId}', '${term}')">
+                      ${term}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <div class="image-actions">
+              ${status === 'live' ? `
+                <button class="action-btn remove" onclick="removeFromLive('${image.imageId}')">
+                  ❌ Remove
+                </button>
+              ` : status === 'candidate' ? `
+                <button class="action-btn promote" onclick="promoteToLive('${image.imageId}')">
+                  ✅ Approve
+                </button>
+                <button class="action-btn demote" onclick="rejectCandidate('${image.imageId}')">
+                  ❌ Reject
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Toggle sub-term
+    window.toggleSubTerm = function(imageId, term) {
+      if (!subTermSelections[imageId]) {
+        subTermSelections[imageId] = [];
+      }
+
+      const selected = subTermSelections[imageId];
+      const index = selected.indexOf(term);
+
+      if (index > -1) {
+        selected.splice(index, 1);
+      } else if (selected.length < 3) {
+        selected.push(term);
+      } else {
+        showStatus('⚠️ Maximum 3 sub-terms per image', '#f59e0b');
+        return;
+      }
+
+      localStorage.setItem('image-subterms', JSON.stringify(subTermSelections));
+      renderAll();
+      updateStats();
+    };
+
+    // Remove from live (move to rejected)
+    window.removeFromLive = function(imageId) {
+      const image = imageData.results.find(img => img.imageId === imageId);
+      if (image) {
+        image.status = 'rejected';
+        renderAll();
+        updateStats();
+        showStatus(`✓ Removed ${imageId} from live`, '#10b981');
+      }
+    };
+
+    // Promote candidate to live
+    window.promoteToLive = function(imageId) {
+      const image = imageData.results.find(img => img.imageId === imageId);
+      if (image) {
+        image.status = 'live';
+        renderAll();
+        updateStats();
+        showStatus(`✓ Promoted ${imageId} to live`, '#10b981');
+      }
+    };
+
+    // Reject candidate
+    window.rejectCandidate = function(imageId) {
+      const image = imageData.results.find(img => img.imageId === imageId);
+      if (image) {
+        image.status = 'rejected';
+        renderAll();
+        updateStats();
+        showStatus(`✓ Rejected ${imageId}`, '#dc2626');
+      }
+    };
+
+    // Update stats
+    function updateStats() {
+      const liveCount = imageData.results.filter(img => img.status === 'live').length;
+      const candidateCount = imageData.results.filter(img => img.status === 'candidate').length;
+      const rejectedCount = imageData.results.filter(img => img.status === 'rejected').length;
+      const taggedCount = Object.keys(subTermSelections).filter(id => subTermSelections[id].length > 0).length;
+
+      document.getElementById('liveCount').textContent = liveCount;
+      document.getElementById('candidateCount').textContent = candidateCount;
+      document.getElementById('rejectedCount').textContent = rejectedCount;
+      document.getElementById('taggedCount').textContent = taggedCount;
+    }
+
+    // Gender filter
+    window.filterGender = function(gender) {
+      currentGenderFilter = gender;
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.gender === gender);
+      });
+      renderAll();
+    };
+
+    // Download updated JSON
+    window.downloadData = function() {
+      // Merge sub-terms into image data
+      const outputData = {
+        ...imageData,
+        exportedAt: new Date().toISOString(),
+        totalImages: imageData.results.length,
+        liveImages: imageData.results.filter(img => img.status === 'live').length,
+        candidateImages: imageData.results.filter(img => img.status === 'candidate').length,
+        rejectedImages: imageData.results.filter(img => img.status === 'rejected').length,
+        results: imageData.results.map(img => ({
+          ...img,
+          subTerms: subTermSelections[img.imageId] || []
+        }))
+      };
+
+      const blob = new Blob([JSON.stringify(outputData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'lifestyle-images.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showStatus('✓ Downloaded lifestyle-images.json', '#10b981');
+    };
+
+    // Load from file
+    window.loadFromFile = function() {
+      document.getElementById('fileInput').click();
+    };
+
+    window.handleFileLoad = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          imageData = data;
+
+          // Extract sub-terms from data if they exist
+          data.results.forEach(img => {
+            if (img.subTerms && img.subTerms.length > 0) {
+              subTermSelections[img.imageId] = img.subTerms;
+            }
+          });
+
+          localStorage.setItem('image-subterms', JSON.stringify(subTermSelections));
+          renderAll();
+          updateStats();
+          showStatus('✓ Loaded from file', '#10b981');
+        } catch (error) {
+          showStatus('❌ Failed to load file', '#dc2626');
+          console.error(error);
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    // Show refill dialog
+    window.showRefillDialog = function() {
+      alert('Refill functionality coming soon!\n\nFor now:\n1. Use the existing image-review.html to search for new images\n2. Mark them as candidates\n3. Load the updated JSON here');
+    };
+
+    // Show status message
+    function showStatus(message, color) {
+      const status = document.getElementById('saveStatus');
+      status.textContent = message;
+      status.style.color = color;
+      setTimeout(() => {
+        status.textContent = '';
+      }, 3000);
+    }
+
+    // Initialize
+    loadData();
+  </script>
+</body>
+</html>

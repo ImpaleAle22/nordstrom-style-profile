@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tagged Image Library</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+    }
+
+    .header {
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 24px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #2563eb;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #6b7280;
+      border: 1px solid #e5e7eb;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-danger {
+      background: #fee;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fecaca;
+    }
+
+    #status {
+      margin-left: 12px;
+      font-size: 13px;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .content {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 16px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: #2563eb;
+    }
+
+    .filter-tab.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
+    .pillar-section {
+      margin-bottom: 32px;
+    }
+
+    .pillar-header {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px 8px 0 0;
+      border-left: 4px solid;
+      margin-bottom: 0;
+    }
+
+    .pillar-header.romantic { border-left-color: #e8a5c5; }
+    .pillar-header.bohemian { border-left-color: #d4a574; }
+    .pillar-header.casual { border-left-color: #7fb3d5; }
+    .pillar-header.classic { border-left-color: #2c3e50; }
+    .pillar-header.minimal { border-left-color: #95a5a6; }
+    .pillar-header.maximal { border-left-color: #f39c12; }
+    .pillar-header.fashion_forward { border-left-color: #e74c3c; }
+    .pillar-header.athletic { border-left-color: #27ae60; }
+    .pillar-header.utility { border-left-color: #8b6f47; }
+
+    .pillar-title {
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: capitalize;
+      margin-bottom: 4px;
+    }
+
+    .pillar-stats {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .image-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      border: 3px solid transparent;
+      position: relative;
+    }
+
+    .image-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .image-card:hover .delete-btn {
+      opacity: 1;
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gender-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+    }
+
+    .brand-score-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.95);
+      color: #1a1a1a;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-score-badge.excellent {
+      background: #10b981;
+      color: white;
+    }
+
+    .brand-score-badge.good {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .brand-score-badge.consider {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .delete-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      background: rgba(220, 38, 38, 0.95);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: all 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #991b1b;
+      transform: scale(1.1);
+    }
+
+    .image-info {
+      padding: 12px;
+    }
+
+    .image-id {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 8px;
+      font-family: monospace;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+      min-height: 24px;
+    }
+
+    .tag {
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      background: #f3f4f6;
+      color: #6b7280;
+      border: 1px solid #e5e7eb;
+    }
+
+    .tag.subterm {
+      background: #dbeafe;
+      color: #1e3a8a;
+      border-color: #bfdbfe;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 64px;
+      color: #999;
+      background: white;
+      border-radius: 8px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 64px;
+      color: #666;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .brand-filter {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .brand-filter label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Tagged Image Library</h1>
+    <p class="subtitle">View and manage tagged lifestyle images ready for customer-facing experiences</p>
+
+    <div class="stats">
+      <div class="stat">
+        <span>Total Images:</span>
+        <span class="stat-value" id="totalCount">0</span>
+      </div>
+      <div class="stat">
+        <span>Womenswear:</span>
+        <span class="stat-value" id="womenCount">0</span>
+      </div>
+      <div class="stat">
+        <span>Menswear:</span>
+        <span class="stat-value" id="menCount">0</span>
+      </div>
+      <div class="stat">
+        <span>Avg Brand Score:</span>
+        <span class="stat-value" id="avgBrandScore">-</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="importJSON()">Import Tagged JSON</button>
+      <button class="btn btn-secondary" onclick="loadFromFile()">Load Existing Library</button>
+      <button class="btn btn-danger" onclick="clearLibrary()">Clear Library</button>
+      <span id="status"></span>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="filters">
+      <div class="filter-row">
+        <div style="flex: 1;">
+          <div style="font-size: 12px; font-weight: 600; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+            Gender
+          </div>
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-gender="all" onclick="filterGender('all')">All</button>
+            <button class="filter-tab" data-gender="womenswear" onclick="filterGender('womenswear')">Womenswear</button>
+            <button class="filter-tab" data-gender="menswear" onclick="filterGender('menswear')">Menswear</button>
+          </div>
+        </div>
+
+        <div style="flex: 1;">
+          <div style="font-size: 12px; font-weight: 600; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+            Brand Adherence
+          </div>
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-brand="all" onclick="filterBrand('all')">All</button>
+            <button class="filter-tab" data-brand="excellent" onclick="filterBrand('excellent')">Excellent (90+)</button>
+            <button class="filter-tab" data-brand="good" onclick="filterBrand('good')">Good (70-89)</button>
+            <button class="filter-tab" data-brand="consider" onclick="filterBrand('consider')">Consider (50-69)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="libraryContent">
+      <div class="empty">No images in library. Click "Import Tagged JSON" to load images.</div>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept=".json">
+
+  <script>
+    let library = {
+      images: [],
+      importedAt: null,
+      source: null
+    };
+
+    let currentGenderFilter = 'all';
+    let currentBrandFilter = 'all';
+
+    // Load existing library from localStorage on page load
+    loadLibrary();
+
+    function loadLibrary() {
+      const stored = localStorage.getItem('tagged-image-library');
+      if (stored) {
+        try {
+          library = JSON.parse(stored);
+          renderLibrary();
+          updateStats();
+          showStatus('Loaded existing library', '#10b981');
+        } catch (error) {
+          console.error('Failed to load library:', error);
+        }
+      }
+    }
+
+    function saveLibrary() {
+      localStorage.setItem('tagged-image-library', JSON.stringify(library));
+    }
+
+    function importJSON() {
+      document.getElementById('fileInput').click();
+    }
+
+    function loadFromFile() {
+      document.getElementById('fileInput').click();
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+
+          // Check if it's a tagged JSON export from Recipe Builder
+          if (data.images && Array.isArray(data.images)) {
+            // Merge with existing library (avoid duplicates by imageId)
+            const existingIds = new Set(library.images.map(img => img.imageId));
+            const newImages = data.images.filter(img => !existingIds.has(img.imageId));
+
+            library.images.push(...newImages);
+            library.importedAt = new Date().toISOString();
+            library.source = data.source || 'imported';
+
+            saveLibrary();
+            renderLibrary();
+            updateStats();
+            showStatus(`Imported ${newImages.length} new images`, '#10b981');
+          } else {
+            showStatus('Invalid JSON format', '#dc2626');
+          }
+        } catch (error) {
+          console.error('Failed to import:', error);
+          showStatus('Failed to import JSON', '#dc2626');
+        }
+      };
+      reader.readAsText(file);
+
+      // Reset file input
+      event.target.value = '';
+    });
+
+    function renderLibrary() {
+      const container = document.getElementById('libraryContent');
+
+      // Filter images
+      let filteredImages = library.images;
+
+      if (currentGenderFilter !== 'all') {
+        filteredImages = filteredImages.filter(img => img.gender === currentGenderFilter);
+      }
+
+      if (currentBrandFilter !== 'all') {
+        filteredImages = filteredImages.filter(img => {
+          const score = img.brandAdherenceScore || 0;
+          if (currentBrandFilter === 'excellent') return score >= 90;
+          if (currentBrandFilter === 'good') return score >= 70 && score < 90;
+          if (currentBrandFilter === 'consider') return score >= 50 && score < 70;
+          return true;
+        });
+      }
+
+      if (filteredImages.length === 0) {
+        container.innerHTML = '<div class="empty">No images match current filters</div>';
+        return;
+      }
+
+      // Group by pillar
+      const byPillar = {};
+      filteredImages.forEach(img => {
+        const pillar = img.finalPillar || 'uncategorized';
+        if (!byPillar[pillar]) {
+          byPillar[pillar] = [];
+        }
+        byPillar[pillar].push(img);
+      });
+
+      const html = Object.entries(byPillar).map(([pillar, images]) => {
+        const womenCount = images.filter(img => img.gender === 'womenswear').length;
+        const menCount = images.filter(img => img.gender === 'menswear').length;
+
+        return `
+          <div class="pillar-section">
+            <div class="pillar-header ${pillar}">
+              <div class="pillar-title">${pillar.replace('_', ' ')}</div>
+              <div class="pillar-stats">${images.length} images · ${womenCount} women · ${menCount} men</div>
+            </div>
+            <div class="image-grid">
+              ${images.map(img => renderImageCard(img)).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = html;
+    }
+
+    function renderImageCard(image) {
+      const genderLabel = image.gender === 'womenswear' ? '♀️ Women' : '♂️ Men';
+      const subTerms = image.subTerms || [];
+      const brandScore = image.brandAdherenceScore || 0;
+
+      let brandClass = '';
+      if (brandScore >= 90) brandClass = 'excellent';
+      else if (brandScore >= 70) brandClass = 'good';
+      else if (brandScore >= 50) brandClass = 'consider';
+
+      return `
+        <div class="image-card" data-id="${image.imageId}">
+          <div class="image-wrapper">
+            <div class="gender-badge">${genderLabel}</div>
+            ${brandScore > 0 ? `<div class="brand-score-badge ${brandClass}">${brandScore}</div>` : ''}
+            <button class="delete-btn" onclick="deleteImage('${image.imageId}')" title="Delete image">×</button>
+            <img src="${image.imageUrl}" alt="${image.imageId}" loading="lazy">
+          </div>
+          <div class="image-info">
+            <div class="image-id">${image.imageId}</div>
+            <div class="tags">
+              ${subTerms.length > 0
+                ? subTerms.map(term => `<div class="tag subterm">${term}</div>`).join('')
+                : '<span style="font-size: 11px; color: #ccc;">No sub-terms</span>'
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function deleteImage(imageId) {
+      if (!confirm('Delete this image from the library?')) return;
+
+      library.images = library.images.filter(img => img.imageId !== imageId);
+      saveLibrary();
+      renderLibrary();
+      updateStats();
+      showStatus('Image deleted', '#dc2626');
+    }
+
+    function filterGender(gender) {
+      currentGenderFilter = gender;
+      document.querySelectorAll('.filter-tab[data-gender]').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.gender === gender);
+      });
+      renderLibrary();
+    }
+
+    function filterBrand(level) {
+      currentBrandFilter = level;
+      document.querySelectorAll('.filter-tab[data-brand]').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.brand === level);
+      });
+      renderLibrary();
+    }
+
+    function updateStats() {
+      const total = library.images.length;
+      const women = library.images.filter(img => img.gender === 'womenswear').length;
+      const men = library.images.filter(img => img.gender === 'menswear').length;
+
+      const scores = library.images
+        .map(img => img.brandAdherenceScore || 0)
+        .filter(score => score > 0);
+
+      const avgScore = scores.length > 0
+        ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+        : 0;
+
+      document.getElementById('totalCount').textContent = total;
+      document.getElementById('womenCount').textContent = women;
+      document.getElementById('menCount').textContent = men;
+      document.getElementById('avgBrandScore').textContent = avgScore > 0 ? avgScore : '-';
+    }
+
+    function clearLibrary() {
+      if (!confirm('Clear entire library? This cannot be undone.')) return;
+
+      library = {
+        images: [],
+        importedAt: null,
+        source: null
+      };
+
+      saveLibrary();
+      renderLibrary();
+      updateStats();
+      showStatus('Library cleared', '#dc2626');
+    }
+
+    function showStatus(message, color) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.style.color = color;
+      setTimeout(() => {
+        status.textContent = '';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

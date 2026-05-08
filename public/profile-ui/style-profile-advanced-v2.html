@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How We Understand Your Style - Nordstrom</title>
+  <style>
+    /* Nordstrom Brand Colors & Typography */
+    :root {
+      --nordstrom-bg: #FAF9F5;
+      --nordstrom-white: #FFFFFF;
+      --nordstrom-black: #191A1B;
+      --nordstrom-gray-900: #374151;
+      --nordstrom-gray-600: #6B7280;
+      --nordstrom-gray-400: #9CA3AF;
+      --nordstrom-gray-200: #E5E7EB;
+      --nordstrom-gray-100: #F3F4F6;
+      --nordstrom-gray-50: #F9FAFB;
+      --nordstrom-border: #E5E7EB;
+      --nordstrom-sale: #DC2626;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--nordstrom-bg);
+      color: var(--nordstrom-black);
+      line-height: 1.6;
+    }
+
+    .serif {
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    /* Top Banner */
+    .top-banner {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .top-banner a {
+      color: var(--nordstrom-white);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    /* Site Header */
+    .site-header {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .site-logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .site-search {
+      flex: 1;
+      max-width: 640px;
+    }
+
+    .site-search-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--nordstrom-gray-200);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--nordstrom-gray-50);
+      transition: all 0.2s;
+    }
+
+    .site-search-input:focus {
+      outline: none;
+      border-color: var(--nordstrom-black);
+      background: var(--nordstrom-white);
+    }
+
+    .site-actions {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .site-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--nordstrom-black);
+      font-size: 13px;
+      font-weight: 500;
+      transition: opacity 0.2s;
+      cursor: pointer;
+    }
+
+    .site-action:hover {
+      opacity: 0.7;
+    }
+
+    .site-action-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .site-action-text {
+      line-height: 1.3;
+    }
+
+    /* Main Navigation */
+    .main-nav {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      padding: 14px 40px;
+    }
+
+    .main-nav-link {
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      transition: opacity 0.2s;
+      position: relative;
+    }
+
+    .main-nav-link:hover {
+      opacity: 0.6;
+    }
+
+    .main-nav-link.sale {
+      color: var(--nordstrom-sale);
+    }
+
+    /* Account Layout */
+    .account-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 180px);
+    }
+
+    /* Account Sidebar */
+    .account-sidebar {
+      background: #f9fafb;
+      border-right: 1px solid var(--nordstrom-border);
+      padding: 32px 0;
+      overflow-y: auto;
+    }
+
+    .account-header {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid var(--nordstrom-border);
+      margin-bottom: 8px;
+    }
+
+    .account-header-title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--nordstrom-black);
+    }
+
+    .account-section {
+      margin: 20px 0;
+    }
+
+    .account-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--nordstrom-gray-600);
+      padding: 8px 24px;
+      margin-top: 20px;
+    }
+
+    .account-nav-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 24px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      transition: background 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .account-nav-item:hover {
+      background: #f3f4f6;
+    }
+
+    .account-nav-item.active {
+      background: var(--nordstrom-white);
+      border-left-color: var(--nordstrom-black);
+      padding-left: 21px;
+    }
+
+    .account-nav-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .account-nav-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .account-nav-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.4;
+      margin-bottom: 2px;
+    }
+
+    .account-nav-item.active .account-nav-title {
+      font-weight: 600;
+    }
+
+    .account-nav-subtitle {
+      font-size: 12px;
+      color: var(--nordstrom-gray-600);
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .account-help {
+      padding: 24px 24px;
+      margin-top: 28px;
+      border-top: 1px solid var(--nordstrom-border);
+    }
+
+    .account-help-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      color: var(--nordstrom-gray-600);
+    }
+
+    .account-help-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      transition: opacity 0.2s;
+    }
+
+    .account-help-link:hover {
+      opacity: 0.7;
+    }
+
+    /* Content Area */
+    .account-content {
+      padding: 0;
+      background: var(--nordstrom-bg);
+    }
+
+    .content-wrapper {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 56px;
+    }
+
+    /* Back Link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--nordstrom-gray-600);
+      text-decoration: none;
+      font-size: 14px;
+      margin: 40px 0 24px;
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      color: var(--nordstrom-black);
+    }
+
+    /* Page Header */
+    .page-header {
+      padding: 20px 0 60px;
+    }
+
+    .page-title {
+      font-size: 52px;
+      font-weight: 350;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .page-subtitle {
+      font-size: 18px;
+      color: var(--nordstrom-gray-600);
+      margin-bottom: 28px;
+      font-weight: 400;
+    }
+
+    .page-intro {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--nordstrom-gray-600);
+      max-width: 740px;
+    }
+
+    /* Section */
+    .section {
+      padding: 60px 0;
+    }
+
+    .section-title {
+      font-size: 36px;
+      margin-bottom: 36px;
+      font-weight: 350;
+      letter-spacing: -0.01em;
+    }
+
+    /* Pillar Distribution */
+    .pillar-list {
+      background: var(--nordstrom-white);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .pillar-item {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--nordstrom-border);
+    }
+
+    .pillar-item:first-child {
+      padding-top: 0;
+    }
+
+    .pillar-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .pillar-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .pillar-item-name {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .pillar-item-percentage {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .pillar-item-bar {
+      height: 10px;
+      background: var(--nordstrom-gray-100);
+      border-radius: 8px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .pillar-item-bar-fill {
+      height: 100%;
+      background: var(--nordstrom-black);
+      border-radius: 8px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .pillar-item-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .pillar-tag {
+      padding: 6px 16px;
+      background: var(--nordstrom-gray-100);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--nordstrom-gray-600);
+    }
+
+    .pillar-item-link {
+      color: var(--nordstrom-black);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+
+    .pillar-item-link:hover {
+      opacity: 0.7;
+    }
+
+    .pillar-note {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--nordstrom-border);
+      font-size: 14px;
+      color: var(--nordstrom-gray-600);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* Data Sources Table */
+    .data-sources-table {
+      background: var(--nordstrom-white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .data-source-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 2fr;
+      padding: 22px 40px;
+      border-bottom: 1px solid var(--nordstrom-border);
+      font-size: 15px;
+    }
+
+    .data-source-row:first-child {
+      background: var(--nordstrom-gray-50);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--nordstrom-gray-600);
+      padding: 18px 40px;
+    }
+
+    .data-source-row:last-child {
+      border-bottom: none;
+    }
+
+    /* Accordion */
+    .accordion {
+      background: var(--nordstrom-white);
+      border-radius: 12px;
+      margin-top: 28px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid var(--nordstrom-border);
+    }
+
+    .accordion-item:last-child {
+      border-bottom: none;
+    }
+
+    .accordion-header {
+      padding: 24px 40px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .accordion-header:hover {
+      background: var(--nordstrom-gray-50);
+    }
+
+    .accordion-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .accordion-icon {
+      font-size: 14px;
+      color: var(--nordstrom-gray-600);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .accordion-item.open .accordion-icon {
+      transform: rotate(180deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .accordion-item.open .accordion-content {
+      max-height: 1400px;
+    }
+
+    .accordion-body {
+      padding: 0 40px 32px;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--nordstrom-gray-600);
+    }
+
+    .accordion-body strong {
+      color: var(--nordstrom-black);
+      font-weight: 600;
+    }
+
+    .quiz-qa {
+      margin: 20px 0;
+      padding: 20px;
+      background: var(--nordstrom-gray-50);
+      border-radius: 8px;
+    }
+
+    .quiz-q {
+      font-weight: 600;
+      color: var(--nordstrom-black);
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .quiz-a {
+      color: var(--nordstrom-gray-600);
+      font-size: 14px;
+    }
+
+    /* Timeline */
+    .timeline {
+      background: var(--nordstrom-white);
+      border-radius: 12px;
+      padding: 48px;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .timeline-line {
+      height: 3px;
+      background: var(--nordstrom-gray-200);
+      margin: 48px 0;
+      position: relative;
+    }
+
+    .timeline-points {
+      display: flex;
+      justify-content: space-between;
+      margin-top: -10px;
+    }
+
+    .timeline-point {
+      width: 18px;
+      height: 18px;
+      background: var(--nordstrom-white);
+      border: 3px solid var(--nordstrom-black);
+      border-radius: 50%;
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .timeline-label {
+      text-align: center;
+      font-size: 14px;
+      flex: 1;
+    }
+
+    .timeline-date {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 15px;
+      color: var(--nordstrom-black);
+    }
+
+    .timeline-event {
+      color: var(--nordstrom-gray-600);
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 220px;
+      margin: 0 auto;
+    }
+
+    .timeline-insight {
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--nordstrom-border);
+      font-size: 15px;
+      color: var(--nordstrom-gray-600);
+      line-height: 1.8;
+    }
+
+    .timeline-insight strong {
+      color: var(--nordstrom-black);
+      font-weight: 600;
+    }
+
+    /* Preferences Grid */
+    .preferences-section {
+      background: var(--nordstrom-white);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .preference-group {
+      margin-bottom: 52px;
+    }
+
+    .preference-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .preference-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    .preference-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .preference-label {
+      font-size: 15px;
+      color: var(--nordstrom-gray-600);
+      min-width: 160px;
+      font-weight: 500;
+    }
+
+    .preference-visual {
+      flex: 1;
+      height: 10px;
+      background: var(--nordstrom-gray-100);
+      border-radius: 8px;
+      margin: 0 20px;
+      overflow: hidden;
+    }
+
+    .preference-visual-fill {
+      height: 100%;
+      background: var(--nordstrom-black);
+      border-radius: 8px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .preference-value {
+      font-size: 16px;
+      font-weight: 600;
+      min-width: 50px;
+      text-align: right;
+      letter-spacing: -0.01em;
+    }
+
+    /* Color Swatches */
+    .color-swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .color-swatch-item {
+      text-align: center;
+    }
+
+    .color-swatch-box {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .color-swatch-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--nordstrom-black);
+      margin-bottom: 4px;
+    }
+
+    .color-swatch-percent {
+      font-size: 13px;
+      color: var(--nordstrom-gray-600);
+    }
+
+    /* Privacy Controls */
+    .privacy-section {
+      background: var(--nordstrom-white);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .privacy-intro {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--nordstrom-gray-600);
+      margin-bottom: 28px;
+    }
+
+    .privacy-list {
+      margin: 20px 0;
+      padding-left: 28px;
+    }
+
+    .privacy-list li {
+      margin-bottom: 10px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--nordstrom-gray-600);
+    }
+
+    .checkboxes {
+      margin: 28px 0;
+      padding: 28px;
+      background: var(--nordstrom-gray-50);
+      border-radius: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+      font-size: 15px;
+    }
+
+    .checkbox-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .checkbox-item label {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn {
+      padding: 14px 36px;
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      border: 2px solid var(--nordstrom-black);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .btn:hover {
+      background: #000;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--nordstrom-black);
+    }
+
+    .btn-secondary:hover {
+      background: var(--nordstrom-gray-50);
+      transform: translateY(-1px);
+    }
+
+    .privacy-actions {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid var(--nordstrom-border);
+    }
+
+    .privacy-action-group {
+      margin-bottom: 32px;
+    }
+
+    .privacy-action-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .privacy-action-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .privacy-action-description {
+      font-size: 14px;
+      color: var(--nordstrom-gray-600);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <!-- Site Header Component Container -->
+  <div id="site-header-container"></div>
+  <div id="main-nav-container"></div>
+
+  <!-- Account Layout -->
+  <div class="account-layout">
+    <!-- Account Sidebar Component Container -->
+    <div id="account-nav-container"></div>
+
+    <!-- Account Content -->
+    <main class="account-content">
+      <div class="content-wrapper">
+        <!-- Back Link -->
+        <a href="index.html" class="back-link">
+          ← Back to Your Style
+        </a>
+
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title serif">How we understand your style</h1>
+          <p class="page-subtitle">
+            Detailed breakdown of your style profile data and the signals we use to personalize your experience
+          </p>
+          <p class="page-intro">
+            Your Style Profile is built from multiple data sources: your Style Quiz responses,
+            shopping behavior, saved outfits, favorited items, and interactions with our platform.
+            This page shows you exactly what we're seeing and how confident we are in each insight.
+            <br><br>
+            All data is private and used only to improve your Nordstrom experience.
+            You can adjust your privacy settings at any time.
+          </p>
+        </div>
+
+        <!-- Pillar Distribution -->
+        <section class="section">
+          <h2 class="section-title serif">Your style pillar distribution</h2>
+
+          <div class="pillar-list">
+            <div class="pillar-item">
+              <div class="pillar-item-header">
+                <div class="pillar-item-name">Classic</div>
+                <div class="pillar-item-percentage">68%</div>
+              </div>
+              <div class="pillar-item-bar">
+                <div class="pillar-item-bar-fill" style="width: 68%"></div>
+              </div>
+              <div class="pillar-item-tags">
+                <span class="pillar-tag">Tailored</span>
+                <span class="pillar-tag">Sophisticated</span>
+                <span class="pillar-tag">Timeless</span>
+              </div>
+              <a href="#" class="pillar-item-link">See Details →</a>
+            </div>
+
+            <div class="pillar-item">
+              <div class="pillar-item-header">
+                <div class="pillar-item-name">Romantic</div>
+                <div class="pillar-item-percentage">22%</div>
+              </div>
+              <div class="pillar-item-bar">
+                <div class="pillar-item-bar-fill" style="width: 22%"></div>
+              </div>
+              <div class="pillar-item-tags">
+                <span class="pillar-tag">Delicate</span>
+                <span class="pillar-tag">Feminine</span>
+              </div>
+              <a href="#" class="pillar-item-link">See Details →</a>
+            </div>
+
+            <div class="pillar-item">
+              <div class="pillar-item-header">
+                <div class="pillar-item-name">Minimal</div>
+                <div class="pillar-item-percentage">10%</div>
+              </div>
+              <div class="pillar-item-bar">
+                <div class="pillar-item-bar-fill" style="width: 10%"></div>
+              </div>
+              <div class="pillar-item-tags">
+                <span class="pillar-tag">Understated</span>
+              </div>
+              <a href="#" class="pillar-item-link">See Details →</a>
+            </div>
+
+            <p class="pillar-note">
+              Other pillars analyzed but below 10% threshold
+            </p>
+          </div>
+        </section>
+
+        <!-- Data Sources -->
+        <section class="section">
+          <h2 class="section-title serif">What signals inform your profile</h2>
+
+          <div class="data-sources-table">
+            <div class="data-source-row">
+              <div>Data Source</div>
+              <div>Weight</div>
+              <div>Last Updated</div>
+            </div>
+            <div class="data-source-row">
+              <div>Style Quiz Responses</div>
+              <div>35%</div>
+              <div>January 15, 2024</div>
+            </div>
+            <div class="data-source-row">
+              <div>Saved Outfits</div>
+              <div>25%</div>
+              <div>Updated daily</div>
+            </div>
+            <div class="data-source-row">
+              <div>Purchase History</div>
+              <div>20%</div>
+              <div>Last purchase: Apr 20</div>
+            </div>
+            <div class="data-source-row">
+              <div>Favorited Items</div>
+              <div>15%</div>
+              <div>Updated real-time</div>
+            </div>
+            <div class="data-source-row">
+              <div>Browse & Engagement</div>
+              <div>5%</div>
+              <div>Updated real-time</div>
+            </div>
+          </div>
+
+          <!-- Accordion for detailed evidence -->
+          <div class="accordion">
+            <div class="accordion-item">
+              <div class="accordion-header" onclick="toggleAccordion(this)">
+                <div class="accordion-title">Style Quiz (35% weight)</div>
+                <div class="accordion-icon">▼</div>
+              </div>
+              <div class="accordion-content">
+                <div class="accordion-body">
+                  <p style="margin-bottom: 16px;">
+                    <strong>Taken:</strong> January 15, 2024<br>
+                    Responses that influence your profile:
+                  </p>
+
+                  <div class="quiz-qa">
+                    <div class="quiz-q">Q: How would you describe your ideal outfit?</div>
+                    <div class="quiz-a">A: "Polished and put-together" → Classic +30pts</div>
+                  </div>
+
+                  <div class="quiz-qa">
+                    <div class="quiz-q">Q: What's most important in your wardrobe?</div>
+                    <div class="quiz-a">A: "Timeless pieces that last" → Classic +25pts</div>
+                  </div>
+
+                  <div class="quiz-qa">
+                    <div class="quiz-q">Q: How do you feel about patterns?</div>
+                    <div class="quiz-a">A: "I prefer subtle patterns or solids" → Classic +15pts, Minimal +10pts</div>
+                  </div>
+
+                  <p style="margin-top: 16px;">
+                    <a href="#" style="color: var(--nordstrom-black); font-weight: 600;">Retake Style Quiz →</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <div class="accordion-header" onclick="toggleAccordion(this)">
+                <div class="accordion-title">Saved Outfits (25% weight)</div>
+                <div class="accordion-icon">▼</div>
+              </div>
+              <div class="accordion-content">
+                <div class="accordion-body">
+                  <p>
+                    <strong>47 outfits saved</strong><br>
+                    Last saved: April 18, 2026
+                  </p>
+                  <p style="margin-top: 16px;">
+                    Pillar distribution of saved outfits:<br>
+                    - Classic: 32 outfits (68%)<br>
+                    - Romantic: 11 outfits (23%)<br>
+                    - Minimal: 4 outfits (9%)
+                  </p>
+                  <p style="margin-top: 16px;">
+                    <a href="#" style="color: var(--nordstrom-black); font-weight: 600;">View All Saved Outfits →</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+              <div class="accordion-header" onclick="toggleAccordion(this)">
+                <div class="accordion-title">Purchase History (20% weight)</div>
+                <div class="accordion-icon">▼</div>
+              </div>
+              <div class="accordion-content">
+                <div class="accordion-body">
+                  <p>
+                    <strong>23 items purchased</strong> (last 12 months)<br>
+                    Last purchase: April 20, 2026
+                  </p>
+                  <p style="margin-top: 16px;">
+                    Category breakdown:<br>
+                    - Blazers & Jackets: 6 items → Classic +strong<br>
+                    - Dresses: 5 items → 3 Classic, 2 Romantic<br>
+                    - Tops & Blouses: 7 items → Mixed Classic/Romantic<br>
+                    - Bottoms: 5 items → Classic tailored
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Style Evolution -->
+        <section class="section">
+          <h2 class="section-title serif">How your style has evolved</h2>
+
+          <div class="timeline">
+            <div class="timeline-line">
+              <div class="timeline-points">
+                <div class="timeline-point"></div>
+                <div class="timeline-point"></div>
+                <div class="timeline-point"></div>
+              </div>
+            </div>
+
+            <div class="timeline-labels">
+              <div class="timeline-label">
+                <div class="timeline-date">Jan 2024</div>
+                <div class="timeline-event">
+                  Style Quiz Taken<br>
+                  Initial profile:<br>
+                  Classic 55%<br>
+                  Romantic 30%<br>
+                  Minimal 15%
+                </div>
+              </div>
+
+              <div class="timeline-label">
+                <div class="timeline-date">July 2024</div>
+                <div class="timeline-event">
+                  Shopping Pattern Shift<br>
+                  +12 Classic purchases<br>
+                  Increased formality
+                </div>
+              </div>
+
+              <div class="timeline-label">
+                <div class="timeline-date">April 2026</div>
+                <div class="timeline-event">
+                  Today<br>
+                  Classic 68%<br>
+                  Romantic 22%<br>
+                  Minimal 10%
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-insight">
+              <strong>Insights:</strong> Your style has become more consistently Classic over time, with a slight
+              decrease in Romantic expressions. This suggests a growing confidence in your personal
+              aesthetic or perhaps a shift in lifestyle needs.
+            </div>
+          </div>
+        </section>
+
+        <!-- Detailed Preferences -->
+        <section class="section">
+          <h2 class="section-title serif">Your detailed style preferences</h2>
+
+          <div class="preferences-section">
+            <!-- Formality -->
+            <div class="preference-group">
+              <div class="preference-title">Formality Breakdown</div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Smart Casual</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 73%"></div>
+                </div>
+                <div class="preference-value">73%</div>
+              </div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Business Casual</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 18%"></div>
+                </div>
+                <div class="preference-value">18%</div>
+              </div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Cocktail/Formal</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 9%"></div>
+                </div>
+                <div class="preference-value">9%</div>
+              </div>
+            </div>
+
+            <!-- Color Preferences -->
+            <div class="preference-group">
+              <div class="preference-title">Color Preferences</div>
+              <p style="font-size: 14px; color: var(--nordstrom-gray-600); margin-bottom: 16px;">
+                Dominant colors in your wardrobe:
+              </p>
+
+              <div class="color-swatches">
+                <div class="color-swatch-item">
+                  <div class="color-swatch-box" style="background: #1a1a2e"></div>
+                  <div class="color-swatch-label">Navy</div>
+                  <div class="color-swatch-percent">32%</div>
+                </div>
+                <div class="color-swatch-item">
+                  <div class="color-swatch-box" style="background: #000000"></div>
+                  <div class="color-swatch-label">Black</div>
+                  <div class="color-swatch-percent">28%</div>
+                </div>
+                <div class="color-swatch-item">
+                  <div class="color-swatch-box" style="background: #C8B89C"></div>
+                  <div class="color-swatch-label">Camel</div>
+                  <div class="color-swatch-percent">18%</div>
+                </div>
+                <div class="color-swatch-item">
+                  <div class="color-swatch-box" style="background: #6B7280"></div>
+                  <div class="color-swatch-label">Gray</div>
+                  <div class="color-swatch-percent">12%</div>
+                </div>
+              </div>
+
+              <p style="font-size: 14px; color: var(--nordstrom-gray-600); margin-top: 16px;">
+                Color mood: Neutral with occasional jewel tones
+              </p>
+            </div>
+
+            <!-- Silhouette & Fit -->
+            <div class="preference-group">
+              <div class="preference-title">Silhouette & Fit</div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Tailored/Fitted</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 68%"></div>
+                </div>
+                <div class="preference-value">68%</div>
+              </div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Relaxed/Flowing</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 22%"></div>
+                </div>
+                <div class="preference-value">22%</div>
+              </div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Oversized</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 10%"></div>
+                </div>
+                <div class="preference-value">10%</div>
+              </div>
+
+              <p style="font-size: 14px; color: var(--nordstrom-gray-600); margin-top: 12px;">
+                You consistently choose structured, defined shapes
+              </p>
+            </div>
+
+            <!-- Pattern Preferences -->
+            <div class="preference-group">
+              <div class="preference-title">Pattern Preferences</div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Solids</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 72%"></div>
+                </div>
+                <div class="preference-value">72%</div>
+              </div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Subtle Patterns</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 23%"></div>
+                </div>
+                <div class="preference-value">23%</div>
+              </div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Bold Patterns</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 5%"></div>
+                </div>
+                <div class="preference-value">5%</div>
+              </div>
+            </div>
+
+            <!-- Occasion Context -->
+            <div class="preference-group">
+              <div class="preference-title">Occasion Context</div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Work/Professional</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 64%"></div>
+                </div>
+                <div class="preference-value">64%</div>
+              </div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Special Occasions</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 21%"></div>
+                </div>
+                <div class="preference-value">21%</div>
+              </div>
+
+              <div class="preference-bar">
+                <div class="preference-label">Everyday/Weekend</div>
+                <div class="preference-visual">
+                  <div class="preference-visual-fill" style="width: 15%"></div>
+                </div>
+                <div class="preference-value">15%</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Privacy Controls -->
+        <section class="section">
+          <h2 class="section-title serif">Your data & privacy controls</h2>
+
+          <div class="privacy-section">
+            <div class="privacy-intro">
+              Your Style Profile uses data from your Nordstrom account to personalize
+              your shopping experience. We use this data to:
+
+              <ul class="privacy-list">
+                <li>Recommend products that match your aesthetic</li>
+                <li>Curate collections tailored to your style</li>
+                <li>Provide relevant styling advice and content</li>
+                <li>Improve product discovery and search results</li>
+              </ul>
+
+              We DO NOT:<br>
+              - Share your style data with third parties<br>
+              - Use your data for advertising outside Nordstrom<br>
+              - Sell or monetize your personal information
+            </div>
+
+            <div class="checkboxes">
+              <div class="checkbox-item">
+                <input type="checkbox" id="use-purchases" checked>
+                <label for="use-purchases">Allow Style Profile to use my purchase history</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="use-outfits" checked>
+                <label for="use-outfits">Allow Style Profile to use my saved outfits</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="use-favorites" checked>
+                <label for="use-favorites">Allow Style Profile to use my favorites/wishlist</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="use-browsing" checked>
+                <label for="use-browsing">Allow Style Profile to use my browsing behavior</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" id="show-recommendations" checked>
+                <label for="show-recommendations">Show personalized recommendations based on my profile</label>
+              </div>
+            </div>
+
+            <button class="btn">Save Preferences</button>
+
+            <div class="privacy-actions">
+              <div class="privacy-action-group">
+                <div class="privacy-action-title">Reset Your Style Profile</div>
+                <div class="privacy-action-description">
+                  If you'd like to start fresh, you can reset your Style Profile. This will clear
+                  all learned preferences and you'll need to retake the Style Quiz.
+                </div>
+                <button class="btn btn-secondary">Reset Profile</button>
+              </div>
+
+              <div class="privacy-action-group">
+                <div class="privacy-action-title">Download Your Data</div>
+                <div class="privacy-action-description">
+                  You can download a complete export of your Style Profile data at any time.
+                </div>
+                <button class="btn btn-secondary">Download My Style Data</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div style="height: 100px;"></div>
+    </main>
+  </div>
+
+  <!-- Initialize Components -->
+  <script type="module">
+    import { initSiteHeader } from './components/site-header.js';
+    import { initAccountNav } from './components/account-nav.js';
+
+    // Initialize site header with navigation
+    initSiteHeader({
+      userName: 'Brian',
+      userStatus: 'Member',
+      storeName: 'Michigan Avenue',
+      showBanner: true,
+      links: [
+        { text: 'New & Now', href: '#', className: '' },
+        { text: 'Sale', href: '#', className: 'sale' },
+        { text: 'Women', href: '#', className: '' },
+        { text: 'Men', href: '#', className: '' },
+        { text: 'Beauty', href: '#', className: '' },
+        { text: 'Shoes', href: '#', className: '' },
+        { text: 'Accessories', href: '#', className: '' },
+        { text: 'Kids', href: '#', className: '' },
+        { text: 'Designer', href: '#', className: '' },
+        { text: 'Home', href: '#', className: '' },
+        { text: 'Gifts', href: '#', className: '' },
+        { text: 'Services', href: '#', className: '' }
+      ]
+    });
+
+    // Initialize account navigation (Your Style is active)
+    initAccountNav({
+      activeItem: 'your-style',
+      userName: 'Brian',
+      rewardsAmount: '$9.91',
+      lastPaymentDigits: '5687',
+      primaryAddress: 'USA My Adrs Pl',
+      storeName: 'Nordstrom Michigan Avenue'
+    });
+  </script>
+
+  <script>
+    // Accordion toggle
+    function toggleAccordion(header) {
+      const item = header.parentElement;
+      const wasOpen = item.classList.contains('open');
+
+      // Close all items
+      document.querySelectorAll('.accordion-item').forEach(i => {
+        i.classList.remove('open');
+      });
+
+      // Open clicked item if it wasn't open
+      if (!wasOpen) {
+        item.classList.add('open');
+      }
+    }
+
+    // Animate bars on load
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(() => {
+        document.querySelectorAll('.pillar-item-bar-fill, .preference-visual-fill').forEach(fill => {
+          const targetWidth = fill.style.width;
+          fill.style.width = '0%';
+          setTimeout(() => {
+            fill.style.width = targetWidth;
+          }, 100);
+        });
+      }, 300);
+    });
+  </script>
+</body>
+</html>

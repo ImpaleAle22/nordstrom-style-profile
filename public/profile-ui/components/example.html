@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Component Example - Nordstrom</title>
+  <style>
+    /* Nordstrom Brand Colors & Typography */
+    :root {
+      --nordstrom-bg: #FAF9F5;
+      --nordstrom-white: #FFFFFF;
+      --nordstrom-black: #191A1B;
+      --nordstrom-gray-900: #374151;
+      --nordstrom-gray-600: #6B7280;
+      --nordstrom-gray-400: #9CA3AF;
+      --nordstrom-gray-200: #E5E7EB;
+      --nordstrom-gray-100: #F3F4F6;
+      --nordstrom-gray-50: #F9FAFB;
+      --nordstrom-border: #E5E7EB;
+      --nordstrom-sale: #DC2626;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--nordstrom-bg);
+      color: var(--nordstrom-black);
+      line-height: 1.6;
+    }
+
+    /* Top Banner */
+    .top-banner {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .top-banner a {
+      color: var(--nordstrom-white);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    /* Site Header */
+    .site-header {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .site-logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .site-search {
+      flex: 1;
+      max-width: 600px;
+    }
+
+    .site-search-input {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1px solid var(--nordstrom-gray-400);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .site-actions {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .site-action {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--nordstrom-black);
+      font-size: 13px;
+    }
+
+    .site-action-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Main Navigation */
+    .main-nav {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      padding: 12px 40px;
+      display: flex;
+      gap: 32px;
+    }
+
+    .main-nav-link {
+      text-decoration: none;
+      color: var(--nordstrom-black);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .main-nav-link:hover,
+    .main-nav-link.active {
+      border-bottom-color: var(--nordstrom-black);
+    }
+
+    .main-nav-link.sale {
+      color: var(--nordstrom-sale);
+    }
+
+    /* Layout */
+    .account-layout {
+      display: flex;
+      min-height: calc(100vh - 140px);
+    }
+
+    /* Account Sidebar */
+    .account-sidebar {
+      width: 280px;
+      background: var(--nordstrom-white);
+      border-right: 1px solid var(--nordstrom-border);
+      padding: 24px 0;
+    }
+
+    .account-header {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid var(--nordstrom-border);
+    }
+
+    .account-header-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .account-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      text-decoration: none;
+      color: var(--nordstrom-black);
+      transition: background-color 0.2s;
+    }
+
+    .account-nav-item:hover {
+      background: var(--nordstrom-gray-50);
+    }
+
+    .account-nav-item.active {
+      background: var(--nordstrom-gray-100);
+      border-left: 3px solid var(--nordstrom-black);
+    }
+
+    .account-nav-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .account-nav-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .account-nav-title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .account-nav-subtitle {
+      font-size: 12px;
+      color: var(--nordstrom-gray-600);
+    }
+
+    .account-section-title {
+      padding: 16px 24px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--nordstrom-gray-600);
+    }
+
+    /* Main Content */
+    .account-main {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .content-section {
+      background: var(--nordstrom-white);
+      padding: 32px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .demo-info {
+      background: var(--nordstrom-gray-50);
+      border-left: 4px solid var(--nordstrom-black);
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .demo-info h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .demo-info p {
+      font-size: 13px;
+      color: var(--nordstrom-gray-600);
+      line-height: 1.6;
+    }
+
+    .demo-info code {
+      background: var(--nordstrom-white);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Site Header Container (populated by component) -->
+  <div id="site-header-container"></div>
+  <div id="main-nav-container"></div>
+
+  <!-- Account Layout -->
+  <div class="account-layout">
+    <!-- Account Sidebar Container (populated by component) -->
+    <div id="account-nav-container"></div>
+
+    <!-- Main Content -->
+    <main class="account-main">
+      <h1 class="page-title">Reusable Components Demo</h1>
+
+      <div class="demo-info">
+        <h3>✓ Components Loaded Successfully</h3>
+        <p>
+          This page demonstrates the <strong>account-nav.js</strong> and <strong>site-header.js</strong> components.
+          All icons are official Nordstrom SVGs loaded from the <code>Iconography/</code> folder.
+        </p>
+      </div>
+
+      <div class="content-section">
+        <h2 class="section-title">How It Works</h2>
+        <p>
+          The header and sidebar navigation are rendered from JavaScript modules, not inline HTML.
+          This means you can:
+        </p>
+        <ul style="margin-top: 16px; padding-left: 24px; line-height: 1.8;">
+          <li>Update icons in one place across all pages</li>
+          <li>Customize user data (name, store, rewards) dynamically</li>
+          <li>Maintain consistency across the entire site</li>
+          <li>Easily modify navigation structure without touching HTML</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2 class="section-title">Usage Example</h2>
+        <pre style="background: var(--nordstrom-gray-50); padding: 16px; border-radius: 4px; overflow-x: auto; font-size: 13px;">
+&lt;!-- In your HTML --&gt;
+&lt;div id="site-header-container"&gt;&lt;/div&gt;
+&lt;div id="main-nav-container"&gt;&lt;/div&gt;
+&lt;div id="account-nav-container"&gt;&lt;/div&gt;
+
+&lt;!-- In your script --&gt;
+&lt;script type="module"&gt;
+  import { initSiteHeader } from './components/site-header.js';
+  import { initAccountNav } from './components/account-nav.js';
+
+  initSiteHeader({
+    userName: 'Brian',
+    storeName: 'Michigan Avenue'
+  });
+
+  initAccountNav({
+    activeItem: 'your-style',
+    userName: 'Brian'
+  });
+&lt;/script&gt;</pre>
+      </div>
+
+      <div class="content-section">
+        <h2 class="section-title">Next Steps</h2>
+        <ol style="margin-top: 16px; padding-left: 24px; line-height: 1.8;">
+          <li>Review <code>ui/components/README.md</code> for full documentation</li>
+          <li>Migrate existing HTML files to use these components</li>
+          <li>Update <code>style-profile-advanced-v2.html</code> first as a pilot</li>
+          <li>Roll out to other pages: <code>style-profile-v2.html</code>, <code>swipe-ui.html</code>, etc.</li>
+        </ol>
+      </div>
+    </main>
+  </div>
+
+  <!-- Initialize Components -->
+  <script type="module">
+    import { initSiteHeader } from './site-header.js';
+    import { initAccountNav } from './account-nav.js';
+
+    // Initialize site header with custom options
+    initSiteHeader({
+      userName: 'Brian',
+      userStatus: 'Member',
+      storeName: 'Michigan Avenue',
+      activeLink: 'Women'
+    });
+
+    // Initialize account navigation
+    initAccountNav({
+      activeItem: 'your-style',
+      userName: 'Brian',
+      rewardsAmount: '$9.91',
+      lastPaymentDigits: '5687',
+      primaryAddress: 'USA My Adrs Pl',
+      storeName: 'Nordstrom Michigan Avenue'
+    });
+  </script>
+</body>
+</html>

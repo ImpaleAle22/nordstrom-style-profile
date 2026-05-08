@@ -1,0 +1,532 @@
+/**
+ * Profile Panel Component
+ * Customer-facing dashboard - engaging and inspirational
+ */
+
+function renderProfilePanel(profile, previousProfile = null, history = []) {
+  const container = document.getElementById('profilePanel');
+
+  if (!profile) {
+    container.innerHTML = renderEmptyState();
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="profile-dashboard">
+      ${renderEngagingHero(profile)}
+      ${renderPersonalHighlights(profile)}
+      ${renderVectorSpaceSection(profile, history)}
+      ${renderPillarsSection(profile, previousProfile)}
+      ${renderBrandsSection(profile)}
+      ${renderRecommendations(profile)}
+      ${renderTechnicalStats(profile)}
+    </div>
+  `;
+}
+
+function renderEngagingHero(profile) {
+  const topPillars = Object.entries(profile.pillars)
+    .sort((a, b) => b[1] - a[1])
+    .filter(([_, v]) => v > 0);
+
+  const primary = topPillars[0];
+  const secondary = topPillars[1];
+
+  // Get the most interesting life context
+  const lifeHighlights = [];
+  if (profile.lifeContext.hobbies.length > 0) {
+    lifeHighlights.push(profile.lifeContext.hobbies[0]);
+  }
+  if (profile.lifeContext.family.length > 0) {
+    lifeHighlights.push(profile.lifeContext.family[0]);
+  }
+
+  const lifeText = lifeHighlights.length > 0
+    ? lifeHighlights.join(' • ')
+    : 'Building your style profile';
+
+  // Create engaging headline
+  const primaryName = primary ? primary[0] : 'Emerging';
+  const secondaryName = secondary ? secondary[0] : null;
+
+  const headline = secondaryName
+    ? `${capitalize(primaryName)} meets ${capitalize(secondaryName)}`
+    : capitalize(primaryName);
+
+  // Style tagline
+  const taglines = {
+    utility: 'Built to last, made to move',
+    classic: 'Timeless elegance, modern confidence',
+    minimal: 'Less is more, always',
+    outdoor: 'Adventure-ready, always exploring',
+    luxe: 'Quality over everything',
+    streetwear: 'Bold moves, no apologies'
+  };
+
+  const tagline = primary ? taglines[primary[0]] : 'Your style is taking shape';
+
+  return `
+    <div class="engaging-hero">
+      <div class="hero-background"></div>
+      <div class="hero-overlay">
+        <div class="hero-eyebrow">${lifeText}</div>
+        <h1 class="hero-headline">${headline}</h1>
+        <p class="hero-tagline">${tagline}</p>
+        ${renderConfidenceBadge(profile.confidence)}
+      </div>
+    </div>
+  `;
+}
+
+function renderConfidenceBadge(confidence) {
+  const dots = '●'.repeat(confidence.overall) + '○'.repeat(5 - confidence.overall);
+  return `
+    <div class="confidence-inline">
+      <span class="confidence-dots">${dots}</span>
+      <span class="confidence-text">${confidence.label} profile</span>
+    </div>
+  `;
+}
+
+function renderPersonalHighlights(profile) {
+  const highlights = [];
+
+  // Extract the most interesting semantic memories
+  const statedMemories = profile.semanticMemory
+    .filter(m => m.type === 'stated' && m.weight >= 0.9)
+    .slice(0, 1);
+
+  const inferredMemories = profile.semanticMemory
+    .filter(m => m.type === 'inferred' && m.weight >= 0.8)
+    .slice(0, 1);
+
+  const lifeMemories = profile.semanticMemory
+    .filter(m => m.type === 'life_context' && m.weight >= 0.85)
+    .slice(0, 1);
+
+  // Add stated memories (direct quotes)
+  statedMemories.forEach(mem => {
+    highlights.push({
+      icon: '💬',
+      label: 'You said',
+      text: mem.text,
+      type: 'stated'
+    });
+  });
+
+  // Add key life context
+  lifeMemories.forEach(mem => {
+    highlights.push({
+      icon: '🏠',
+      label: 'Your life',
+      text: mem.text,
+      type: 'life_context'
+    });
+  });
+
+  // Add inferred insights
+  inferredMemories.forEach(mem => {
+    highlights.push({
+      icon: '✨',
+      label: 'We noticed',
+      text: mem.text,
+      type: 'inferred'
+    });
+  });
+
+  // Add top brand if strong affinity
+  const topBrand = profile.brandAffinity[0];
+  if (topBrand && topBrand.score >= 0.35) {
+    highlights.push({
+      icon: '🏷️',
+      label: 'Go-to brand',
+      text: `${topBrand.brand} is your most-shopped brand`,
+      type: 'brand'
+    });
+  }
+
+  // Add price insight if available
+  if (profile.priceRange.sweet) {
+    const priceInsight = getPriceInsight(profile.priceRange);
+    highlights.push({
+      icon: '💰',
+      label: 'Your sweet spot',
+      text: priceInsight,
+      type: 'price'
+    });
+  }
+
+  // Add fit preference if clear
+  if (profile.fitPreferences.liked.length > 0) {
+    highlights.push({
+      icon: '👕',
+      label: 'Perfect fit',
+      text: `You prefer ${profile.fitPreferences.liked.join(', ')} fits`,
+      type: 'fit'
+    });
+  }
+
+  // If no highlights, show encouraging message
+  if (highlights.length === 0) {
+    return `
+      <div class="personal-highlights">
+        <div class="highlights-header">
+          <h2>Your Style Story</h2>
+          <p class="highlights-subtitle">Start shopping and chatting to build your unique profile</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Take top 4-5 most interesting highlights
+  const topHighlights = highlights.slice(0, 5);
+
+  const cards = topHighlights.map(h => `
+    <div class="highlight-card ${h.type}">
+      <div class="highlight-icon">${h.icon}</div>
+      <div class="highlight-content">
+        <div class="highlight-label">${h.label}</div>
+        <div class="highlight-text">${h.text}</div>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="personal-highlights">
+      <div class="highlights-header">
+        <h2>What Makes Your Style Unique</h2>
+        <p class="highlights-subtitle">The details that define your look</p>
+      </div>
+      <div class="highlights-grid">
+        ${cards}
+      </div>
+    </div>
+  `;
+}
+
+function getPriceInsight(priceRange) {
+  const sweet = priceRange.sweet;
+  if (sweet < 75) return `Quality finds around $${sweet} — smart value`;
+  if (sweet < 150) return `Investing around $${sweet} — balanced quality`;
+  return `Premium pieces around $${sweet} — elevated quality`;
+}
+
+function renderPillarsSection(profile, previousProfile) {
+  const pillars = Object.entries(profile.pillars)
+    .sort((a, b) => b[1] - a[1])
+    .filter(([_, value]) => value > 0);
+
+  if (pillars.length === 0) {
+    return `
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-title-icon">🎨</span>
+            <span>Your Style DNA</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="empty-state">
+            <div class="empty-state-icon">🎯</div>
+            <div class="empty-state-text">Take the style quiz to discover your style DNA</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Get top 3 pillars for hero cards
+  const topPillars = pillars.slice(0, 3);
+
+  // Pillar descriptions
+  const pillarDescriptions = {
+    utility: 'Bold, Daring, Creative',
+    classic: 'Elegant, Tailored, Structure',
+    minimal: 'Clean, Simple, Intentional',
+    outdoor: 'Adventure-Ready, Technical',
+    luxe: 'Refined, Elevated, Premium',
+    streetwear: 'Modern, Expressive, Bold'
+  };
+
+  // Hero cards with fashion photos
+  const heroCards = topPillars.map(([name, value]) => {
+    const previousValue = previousProfile?.pillars?.[name] || 0;
+    const delta = value - previousValue;
+    const deltaDisplay = delta !== 0 ? `<span class="hero-delta ${delta > 0 ? 'positive' : 'negative'}">${delta > 0 ? '+' : ''}${delta}%</span>` : '';
+
+    return `
+      <div class="style-hero-card ${name}">
+        <div class="style-hero-images">
+          <div class="style-hero-img"></div>
+          <div class="style-hero-img"></div>
+          <div class="style-hero-img"></div>
+        </div>
+        <div class="style-hero-content">
+          <div class="style-hero-header">
+            <h3>${capitalize(name)}</h3>
+            <div class="circular-progress">
+              <svg width="60" height="60" viewBox="0 0 60 60">
+                <circle cx="30" cy="30" r="25" fill="none" stroke="#e5e5e5" stroke-width="4"/>
+                <circle cx="30" cy="30" r="25" fill="none" stroke="currentColor" stroke-width="4"
+                  stroke-dasharray="${value * 1.57} 157"
+                  stroke-dashoffset="39.25"
+                  transform="rotate(-90 30 30)"
+                  class="progress-circle ${name}"/>
+                <text x="30" y="35" text-anchor="middle" font-size="14" font-weight="500">${value}%</text>
+              </svg>
+              ${deltaDisplay}
+            </div>
+          </div>
+          <p class="style-hero-description">${pillarDescriptions[name]}</p>
+          <button class="explore-btn">Explore ${capitalize(name)}</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // All pillars chart view
+  const allPillarsChart = pillars.map(([name, value]) => {
+    return `
+      <div class="pillar-chart-item">
+        <div class="pillar-chart-label">
+          <span class="pillar-chart-name">${capitalize(name)}</span>
+          <span class="pillar-chart-value">${value}%</span>
+        </div>
+        <div class="pillar-chart-bar">
+          <div class="pillar-chart-fill ${name}" style="width: ${value}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="dashboard-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">🎨</span>
+          <span>Your Style Breakdown</span>
+        </div>
+        <div class="section-badge">${pillars.length} styles identified</div>
+      </div>
+      <div class="section-content">
+        <div class="style-hero-grid">
+          ${heroCards}
+        </div>
+
+        <div class="style-chart-section">
+          <h4 class="chart-title">All Style Pillars</h4>
+          <div class="pillar-chart">
+            ${allPillarsChart}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderBrandsSection(profile) {
+  if (profile.brandAffinity.length === 0) {
+    return `
+      <div class="dashboard-section">
+        <div class="section-header">
+          <div class="section-title">
+            <span class="section-title-icon">🏷️</span>
+            <span>Your Brands</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="empty-state">
+            <div class="empty-state-icon">🛍️</div>
+            <div class="empty-state-text">Shop and browse to discover your favorite brands</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  const brands = profile.brandAffinity.slice(0, 8).map(brand => {
+    const score = Math.round(brand.score * 100);
+    const strongClass = brand.score >= 0.3 ? 'strong' : '';
+    const initials = brand.brand.split(' ').map(w => w[0]).join('').slice(0, 2);
+
+    return `
+      <div class="brand-card ${strongClass}">
+        <div class="brand-logo">${initials}</div>
+        <div class="brand-name">${brand.brand}</div>
+        <div class="brand-score">${score}% affinity</div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="dashboard-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">🏷️</span>
+          <span>Your Brands</span>
+        </div>
+        <div class="section-badge">${profile.brandAffinity.length} brands tracked</div>
+      </div>
+      <div class="section-content">
+        <div class="brand-grid">
+          ${brands}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderRecommendations(profile) {
+  const recommendations = [];
+
+  // Low confidence - suggest quiz
+  if (profile.confidence.overall < 2) {
+    recommendations.push({
+      icon: '📋',
+      title: 'Take the Style Quiz',
+      description: 'Help us learn your preferences faster with a 2-minute quiz'
+    });
+  }
+
+  // No purchases
+  const hasPurchases = profile.brandAffinity.some(b => b.sources.includes('purchase'));
+  if (!hasPurchases) {
+    recommendations.push({
+      icon: '🛍️',
+      title: 'Make Your First Purchase',
+      description: 'Your purchase history helps us understand your true preferences'
+    });
+  }
+
+  // Few memories
+  if (profile.semanticMemory.length < 5) {
+    recommendations.push({
+      icon: '💬',
+      title: 'Chat with a Stylist',
+      description: 'Tell us about your lifestyle and style goals in a quick conversation'
+    });
+  }
+
+  // No RAL
+  const hasRAL = profile.semanticMemory.some(m => m.source === 'ral');
+  if (!hasRAL && profile.confidence.overall >= 2) {
+    recommendations.push({
+      icon: '✨',
+      title: 'Request a Look',
+      description: 'Get personalized outfit recommendations for an upcoming occasion'
+    });
+  }
+
+  // Few swipes
+  const hasSwipes = profile.brandAffinity.some(b => b.sources.includes('swipe_like'));
+  if (!hasSwipes) {
+    recommendations.push({
+      icon: '❤️',
+      title: 'Browse Style Looks',
+      description: 'Swipe through curated looks to train your style profile'
+    });
+  }
+
+  if (recommendations.length === 0) {
+    return '';
+  }
+
+  const cards = recommendations.slice(0, 3).map(rec => `
+    <div class="recommendation-card">
+      <div class="recommendation-icon">${rec.icon}</div>
+      <div class="recommendation-content">
+        <div class="recommendation-title">${rec.title}</div>
+        <div class="recommendation-description">${rec.description}</div>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="dashboard-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">💡</span>
+          <span>Improve Your Profile</span>
+        </div>
+      </div>
+      <div class="section-content">
+        <div class="recommendations">
+          ${cards}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTechnicalStats(profile) {
+  // Calculate activity metrics
+  const quizzesTaken = profile.sessionsProcessed > 0 ? 1 : 0; // Simplified
+  const swipeStacks = profile.brandAffinity.filter(b =>
+    b.sources.includes('swipe_like')
+  ).length;
+  const outfitsLiked = profile.brandAffinity.reduce((sum, b) => {
+    return sum + (b.sources.includes('swipe_like') ? 1 : 0);
+  }, 0);
+  const purchases = profile.brandAffinity.filter(b =>
+    b.sources.includes('purchase')
+  ).length;
+
+  return `
+    <div class="dashboard-section technical-stats-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-title-icon">📊</span>
+          <span>Your Activity</span>
+        </div>
+      </div>
+      <div class="section-content">
+        <div class="tech-stats-grid">
+          <div class="tech-stat">
+            <div class="tech-stat-value">${quizzesTaken}</div>
+            <div class="tech-stat-label">Quizzes Taken</div>
+          </div>
+          <div class="tech-stat">
+            <div class="tech-stat-value">${profile.sessionsProcessed}</div>
+            <div class="tech-stat-label">Sessions Tracked</div>
+          </div>
+          <div class="tech-stat">
+            <div class="tech-stat-value">${outfitsLiked}</div>
+            <div class="tech-stat-label">Outfits Liked</div>
+          </div>
+          <div class="tech-stat">
+            <div class="tech-stat-value">${purchases}</div>
+            <div class="tech-stat-label">Purchases</div>
+          </div>
+          <div class="tech-stat">
+            <div class="tech-stat-value">${profile.priceRange.sweet ? '$' + profile.priceRange.sweet : '—'}</div>
+            <div class="tech-stat-label">Avg Purchase</div>
+          </div>
+          <div class="tech-stat">
+            <div class="tech-stat-value">${profile.semanticMemory.length}</div>
+            <div class="tech-stat-label">Style Insights</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEmptyState() {
+  return `
+    <div class="profile-dashboard">
+      <div class="empty-state" style="padding: 100px 20px;">
+        <div class="empty-state-icon">👤</div>
+        <div class="empty-state-text" style="font-size: 18px; margin-bottom: 12px;">
+          No profile data yet
+        </div>
+        <div style="font-size: 14px; color: #767676;">
+          Run <code>node index.js apply session_01</code> to start building a profile
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

@@ -234,6 +234,7 @@ export async function checkRecipeIngredientHealth(
           materials: ingredient.materials,
           brands: ingredient.brands,
           department: recipe.department,
+          colorMatchMode: 'none', // CRITICAL: Disable color filtering for health checks
         },
         1, // Only need to know if ANY products exist
         false // Disable fallback for accurate health check

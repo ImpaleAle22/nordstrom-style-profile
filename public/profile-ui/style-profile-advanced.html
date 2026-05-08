@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How We Understand Your Style - Nordstrom</title>
+  <style>
+    /* Reuse base styles from dashboard */
+    :root {
+      --nordstrom-bg: #FAF9F5;
+      --nordstrom-white: #FFFFFF;
+      --nordstrom-black: #1a1a1a;
+      --nordstrom-gray: #6b7280;
+      --nordstrom-border: #e5e7eb;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--nordstrom-bg);
+      color: var(--nordstrom-black);
+      line-height: 1.6;
+    }
+
+    .serif {
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* Navigation */
+    .nav {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--nordstrom-gray);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--nordstrom-black);
+    }
+
+    /* Back Link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--nordstrom-gray);
+      text-decoration: none;
+      font-size: 14px;
+      margin: 32px 0 16px;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--nordstrom-black);
+    }
+
+    /* Header */
+    .page-header {
+      padding: 40px 0 60px;
+    }
+
+    .page-title {
+      font-size: 48px;
+      font-weight: 400;
+      margin-bottom: 16px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: var(--nordstrom-gray);
+      margin-bottom: 24px;
+    }
+
+    .page-intro {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--nordstrom-gray);
+      max-width: 700px;
+    }
+
+    /* Section */
+    .section {
+      padding: 60px 0;
+    }
+
+    .section-title {
+      font-size: 32px;
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    /* Pillar Distribution */
+    .pillar-list {
+      background: var(--nordstrom-white);
+      border-radius: 8px;
+      padding: 32px;
+    }
+
+    .pillar-item {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--nordstrom-border);
+    }
+
+    .pillar-item:last-child {
+      border-bottom: none;
+    }
+
+    .pillar-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .pillar-item-name {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .pillar-item-percentage {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .pillar-item-bar {
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .pillar-item-bar-fill {
+      height: 100%;
+      background: var(--nordstrom-black);
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+
+    .pillar-item-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .pillar-tag {
+      padding: 4px 12px;
+      background: #f3f4f6;
+      border-radius: 16px;
+      font-size: 12px;
+      color: var(--nordstrom-gray);
+    }
+
+    .pillar-item-link {
+      color: var(--nordstrom-gray);
+      font-size: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pillar-item-link:hover {
+      color: var(--nordstrom-black);
+    }
+
+    .pillar-note {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--nordstrom-border);
+      font-size: 13px;
+      color: var(--nordstrom-gray);
+      font-style: italic;
+    }
+
+    /* Data Sources Table */
+    .data-sources-table {
+      background: var(--nordstrom-white);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .data-source-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 2fr;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--nordstrom-border);
+      font-size: 14px;
+    }
+
+    .data-source-row:first-child {
+      background: #f9fafb;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--nordstrom-gray);
+    }
+
+    .data-source-row:last-child {
+      border-bottom: none;
+    }
+
+    /* Accordion */
+    .accordion {
+      background: var(--nordstrom-white);
+      border-radius: 8px;
+      margin-top: 24px;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid var(--nordstrom-border);
+    }
+
+    .accordion-item:last-child {
+      border-bottom: none;
+    }
+
+    .accordion-header {
+      padding: 20px 32px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .accordion-header:hover {
+      background: #f9fafb;
+    }
+
+    .accordion-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .accordion-icon {
+      font-size: 12px;
+      color: var(--nordstrom-gray);
+      transition: transform 0.3s;
+    }
+
+    .accordion-item.open .accordion-icon {
+      transform: rotate(180deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .accordion-item.open .accordion-content {
+      max-height: 1000px;
+    }
+
+    .accordion-body {
+      padding: 0 32px 24px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--nordstrom-gray);
+    }
+
+    .quiz-qa {
+      margin: 16px 0;
+      padding: 16px;
+      background: #f9fafb;
+      border-radius: 4px;
+    }
+
+    .quiz-q {
+      font-weight: 600;
+      color: var(--nordstrom-black);
+      margin-bottom: 4px;
+    }
+
+    .quiz-a {
+      color: var(--nordstrom-gray);
+    }
+
+    /* Timeline */
+    .timeline {
+      background: var(--nordstrom-white);
+      border-radius: 8px;
+      padding: 40px;
+      position: relative;
+    }
+
+    .timeline-line {
+      height: 2px;
+      background: #e5e7eb;
+      margin: 40px 0;
+      position: relative;
+    }
+
+    .timeline-points {
+      display: flex;
+      justify-content: space-between;
+      margin-top: -9px;
+    }
+
+    .timeline-point {
+      width: 16px;
+      height: 16px;
+      background: var(--nordstrom-white);
+      border: 3px solid var(--nordstrom-black);
+      border-radius: 50%;
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+
+    .timeline-label {
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .timeline-date {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .timeline-event {
+      color: var(--nordstrom-gray);
+      font-size: 12px;
+      max-width: 180px;
+    }
+
+    .timeline-insight {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--nordstrom-border);
+      font-size: 14px;
+      color: var(--nordstrom-gray);
+      line-height: 1.8;
+    }
+
+    /* Preferences Grid */
+    .preferences-section {
+      background: var(--nordstrom-white);
+      border-radius: 8px;
+      padding: 32px;
+    }
+
+    .preference-group {
+      margin-bottom: 48px;
+    }
+
+    .preference-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .preference-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .preference-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .preference-label {
+      font-size: 14px;
+      color: var(--nordstrom-gray);
+      min-width: 140px;
+    }
+
+    .preference-visual {
+      flex: 1;
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 4px;
+      margin: 0 16px;
+      overflow: hidden;
+    }
+
+    .preference-visual-fill {
+      height: 100%;
+      background: var(--nordstrom-black);
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+
+    .preference-value {
+      font-size: 14px;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    /* Color Swatches */
+    .color-swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .color-swatch-item {
+      text-align: center;
+    }
+
+    .color-swatch-box {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .color-swatch-label {
+      font-size: 13px;
+      color: var(--nordstrom-gray);
+    }
+
+    .color-swatch-percent {
+      font-size: 12px;
+      color: var(--nordstrom-gray);
+    }
+
+    /* Privacy Controls */
+    .privacy-section {
+      background: var(--nordstrom-white);
+      border-radius: 8px;
+      padding: 32px;
+    }
+
+    .privacy-intro {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--nordstrom-gray);
+      margin-bottom: 24px;
+    }
+
+    .privacy-list {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+
+    .privacy-list li {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .checkboxes {
+      margin: 24px 0;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn {
+      padding: 12px 32px;
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      border: 2px solid var(--nordstrom-black);
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #000;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--nordstrom-black);
+    }
+
+    .btn-secondary:hover {
+      background: #f9fafb;
+    }
+
+    .privacy-actions {
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid var(--nordstrom-border);
+    }
+
+    .privacy-action-group {
+      margin-bottom: 24px;
+    }
+
+    .privacy-action-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .privacy-action-description {
+      font-size: 13px;
+      color: var(--nordstrom-gray);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="style-profile-dashboard.html" class="nav-logo">Nordstrom</a>
+    <div class="nav-links">
+      <a href="style-profile-dashboard.html">Your Profile</a>
+      <a href="#" class="active">Advanced View</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Back Link -->
+    <a href="style-profile-dashboard.html" class="back-link">
+      ← Back to Dashboard
+    </a>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title serif">How we understand your style</h1>
+      <p class="page-subtitle">
+        Detailed breakdown of your style profile data and the signals we use to personalize your experience.
+      </p>
+      <p class="page-intro">
+        Your Style Profile is built from multiple data sources: your Style Quiz responses,
+        shopping behavior, saved outfits, favorited items, and interactions with our platform.
+        This page shows you exactly what we're seeing and how confident we are in each insight.
+        <br><br>
+        All data is private and used only to improve your Nordstrom experience.
+        You can adjust your privacy settings at any time.
+      </p>
+    </div>
+
+    <!-- Pillar Distribution -->
+    <section class="section">
+      <h2 class="section-title serif">Your style pillar distribution</h2>
+
+      <div class="pillar-list">
+        <div class="pillar-item">
+          <div class="pillar-item-header">
+            <div class="pillar-item-name">● Classic</div>
+            <div class="pillar-item-percentage">68%</div>
+          </div>
+          <div class="pillar-item-bar">
+            <div class="pillar-item-bar-fill" style="width: 68%"></div>
+          </div>
+          <div class="pillar-item-tags">
+            <span class="pillar-tag">Tailored</span>
+            <span class="pillar-tag">Sophisticated</span>
+            <span class="pillar-tag">Timeless</span>
+          </div>
+          <a href="#" class="pillar-item-link">See Details →</a>
+        </div>
+
+        <div class="pillar-item">
+          <div class="pillar-item-header">
+            <div class="pillar-item-name">● Romantic</div>
+            <div class="pillar-item-percentage">22%</div>
+          </div>
+          <div class="pillar-item-bar">
+            <div class="pillar-item-bar-fill" style="width: 22%"></div>
+          </div>
+          <div class="pillar-item-tags">
+            <span class="pillar-tag">Delicate</span>
+            <span class="pillar-tag">Feminine</span>
+          </div>
+          <a href="#" class="pillar-item-link">See Details →</a>
+        </div>
+
+        <div class="pillar-item">
+          <div class="pillar-item-header">
+            <div class="pillar-item-name">● Minimal</div>
+            <div class="pillar-item-percentage">10%</div>
+          </div>
+          <div class="pillar-item-bar">
+            <div class="pillar-item-bar-fill" style="width: 10%"></div>
+          </div>
+          <div class="pillar-item-tags">
+            <span class="pillar-tag">Understated</span>
+          </div>
+          <a href="#" class="pillar-item-link">See Details →</a>
+        </div>
+
+        <p class="pillar-note">
+          Other pillars analyzed but below 10% threshold
+        </p>
+      </div>
+    </section>
+
+    <!-- Data Sources -->
+    <section class="section">
+      <h2 class="section-title serif">What signals inform your profile</h2>
+
+      <div class="data-sources-table">
+        <div class="data-source-row">
+          <div>Data Source</div>
+          <div>Weight</div>
+          <div>Last Updated</div>
+        </div>
+        <div class="data-source-row">
+          <div>Style Quiz Responses</div>
+          <div>35%</div>
+          <div>January 15, 2024</div>
+        </div>
+        <div class="data-source-row">
+          <div>Saved Outfits</div>
+          <div>25%</div>
+          <div>Updated daily</div>
+        </div>
+        <div class="data-source-row">
+          <div>Purchase History</div>
+          <div>20%</div>
+          <div>Last purchase: Apr 20</div>
+        </div>
+        <div class="data-source-row">
+          <div>Favorited Items</div>
+          <div>15%</div>
+          <div>Updated real-time</div>
+        </div>
+        <div class="data-source-row">
+          <div>Browse & Engagement</div>
+          <div>5%</div>
+          <div>Updated real-time</div>
+        </div>
+      </div>
+
+      <!-- Accordion for detailed evidence -->
+      <div class="accordion">
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title">Style Quiz (35% weight)</div>
+            <div class="accordion-icon">▼</div>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <p style="margin-bottom: 16px;">
+                <strong>Taken:</strong> January 15, 2024<br>
+                Responses that influence your profile:
+              </p>
+
+              <div class="quiz-qa">
+                <div class="quiz-q">Q: How would you describe your ideal outfit?</div>
+                <div class="quiz-a">A: "Polished and put-together" → Classic +30pts</div>
+              </div>
+
+              <div class="quiz-qa">
+                <div class="quiz-q">Q: What's most important in your wardrobe?</div>
+                <div class="quiz-a">A: "Timeless pieces that last" → Classic +25pts</div>
+              </div>
+
+              <div class="quiz-qa">
+                <div class="quiz-q">Q: How do you feel about patterns?</div>
+                <div class="quiz-a">A: "I prefer subtle patterns or solids" → Classic +15pts, Minimal +10pts</div>
+              </div>
+
+              <p style="margin-top: 16px;">
+                <a href="#" style="color: var(--nordstrom-black); font-weight: 600;">Retake Style Quiz →</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title">Saved Outfits (25% weight)</div>
+            <div class="accordion-icon">▼</div>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <p>
+                <strong>47 outfits saved</strong><br>
+                Last saved: April 18, 2026
+              </p>
+              <p style="margin-top: 16px;">
+                Pillar distribution of saved outfits:<br>
+                - Classic: 32 outfits (68%)<br>
+                - Romantic: 11 outfits (23%)<br>
+                - Minimal: 4 outfits (9%)
+              </p>
+              <p style="margin-top: 16px;">
+                <a href="#" style="color: var(--nordstrom-black); font-weight: 600;">View All Saved Outfits →</a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title">Purchase History (20% weight)</div>
+            <div class="accordion-icon">▼</div>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <p>
+                <strong>23 items purchased</strong> (last 12 months)<br>
+                Last purchase: April 20, 2026
+              </p>
+              <p style="margin-top: 16px;">
+                Category breakdown:<br>
+                - Blazers & Jackets: 6 items → Classic +strong<br>
+                - Dresses: 5 items → 3 Classic, 2 Romantic<br>
+                - Tops & Blouses: 7 items → Mixed Classic/Romantic<br>
+                - Bottoms: 5 items → Classic tailored
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Style Evolution -->
+    <section class="section">
+      <h2 class="section-title serif">How your style has evolved</h2>
+
+      <div class="timeline">
+        <div class="timeline-line">
+          <div class="timeline-points">
+            <div class="timeline-point"></div>
+            <div class="timeline-point"></div>
+            <div class="timeline-point"></div>
+          </div>
+        </div>
+
+        <div class="timeline-labels">
+          <div class="timeline-label">
+            <div class="timeline-date">Jan 2024</div>
+            <div class="timeline-event">
+              Style Quiz Taken<br>
+              Initial profile:<br>
+              Classic 55%<br>
+              Romantic 30%<br>
+              Minimal 15%
+            </div>
+          </div>
+
+          <div class="timeline-label">
+            <div class="timeline-date">July 2024</div>
+            <div class="timeline-event">
+              Shopping Pattern Shift<br>
+              +12 Classic purchases<br>
+              Increased formality
+            </div>
+          </div>
+
+          <div class="timeline-label">
+            <div class="timeline-date">April 2026</div>
+            <div class="timeline-event">
+              Today<br>
+              Classic 68%<br>
+              Romantic 22%<br>
+              Minimal 10%
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-insight">
+          <strong>Insights:</strong> Your style has become more consistently Classic over time, with a slight
+          decrease in Romantic expressions. This suggests a growing confidence in your personal
+          aesthetic or perhaps a shift in lifestyle needs.
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Preferences -->
+    <section class="section">
+      <h2 class="section-title serif">Your detailed style preferences</h2>
+
+      <div class="preferences-section">
+        <!-- Formality -->
+        <div class="preference-group">
+          <div class="preference-title">Formality Breakdown</div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Smart Casual</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 73%"></div>
+            </div>
+            <div class="preference-value">73%</div>
+          </div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Business Casual</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 18%"></div>
+            </div>
+            <div class="preference-value">18%</div>
+          </div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Cocktail/Formal</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 9%"></div>
+            </div>
+            <div class="preference-value">9%</div>
+          </div>
+        </div>
+
+        <!-- Color Preferences -->
+        <div class="preference-group">
+          <div class="preference-title">Color Preferences</div>
+          <p style="font-size: 13px; color: var(--nordstrom-gray); margin-bottom: 16px;">
+            Dominant colors in your wardrobe:
+          </p>
+
+          <div class="color-swatches">
+            <div class="color-swatch-item">
+              <div class="color-swatch-box" style="background: #1a1a2e"></div>
+              <div class="color-swatch-label">Navy</div>
+              <div class="color-swatch-percent">32%</div>
+            </div>
+            <div class="color-swatch-item">
+              <div class="color-swatch-box" style="background: #000000"></div>
+              <div class="color-swatch-label">Black</div>
+              <div class="color-swatch-percent">28%</div>
+            </div>
+            <div class="color-swatch-item">
+              <div class="color-swatch-box" style="background: #C8B89C"></div>
+              <div class="color-swatch-label">Camel</div>
+              <div class="color-swatch-percent">18%</div>
+            </div>
+            <div class="color-swatch-item">
+              <div class="color-swatch-box" style="background: #6B7280"></div>
+              <div class="color-swatch-label">Gray</div>
+              <div class="color-swatch-percent">12%</div>
+            </div>
+          </div>
+
+          <p style="font-size: 13px; color: var(--nordstrom-gray); margin-top: 16px;">
+            Color mood: Neutral with occasional jewel tones
+          </p>
+        </div>
+
+        <!-- Silhouette & Fit -->
+        <div class="preference-group">
+          <div class="preference-title">Silhouette & Fit</div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Tailored/Fitted</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 68%"></div>
+            </div>
+            <div class="preference-value">68%</div>
+          </div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Relaxed/Flowing</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 22%"></div>
+            </div>
+            <div class="preference-value">22%</div>
+          </div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Oversized</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 10%"></div>
+            </div>
+            <div class="preference-value">10%</div>
+          </div>
+
+          <p style="font-size: 13px; color: var(--nordstrom-gray); margin-top: 12px;">
+            You consistently choose structured, defined shapes
+          </p>
+        </div>
+
+        <!-- Pattern Preferences -->
+        <div class="preference-group">
+          <div class="preference-title">Pattern Preferences</div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Solids</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 72%"></div>
+            </div>
+            <div class="preference-value">72%</div>
+          </div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Subtle Patterns</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 23%"></div>
+            </div>
+            <div class="preference-value">23%</div>
+          </div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Bold Patterns</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 5%"></div>
+            </div>
+            <div class="preference-value">5%</div>
+          </div>
+        </div>
+
+        <!-- Occasion Context -->
+        <div class="preference-group">
+          <div class="preference-title">Occasion Context</div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Work/Professional</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 64%"></div>
+            </div>
+            <div class="preference-value">64%</div>
+          </div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Special Occasions</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 21%"></div>
+            </div>
+            <div class="preference-value">21%</div>
+          </div>
+
+          <div class="preference-bar">
+            <div class="preference-label">Everyday/Weekend</div>
+            <div class="preference-visual">
+              <div class="preference-visual-fill" style="width: 15%"></div>
+            </div>
+            <div class="preference-value">15%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy Controls -->
+    <section class="section">
+      <h2 class="section-title serif">Your data & privacy controls</h2>
+
+      <div class="privacy-section">
+        <div class="privacy-intro">
+          Your Style Profile uses data from your Nordstrom account to personalize
+          your shopping experience. We use this data to:
+
+          <ul class="privacy-list">
+            <li>Recommend products that match your aesthetic</li>
+            <li>Curate collections tailored to your style</li>
+            <li>Provide relevant styling advice and content</li>
+            <li>Improve product discovery and search results</li>
+          </ul>
+
+          We DO NOT:<br>
+          - Share your style data with third parties<br>
+          - Use your data for advertising outside Nordstrom<br>
+          - Sell or monetize your personal information
+        </div>
+
+        <div class="checkboxes">
+          <div class="checkbox-item">
+            <input type="checkbox" id="use-purchases" checked>
+            <label for="use-purchases">Allow Style Profile to use my purchase history</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="use-outfits" checked>
+            <label for="use-outfits">Allow Style Profile to use my saved outfits</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="use-favorites" checked>
+            <label for="use-favorites">Allow Style Profile to use my favorites/wishlist</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="use-browsing" checked>
+            <label for="use-browsing">Allow Style Profile to use my browsing behavior</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="show-recommendations" checked>
+            <label for="show-recommendations">Show personalized recommendations based on my profile</label>
+          </div>
+        </div>
+
+        <button class="btn">Save Preferences</button>
+
+        <div class="privacy-actions">
+          <div class="privacy-action-group">
+            <div class="privacy-action-title">Reset Your Style Profile</div>
+            <div class="privacy-action-description">
+              If you'd like to start fresh, you can reset your Style Profile. This will clear
+              all learned preferences and you'll need to retake the Style Quiz.
+            </div>
+            <button class="btn btn-secondary">Reset Profile</button>
+          </div>
+
+          <div class="privacy-action-group">
+            <div class="privacy-action-title">Download Your Data</div>
+            <div class="privacy-action-description">
+              You can download a complete export of your Style Profile data at any time.
+            </div>
+            <button class="btn btn-secondary">Download My Style Data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div style="height: 80px;"></div>
+
+  <script>
+    // Accordion toggle
+    function toggleAccordion(header) {
+      const item = header.parentElement;
+      const wasOpen = item.classList.contains('open');
+
+      // Close all items
+      document.querySelectorAll('.accordion-item').forEach(i => {
+        i.classList.remove('open');
+      });
+
+      // Open clicked item if it wasn't open
+      if (!wasOpen) {
+        item.classList.add('open');
+      }
+    }
+
+    // Animate bars on load
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(() => {
+        document.querySelectorAll('.pillar-item-bar-fill, .preference-visual-fill').forEach(fill => {
+          fill.style.width = fill.style.width;
+        });
+      }, 300);
+    });
+  </script>
+</body>
+</html>

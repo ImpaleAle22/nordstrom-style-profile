@@ -1,122 +1,114 @@
+'use client';
+
 /**
- * Landing Page - Choose Your Path
- * Two demo options: Pre-built personas or interactive demo
+ * Password Gate - Landing Page
+ * Simple shared password for Nordstrom leadership
  */
 
-import Link from 'next/link';
+import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function Home() {
+export default function PasswordGate() {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    // Simple shared password
+    if (password === 'nordstrom2026' || password === 'demo') {
+      // Set secure cookie that middleware can check
+      document.cookie = 'demo_access=granted; path=/; max-age=86400; SameSite=Strict';
+      // Also store in sessionStorage for client-side checks
+      sessionStorage.setItem('demo_access', 'granted');
+      router.push('/presentation/1');
+    } else {
+      setError(true);
+      setTimeout(() => setError(false), 2000);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#FAF9F5]">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-8 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold tracking-[3px]">NORDSTROM</h1>
-          <Link href="/admin" className="text-xs text-gray-500 hover:text-gray-900">
-            Admin
-          </Link>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <main className="max-w-6xl mx-auto px-8 py-20">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-serif font-light mb-6">
-            Style Intelligence
-          </h1>
-          <p className="text-2xl text-gray-600 mb-3">
-            Personalized fashion discovery powered by AI
-          </p>
-          <p className="text-lg text-gray-500">
-            Building rich customer profiles through interactive style signals
-          </p>
-        </div>
-
-        {/* Two Paths */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Path 1: Demo Personas */}
-          <Link
-            href="/personas"
-            className="group bg-white rounded-2xl border-2 border-gray-200 p-8 hover:border-black hover:shadow-2xl transition-all"
+    <div
+      className="min-h-screen flex items-center justify-center p-8"
+      style={{ backgroundColor: '#FAF9F5' }}
+    >
+      <div className="max-w-md w-full">
+        {/* Logo */}
+        <div className="text-center mb-12">
+          <img
+            src="https://n.nordstrommedia.com/alias/nordstrom-logo.svg"
+            alt="Nordstrom"
+            className="h-12 mx-auto mb-8"
+            style={{ filter: 'brightness(0)' }}
+          />
+          <div
+            className="h-px mx-auto mb-8"
+            style={{
+              maxWidth: '200px',
+              background: 'linear-gradient(to right, transparent, #DBDBD0, transparent)'
+            }}
+          />
+          <p
+            className="text-xl font-light"
+            style={{ color: '#8E8A82' }}
           >
-            <div className="mb-6">
-              <div className="text-4xl mb-4">👥</div>
-              <h2 className="text-2xl font-semibold mb-3">Explore Demo Personas</h2>
-              <p className="text-gray-600 leading-relaxed">
-                See how our system builds personalized style intelligence with 9 pre-built customer journeys
-              </p>
-            </div>
-
-            <div className="space-y-2 text-sm text-gray-600 mb-6">
-              <div className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
-                <span>View complete style profiles</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
-                <span>Explore swipe sessions</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-600">✓</span>
-                <span>See confidence scores</span>
-              </div>
-            </div>
-
-            <div className="text-black font-medium group-hover:translate-x-2 transition-transform inline-flex items-center gap-2">
-              View Personas
-              <span>→</span>
-            </div>
-          </Link>
-
-          {/* Path 2: Interactive Demo */}
-          <Link
-            href="/interactive"
-            className="group bg-black text-white rounded-2xl border-2 border-black p-8 hover:shadow-2xl hover:scale-105 transition-all"
-          >
-            <div className="mb-6">
-              <div className="text-4xl mb-4">✨</div>
-              <h2 className="text-2xl font-semibold mb-3">Try Interactive Demo</h2>
-              <p className="text-gray-300 leading-relaxed">
-                Experience personalized style intelligence for yourself through our interactive swipe sessions
-              </p>
-            </div>
-
-            <div className="space-y-2 text-sm text-gray-300 mb-6">
-              <div className="flex items-center gap-2">
-                <span className="text-green-400">✓</span>
-                <span>Build your style profile</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-400">✓</span>
-                <span>Swipe through curated looks</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-green-400">✓</span>
-                <span>See real-time intelligence</span>
-              </div>
-            </div>
-
-            <div className="text-white font-medium group-hover:translate-x-2 transition-transform inline-flex items-center gap-2">
-              Start Demo
-              <span>→</span>
-            </div>
-          </Link>
+            Style Engine Demo
+          </p>
         </div>
 
-        {/* Technology Stack */}
-        <div className="mt-20 text-center">
-          <p className="text-sm text-gray-500 mb-4">Built with</p>
-          <div className="flex justify-center gap-6 text-sm text-gray-600">
-            <span>Next.js 16</span>
-            <span>•</span>
-            <span>Supabase</span>
-            <span>•</span>
-            <span>Claude AI</span>
-            <span>•</span>
-            <span>Gemini AI</span>
+        {/* Password Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-2"
+              style={{ color: '#8E8A82' }}
+            >
+              Access Code
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`w-full px-4 py-3 border rounded transition-colors focus:outline-none`}
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderColor: error ? '#EC3B3B' : '#E5E7EB',
+                color: '#0C0C0C',
+                borderWidth: '2px'
+              }}
+              placeholder="Enter access code"
+              autoFocus
+            />
+            {error && (
+              <p className="mt-2 text-sm" style={{ color: '#EC3B3B' }}>
+                Incorrect access code. Please try again.
+              </p>
+            )}
           </div>
+
+          <button
+            type="submit"
+            className="w-full px-6 py-3 rounded font-semibold transition-all hover:scale-105"
+            style={{
+              backgroundColor: '#0C0C0C',
+              color: '#FFFFFF'
+            }}
+          >
+            Enter Demo
+          </button>
+        </form>
+
+        {/* Footer hint */}
+        <div className="mt-12 text-center">
+          <p className="text-xs" style={{ color: '#B4B1A9' }}>
+            This is a private demonstration
+          </p>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

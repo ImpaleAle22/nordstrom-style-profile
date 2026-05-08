@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import fs from 'fs';
-import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-const execPromise = promisify(exec);
-
-// Cache the total count and file mtime to avoid recounting on every request
-let cachedTotal: number | null = null;
-let cachedMtime: number | null = null;
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,78 +16,65 @@ export async function GET(request: NextRequest) {
     const aiTagged = searchParams.get('aiTagged');
     const search = searchParams.get('search')?.toLowerCase();
 
-    const filePath = '/Users/hqh4/claude/edit-engine/scripts/products-MASTER-SOURCE-OF-TRUTH.json';
-
     console.log(`API called: page=${page}, limit=${limit}, filters:`, { department, productType, aiTagged, search });
 
-    // Check if file has been modified
-    const stats = fs.statSync(filePath);
-    const currentMtime = stats.mtimeMs;
-
-    // Use jq to slice and filter the JSON array efficiently
-    const startIndex = (page - 1) * limit;
-
-    // Build jq filter
-    let jqFilter = '.';
+    // Start with base query
+    let query = supabase
+      .from('products')
+      .select('id, title, brand, price, department, image_url, r2_image_url, colors, materials, product_type_1, product_type_2, product_type_3, product_type_4, vision_metadata', { count: 'exact' });
 
     // Apply filters
-    const conditions: string[] = [];
-
     if (department && department !== 'all') {
-      conditions.push(`.department == "${department}"`);
+      query = query.eq('department', department);
     }
 
     if (productType && productType !== 'all') {
-      conditions.push(`.productType1 == "${productType}"`);
+      query = query.eq('product_type_1', productType);
     }
 
     if (aiTagged === 'true') {
-      conditions.push('.visionMetadata != null');
+      query = query.not('vision_metadata', 'is', null);
     } else if (aiTagged === 'false') {
-      conditions.push('.visionMetadata == null');
+      query = query.is('vision_metadata', null);
     }
 
     if (search) {
-      const escapedSearch = search.replace(/"/g, '\\"');
-      conditions.push(`(.title, .brand, .productType1, .productType2) | tostring | ascii_downcase | contains("${escapedSearch}")`);
+      // Search across multiple fields
+      query = query.or(`title.ilike.%${search}%,brand.ilike.%${search}%,product_type_1.ilike.%${search}%,product_type_2.ilike.%${search}%`);
     }
 
-    if (conditions.length > 0) {
-      jqFilter = `[.[] | select(${conditions.join(' and ')})]`;
+    // Apply pagination
+    const startIndex = (page - 1) * limit;
+    query = query.range(startIndex, startIndex + limit - 1);
+
+    // Execute query
+    const { data, error, count } = await query;
+
+    if (error) {
+      console.error('Supabase error:', error);
+      throw new Error(error.message);
     }
 
-    let total: number;
+    // Transform to match frontend expectations
+    const products = (data || []).map(p => ({
+      productId: p.id,
+      title: p.title,
+      brand: p.brand,
+      price: p.price,
+      department: p.department,
+      imageUrl: p.image_url || p.r2_image_url || '', // Fallback logic
+      colors: p.colors,
+      materials: p.materials,
+      productType1: p.product_type_1,
+      productType2: p.product_type_2,
+      productType3: p.product_type_3,
+      productType4: p.product_type_4,
+      visionMetadata: p.vision_metadata,
+    }));
 
-    // Only get count if:
-    // 1. We have filters (can't cache filtered counts)
-    // 2. File has been modified since last cache
-    // 3. We don't have a cached count yet
-    if (conditions.length > 0 || cachedTotal === null || cachedMtime !== currentMtime) {
-      console.log('Getting count from jq...');
-      const countCmd = `jq -c '${jqFilter} | length' "${filePath}"`;
-      const { stdout: countOut } = await execPromise(countCmd, { maxBuffer: 10 * 1024 * 1024 });
-      total = parseInt(countOut.trim());
+    const total = count || 0;
 
-      // Cache if no filters
-      if (conditions.length === 0) {
-        cachedTotal = total;
-        cachedMtime = currentMtime;
-        console.log(`Cached total count: ${total}`);
-      }
-    } else {
-      // Use cached count
-      total = cachedTotal;
-      console.log(`Using cached total: ${total}`);
-    }
-
-    // Get paginated slice with imageUrl extracted
-    console.log('Getting product slice...');
-    const sliceCmd = `jq -c '${jqFilter} | .[${startIndex}:${startIndex + limit}] | map(. + {imageUrl: (.images[0].url // "")})' "${filePath}"`;
-
-    const { stdout: productsOut } = await execPromise(sliceCmd, { maxBuffer: 50 * 1024 * 1024 });
-    const products = JSON.parse(productsOut);
-
-    console.log(`Returned ${products.length} products for page ${page}`);
+    console.log(`Returned ${products.length} products for page ${page} of ${Math.ceil(total / limit)}`);
 
     return NextResponse.json({
       products,

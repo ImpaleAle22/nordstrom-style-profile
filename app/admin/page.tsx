@@ -1,109 +1,290 @@
 'use client';
 
-import { Container, Typography, Box, Grid, Card, CardContent, Button, Stack } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import CategoryIcon from '@mui/icons-material/Category';
-import WarningIcon from '@mui/icons-material/Warning';
-import { useState, useEffect } from 'react';
-import { getProductGapCount } from '../../lib/indexeddb-storage';
+/**
+ * Admin Landing Page
+ * Main hub for all admin management tools
+ */
 
-export default function Home() {
-  const [gapCount, setGapCount] = useState<number>(0);
+import Link from 'next/link';
 
-  useEffect(() => {
-    async function loadGapCount() {
-      try {
-        const count = await getProductGapCount('active');
-        setGapCount(count);
-      } catch (error) {
-        console.error('Failed to load gap count:', error);
-      }
-    }
-    loadGapCount();
-  }, []);
+export default function AdminPage() {
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Box sx={{ mb: 6 }}>
-        <Typography variant="h1" gutterBottom>
-          Recipe Builder
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Create and manage content recipes for personalized shopping edits
-        </Typography>
-      </Box>
+    <div className="min-h-screen" style={{ backgroundColor: '#FAF9F5' }}>
+      {/* Header */}
+      <header className="border-b" style={{ backgroundColor: '#FFFFFF', borderColor: '#E5E7EB' }}>
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1
+                className="text-3xl font-light mb-1"
+                style={{
+                  fontFamily: 'ui-serif, Georgia, serif',
+                  color: '#0C0C0C'
+                }}
+              >
+                Admin Dashboard
+              </h1>
+              <p className="text-sm" style={{ color: '#8E8A82' }}>
+                Manage recipes, content, and experiences
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="text-sm hover:opacity-60 transition-opacity"
+              style={{ color: '#8E8A82' }}
+            >
+              ← Back to Demo
+            </Link>
+          </div>
+        </div>
+      </header>
 
-      <Grid container spacing={2.5}>
-        {/* Quick Actions */}
-        <Grid item xs={12}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="h3" gutterBottom>
-                Quick Actions
-              </Typography>
-              <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  size="large"
-                  href="/recipes/outfit/new"
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-8 py-12">
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Tile 1: Recipe Manager */}
+          <Link
+            href="/admin/recipes"
+            className="group block bg-white rounded-2xl border-2 transition-all hover:shadow-xl hover:scale-105"
+            style={{ borderColor: '#E5E7EB' }}
+          >
+            <div className="p-8">
+              {/* Icon */}
+              <div
+                className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: '#EEF2FF' }}
+              >
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  style={{ color: '#4F46E5' }}
                 >
-                  New Outfit Recipe
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<AddIcon />}
-                  size="large"
-                  href="/recipes/campaign/new"
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+
+              {/* Title */}
+              <h3
+                className="text-2xl font-light mb-3"
+                style={{
+                  fontFamily: 'ui-serif, Georgia, serif',
+                  color: '#0C0C0C'
+                }}
+              >
+                Recipe Manager
+              </h3>
+
+              {/* Description */}
+              <p className="text-sm leading-relaxed mb-6" style={{ color: '#8E8A82' }}>
+                Create and manage outfit recipes, campaign content, and personalized shopping edits
+              </p>
+
+              {/* Arrow */}
+              <div className="flex items-center text-sm font-medium group-hover:gap-3 transition-all" style={{ color: '#0C0C0C' }}>
+                <span>Manage Recipes</span>
+                <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+
+          {/* Tile 2: Lifestyle Images */}
+          <Link
+            href="/admin/lifestyle-images"
+            className="group block bg-white rounded-2xl border-2 transition-all hover:shadow-xl hover:scale-105"
+            style={{ borderColor: '#E5E7EB' }}
+          >
+            <div className="p-8">
+              {/* Icon */}
+              <div
+                className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: '#FEF3C7' }}
+              >
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  style={{ color: '#D97706' }}
                 >
-                  New Campaign Recipe
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
 
-        {/* Stats Cards */}
-        <Grid item xs={12} md={6}>
-          <Card variant="outlined">
-            <CardContent>
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-                <RestaurantIcon color="primary" sx={{ fontSize: 32 }} />
-                <Typography variant="h3">Recipes</Typography>
-              </Stack>
-              <Typography variant="h2" color="primary">
-                12
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total recipes across all types
-              </Typography>
-              <Button sx={{ mt: 2 }} href="/recipes">
-                View All Recipes
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
+              {/* Title */}
+              <h3
+                className="text-2xl font-light mb-3"
+                style={{
+                  fontFamily: 'ui-serif, Georgia, serif',
+                  color: '#0C0C0C'
+                }}
+              >
+                Lifestyle Images
+              </h3>
 
-        <Grid item xs={12} md={6}>
-          <Card variant="outlined" sx={{ borderColor: gapCount > 0 ? 'warning.main' : undefined }}>
-            <CardContent>
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
-                <WarningIcon color={gapCount > 0 ? 'warning' : 'disabled'} sx={{ fontSize: 32 }} />
-                <Typography variant="h3">Product Gaps</Typography>
-              </Stack>
-              <Typography variant="h2" color={gapCount > 0 ? 'warning.main' : 'text.secondary'}>
-                {gapCount}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Missing products detected during recipe cooking
-              </Typography>
-              <Button sx={{ mt: 2 }} href="/product-gaps" color={gapCount > 0 ? 'warning' : 'inherit'}>
-                {gapCount > 0 ? 'Review Gaps' : 'View Dashboard'}
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
+              {/* Description */}
+              <p className="text-sm leading-relaxed mb-6" style={{ color: '#8E8A82' }}>
+                Import, tag, and manage lifestyle imagery for swipe cards and style inspiration
+              </p>
+
+              {/* Arrow */}
+              <div className="flex items-center text-sm font-medium group-hover:gap-3 transition-all" style={{ color: '#0C0C0C' }}>
+                <span>Manage Images</span>
+                <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+
+          {/* Tile 3: Swipe Stacks */}
+          <Link
+            href="/admin/swipe-stacks"
+            className="group block bg-white rounded-2xl border-2 transition-all hover:shadow-xl hover:scale-105"
+            style={{ borderColor: '#E5E7EB' }}
+          >
+            <div className="p-8">
+              {/* Icon */}
+              <div
+                className="w-16 h-16 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
+                style={{ backgroundColor: '#FCE7F3' }}
+              >
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  style={{ color: '#BE185D' }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
+                </svg>
+              </div>
+
+              {/* Title */}
+              <h3
+                className="text-2xl font-light mb-3"
+                style={{
+                  fontFamily: 'ui-serif, Georgia, serif',
+                  color: '#0C0C0C'
+                }}
+              >
+                Swipe Stacks
+              </h3>
+
+              {/* Description */}
+              <p className="text-sm leading-relaxed mb-6" style={{ color: '#8E8A82' }}>
+                Create and manage card stacks for the swipe experience and style discovery
+              </p>
+
+              {/* Arrow */}
+              <div className="flex items-center text-sm font-medium group-hover:gap-3 transition-all" style={{ color: '#0C0C0C' }}>
+                <span>Manage Stacks</span>
+                <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        {/* Additional Tools */}
+        <div className="mt-12">
+          <h2
+            className="text-xl font-light mb-6"
+            style={{
+              fontFamily: 'ui-serif, Georgia, serif',
+              color: '#0C0C0C'
+            }}
+          >
+            Additional Tools
+          </h2>
+
+          <div className="grid md:grid-cols-5 gap-4">
+            <Link
+              href="/admin/products"
+              className="p-4 bg-white rounded-lg border hover:border-gray-400 transition-all"
+              style={{ borderColor: '#E5E7EB' }}
+            >
+              <p className="font-medium text-sm" style={{ color: '#0C0C0C' }}>
+                Products
+              </p>
+              <p className="text-xs mt-1" style={{ color: '#8E8A82' }}>
+                Product catalog
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/vision-import"
+              className="p-4 bg-white rounded-lg border hover:border-gray-400 transition-all"
+              style={{ borderColor: '#E5E7EB' }}
+            >
+              <p className="font-medium text-sm" style={{ color: '#0C0C0C' }}>
+                Vision Import
+              </p>
+              <p className="text-xs mt-1" style={{ color: '#8E8A82' }}>
+                AI photo analysis
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/analytics"
+              className="p-4 bg-white rounded-lg border hover:border-gray-400 transition-all"
+              style={{ borderColor: '#E5E7EB' }}
+            >
+              <p className="font-medium text-sm" style={{ color: '#0C0C0C' }}>
+                Analytics
+              </p>
+              <p className="text-xs mt-1" style={{ color: '#8E8A82' }}>
+                Usage insights
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/clip-search"
+              className="p-4 bg-white rounded-lg border hover:border-gray-400 transition-all"
+              style={{ borderColor: '#E5E7EB' }}
+            >
+              <p className="font-medium text-sm" style={{ color: '#0C0C0C' }}>
+                CLIP Search
+              </p>
+              <p className="text-xs mt-1" style={{ color: '#8E8A82' }}>
+                Visual search
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/test-tagging"
+              className="p-4 bg-white rounded-lg border hover:border-gray-400 transition-all"
+              style={{ borderColor: '#E5E7EB' }}
+            >
+              <p className="font-medium text-sm" style={{ color: '#0C0C0C' }}>
+                Test Tagging
+              </p>
+              <p className="text-xs mt-1" style={{ color: '#8E8A82' }}>
+                AI tagging test
+              </p>
+            </Link>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

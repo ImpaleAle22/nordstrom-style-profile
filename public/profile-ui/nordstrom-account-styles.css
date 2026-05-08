@@ -1,0 +1,179 @@
+/* Nordstrom Account Shared Styles */
+
+/* Top Banner */
+.top-banner {
+  background: #000;
+  color: #fff;
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.top-banner a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* Site Header */
+.site-header {
+  background: var(--nordstrom-white);
+  border-bottom: 1px solid var(--nordstrom-border);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.site-logo {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--nordstrom-black);
+  text-decoration: none;
+}
+
+.site-search {
+  flex: 1;
+  max-width: 600px;
+}
+
+.site-search input {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid var(--nordstrom-border);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.site-actions {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.site-action-link {
+  color: var(--nordstrom-black);
+  text-decoration: none;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Main Navigation */
+.main-nav {
+  background: var(--nordstrom-white);
+  border-bottom: 1px solid var(--nordstrom-border);
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 12px 32px;
+}
+
+.main-nav a {
+  color: var(--nordstrom-black);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.main-nav a:hover {
+  color: var(--nordstrom-gray);
+}
+
+.main-nav a.sale {
+  color: #dc2626;
+}
+
+/* Account Layout */
+.account-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 160px);
+}
+
+/* Account Sidebar */
+.account-sidebar {
+  background: #f9fafb;
+  border-right: 1px solid var(--nordstrom-border);
+  padding: 32px 0;
+}
+
+.account-header {
+  padding: 0 24px 24px;
+  border-bottom: 1px solid var(--nordstrom-border);
+  margin-bottom: 8px;
+}
+
+.account-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.account-section {
+  margin: 16px 0;
+}
+
+.account-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--nordstrom-gray);
+  padding: 8px 24px;
+  margin-top: 16px;
+}
+
+.account-nav-item {
+  display: block;
+  padding: 10px 24px;
+  color: var(--nordstrom-black);
+  text-decoration: none;
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: background 0.2s;
+}
+
+.account-nav-item:hover {
+  background: #f3f4f6;
+}
+
+.account-nav-item.active {
+  background: var(--nordstrom-white);
+  border-left: 3px solid var(--nordstrom-black);
+  padding-left: 21px;
+  font-weight: 600;
+}
+
+.account-nav-icon {
+  font-size: 18px;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.account-nav-content {
+  flex: 1;
+}
+
+.account-nav-title {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.account-nav-subtitle {
+  font-size: 12px;
+  color: var(--nordstrom-gray);
+  font-weight: normal;
+}
+
+/* Content Area */
+.account-content {
+  padding: 0;
+}

@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stack Builder</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #FAF9F5;
+      color: #0C0C0C;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #8E8A82;
+      font-size: 15px;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #EDECEB;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #8E8A82;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .option-card {
+      background: #FAF9F5;
+      border: 2px solid #EDECEB;
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-card:hover {
+      border-color: #B4B1A9;
+      transform: translateY(-2px);
+    }
+
+    .option-card.selected {
+      border-color: #0C0C0C;
+      background: white;
+    }
+
+    .option-card.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .option-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .option-meta {
+      font-size: 13px;
+      color: #8E8A82;
+    }
+
+    .preview-section {
+      background: #F0EBE0;
+      border: 1px solid #E0DBD0;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .preview-stat {
+      text-align: center;
+    }
+
+    .preview-value {
+      font-size: 32px;
+      font-weight: 600;
+      color: #0C0C0C;
+      margin-bottom: 4px;
+    }
+
+    .preview-label {
+      font-size: 12px;
+      color: #8E8A82;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .build-btn {
+      width: 100%;
+      padding: 16px;
+      background: #0C0C0C;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 24px;
+    }
+
+    .build-btn:hover:not(:disabled) {
+      background: #2c2c2c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .build-btn:disabled {
+      background: #B4B1A9;
+      cursor: not-allowed;
+    }
+
+    .status-message {
+      text-align: center;
+      padding: 16px;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #EDECEB;
+      margin-top: 24px;
+      display: none;
+    }
+
+    .status-message.show {
+      display: block;
+    }
+
+    .status-message.success {
+      border-color: #10b981;
+      background: #f0fdf4;
+      color: #10b981;
+    }
+
+    .status-message.error {
+      border-color: #dc2626;
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .warning-box {
+      background: #fef3e0;
+      border: 1px solid #f39c12;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #0C0C0C;
+    }
+
+    .warning-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .pill-breakdown {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill-tag {
+      padding: 6px 12px;
+      background: white;
+      border: 1px solid #EDECEB;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #EDECEB;
+    }
+
+    .nav-link {
+      color: #8E8A82;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #0C0C0C;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav-links">
+      <a href="/stock-image-selector" class="nav-link">Stock Selector</a>
+      <a href="/tagged-image-library" class="nav-link">Image Library</a>
+      <a href="/stack-builder" class="nav-link" style="color: #0C0C0C;">Stack Builder</a>
+      <a href="/swipe" class="nav-link">Swipe UI</a>
+    </div>
+
+    <h1>Stack Builder</h1>
+    <p class="subtitle">Build swipeable stacks from your tagged lifestyle images</p>
+
+    <div id="libraryWarning" class="warning-box" style="display: none;">
+      <div class="warning-title">⚠️ No images in library</div>
+      <div>Import tagged images in the <a href="/tagged-image-library">Image Library</a> to start building stacks.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1. Select Department</div>
+      <div class="option-grid">
+        <div class="option-card" data-gender="womenswear" onclick="selectGender('womenswear')">
+          <div class="option-title">Womenswear</div>
+          <div class="option-meta" id="womenCount">Loading...</div>
+        </div>
+        <div class="option-card" data-gender="menswear" onclick="selectGender('menswear')">
+          <div class="option-title">Menswear</div>
+          <div class="option-meta" id="menCount">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">2. Select Recipe Type</div>
+      <div class="option-grid" id="recipeGrid">
+        <div class="option-card" data-recipe="broadcast" onclick="selectRecipe('broadcast')">
+          <div class="option-title">Broadcast</div>
+          <div class="option-meta">Wide net, max diversity</div>
+        </div>
+        <div class="option-card disabled" data-recipe="diagnostic">
+          <div class="option-title">Diagnostic</div>
+          <div class="option-meta">Coming soon</div>
+        </div>
+        <div class="option-card disabled" data-recipe="deepening">
+          <div class="option-title">Deepening</div>
+          <div class="option-meta">Coming soon</div>
+        </div>
+        <div class="option-card disabled" data-recipe="editorial">
+          <div class="option-title">Editorial</div>
+          <div class="option-meta">Coming soon</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3. Select Theme</div>
+      <div class="option-grid" id="themeGrid"></div>
+    </div>
+
+    <div class="preview-section" id="previewSection" style="display: none;">
+      <div class="section-title">Stack Preview</div>
+      <div class="preview-grid">
+        <div class="preview-stat">
+          <div class="preview-value" id="previewCardCount">-</div>
+          <div class="preview-label">Cards</div>
+        </div>
+        <div class="preview-stat">
+          <div class="preview-value" id="previewAvailable">-</div>
+          <div class="preview-label">Available</div>
+        </div>
+        <div class="preview-stat">
+          <div class="preview-value" id="previewPillars">-</div>
+          <div class="preview-label">Pillars</div>
+        </div>
+        <div class="preview-stat">
+          <div class="preview-value" id="previewScore">-</div>
+          <div class="preview-label">Avg Score</div>
+        </div>
+      </div>
+      <div class="pill-breakdown" id="pillarBreakdown"></div>
+    </div>
+
+    <button class="build-btn" id="buildBtn" onclick="buildStack()" disabled>
+      Build Stack
+    </button>
+
+    <div class="status-message" id="statusMessage"></div>
+  </div>
+
+  <script>
+    // State
+    let selectedGender = null;
+    let selectedRecipe = null;
+    let selectedTheme = null;
+    let library = null;
+    let recipes = null;
+    let themes = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLibrary();
+      loadRecipes();
+      loadThemes();
+      showGenderCounts();
+    });
+
+    function loadLibrary() {
+      const stored = localStorage.getItem('tagged-image-library');
+      if (stored) {
+        library = JSON.parse(stored);
+        console.log(`📚 Loaded ${library.images?.length || 0} images from library`);
+      } else {
+        document.getElementById('libraryWarning').style.display = 'block';
+        library = { images: [] };
+      }
+    }
+
+    function showGenderCounts() {
+      if (!library || !library.images) return;
+
+      const womenCount = library.images.filter(img => extractGender(img) === 'womenswear').length;
+      const menCount = library.images.filter(img => extractGender(img) === 'menswear').length;
+
+      document.getElementById('womenCount').textContent = `${womenCount} images`;
+      document.getElementById('menCount').textContent = `${menCount} images`;
+    }
+
+    function selectGender(gender) {
+      selectedGender = gender;
+
+      // Update UI
+      document.querySelectorAll('[data-gender]').forEach(card => {
+        card.classList.toggle('selected', card.dataset.gender === gender);
+      });
+
+      // Reset downstream selections
+      selectedRecipe = null;
+      selectedTheme = null;
+      document.querySelectorAll('[data-recipe]').forEach(card => {
+        card.classList.remove('selected');
+      });
+
+      renderThemes();
+      updateBuildButton();
+    }
+
+    function loadRecipes() {
+      // Hardcoded recipes (in production, load from Supabase)
+      recipes = {
+        broadcast: {
+          recipeType: 'broadcast',
+          description: 'Cast wide net, max diversity',
+          defaultCardCount: 12,
+          cardTypeMix: {
+            lifestyle: 1.0,
+            item: 0.0,
+            outfit: 0.0
+          },
+          pillarDistribution: {
+            minimal: 0.11,
+            classic: 0.11,
+            casual: 0.11,
+            athletic: 0.11,
+            utility: 0.11,
+            romantic: 0.11,
+            bohemian: 0.11,
+            streetwear: 0.11,
+            maximal: 0.11
+          },
+          selectionLogic: 'balanced',
+          sequencingRules: {
+            openWithContrast: true,
+            maxSamePillarRun: 2,
+            maxSameTypeRun: 3,
+            wildcardTrigger: 4
+          }
+        }
+      };
+    }
+
+    function loadThemes() {
+      // Hardcoded themes (in production, load from Supabase)
+      themes = [
+        {
+          id: 'wardrobe_foundations',
+          title: "What's Your Vibe?",
+          description: 'Explore your style across the spectrum',
+          applicableTypes: ['broadcast'],
+          filters: {
+            pillars: 'all',
+            formality: ['formal', 'business-casual', 'smart-casual', 'casual']
+          }
+        },
+        {
+          id: 'fall_style',
+          title: 'Fall Style Edit',
+          description: 'Seasonal autumn looks',
+          applicableTypes: ['broadcast'],
+          filters: {
+            pillars: 'all'
+          }
+        },
+        {
+          id: 'weekend_casual',
+          title: 'Weekend Casual',
+          description: 'Relaxed weekend looks',
+          applicableTypes: ['broadcast'],
+          filters: {
+            pillars: ['casual', 'minimal', 'classic', 'athletic'],
+            formality: ['casual', 'smart-casual']
+          }
+        },
+        {
+          id: 'smart_casual',
+          title: 'Smart Casual',
+          description: 'Polished but not formal',
+          applicableTypes: ['broadcast'],
+          filters: {
+            pillars: ['classic', 'minimal', 'romantic'],
+            formality: ['smart-casual', 'business-casual']
+          }
+        }
+      ];
+
+      renderThemes();
+    }
+
+    function selectRecipe(recipeType) {
+      if (!selectedGender) {
+        alert('Please select a department first');
+        return;
+      }
+
+      selectedRecipe = recipeType;
+
+      // Update UI
+      document.querySelectorAll('[data-recipe]').forEach(card => {
+        card.classList.toggle('selected', card.dataset.recipe === recipeType);
+      });
+
+      // Reset theme selection
+      selectedTheme = null;
+      document.querySelectorAll('[data-theme]').forEach(card => {
+        card.classList.remove('selected');
+      });
+
+      // Filter themes by applicable types
+      renderThemes();
+      updateBuildButton();
+    }
+
+    function renderThemes() {
+      const grid = document.getElementById('themeGrid');
+
+      if (!selectedGender) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #8E8A82; padding: 20px;">Select a department first</div>';
+        return;
+      }
+
+      if (!selectedRecipe) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #8E8A82; padding: 20px;">Select a recipe type first</div>';
+        return;
+      }
+
+      const applicable = themes.filter(t => t.applicableTypes.includes(selectedRecipe));
+
+      grid.innerHTML = applicable.map(theme => `
+        <div class="option-card" data-theme="${theme.id}" onclick="selectTheme('${theme.id}')">
+          <div class="option-title">${theme.title}</div>
+          <div class="option-meta">${theme.description}</div>
+        </div>
+      `).join('');
+    }
+
+    function selectTheme(themeId) {
+      selectedTheme = themeId;
+
+      // Update UI
+      document.querySelectorAll('[data-theme]').forEach(card => {
+        card.classList.toggle('selected', card.dataset.theme === themeId);
+      });
+
+      updatePreview();
+      updateBuildButton();
+    }
+
+    function updatePreview() {
+      if (!selectedGender || !selectedRecipe || !selectedTheme) {
+        document.getElementById('previewSection').style.display = 'none';
+        return;
+      }
+
+      const recipe = recipes[selectedRecipe];
+      const theme = themes.find(t => t.id === selectedTheme);
+
+      // Filter cards by gender AND theme
+      const filteredCards = filterCardsByThemeAndGender(library.images, theme, selectedGender);
+
+      // Calculate stats
+      const pillarCounts = {};
+      filteredCards.forEach(card => {
+        const pillar = extractPillar(card);
+        pillarCounts[pillar] = (pillarCounts[pillar] || 0) + 1;
+      });
+
+      const avgScore = filteredCards.length > 0
+        ? Math.round(filteredCards.reduce((sum, c) => sum + extractBrandScore(c), 0) / filteredCards.length)
+        : 0;
+
+      document.getElementById('previewCardCount').textContent = recipe.defaultCardCount;
+      document.getElementById('previewAvailable').textContent = filteredCards.length;
+      document.getElementById('previewPillars').textContent = Object.keys(pillarCounts).length;
+      document.getElementById('previewScore').textContent = avgScore;
+
+      // Pillar breakdown
+      const breakdown = document.getElementById('pillarBreakdown');
+      breakdown.innerHTML = Object.entries(pillarCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([pillar, count]) => `<div class="pill-tag">${pillar}: ${count}</div>`)
+        .join('');
+
+      document.getElementById('previewSection').style.display = 'block';
+    }
+
+    function updateBuildButton() {
+      const btn = document.getElementById('buildBtn');
+      btn.disabled = !selectedGender || !selectedRecipe || !selectedTheme || library.images.length === 0;
+    }
+
+    function buildStack() {
+      const recipe = recipes[selectedRecipe];
+      const theme = themes.find(t => t.id === selectedTheme);
+
+      showStatus('Building stack...', 'info');
+
+      try {
+        // Build the stack
+        const stack = buildStackFromRecipe(recipe, theme);
+
+        // Save to localStorage
+        saveStackToStorage(stack);
+
+        showStatus(`✓ Stack built: ${stack.title} (${stack.cardCount} cards)`, 'success');
+
+        setTimeout(() => {
+          window.location.href = '/swipe';
+        }, 1500);
+      } catch (error) {
+        console.error('Build error:', error);
+        showStatus(`❌ Error: ${error.message}`, 'error');
+      }
+    }
+
+    function buildStackFromRecipe(recipe, theme) {
+      console.log('🏗️ Building stack:', recipe.recipeType, '/', theme.id, '/', selectedGender);
+
+      // 1. Filter cards by gender AND theme
+      const cardPool = filterCardsByThemeAndGender(library.images, theme, selectedGender);
+      console.log(`   Available cards: ${cardPool.length}`);
+
+      if (cardPool.length === 0) {
+        throw new Error(`No ${selectedGender} cards match theme filters`);
+      }
+
+      // 2. Select cards based on pillar distribution
+      const selectedCards = selectCards(cardPool, recipe);
+      console.log(`   Selected cards: ${selectedCards.length}`);
+
+      // 3. Sequence cards
+      const sequencedCards = sequenceCards(selectedCards, recipe);
+
+      // 4. Enrich with position and display data
+      const enrichedCards = sequencedCards.map((card, idx) => ({
+        ...card,
+        position: idx + 1,
+        displayData: {
+          ...card.displayData,
+          stackTitle: theme.title
+        }
+      }));
+
+      // 5. Build stack object
+      const stackId = `${theme.id}_${selectedGender}_${recipe.recipeType}_${Date.now()}`;
+
+      return {
+        stackId,
+        stackType: recipe.recipeType,
+        stackRecipe: recipe.recipeType,
+        title: theme.title,
+        description: theme.description,
+        department: selectedGender,
+        assembledAt: new Date().toISOString(),
+        cardCount: enrichedCards.length,
+        cards: enrichedCards,
+        meta: {
+          themeId: theme.id,
+          department: selectedGender,
+          profileSnapshotVersion: 0,
+          sequencingStrategy: `${recipe.recipeType}_${recipe.selectionLogic}`,
+          excludedCardCount: 0
+        }
+      };
+    }
+
+    function filterCardsByThemeAndGender(images, theme, gender) {
+      const filters = theme.filters || {};
+
+      return images.filter(img => {
+        // Filter by gender FIRST
+        const imgGender = extractGender(img);
+        if (imgGender !== gender) {
+          return false;
+        }
+
+        const pillar = extractPillar(img);
+
+        // Filter by pillars
+        if (filters.pillars && filters.pillars !== 'all') {
+          const targetPillars = Array.isArray(filters.pillars) ? filters.pillars : [filters.pillars];
+          if (!targetPillars.includes(pillar)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+    }
+
+    function selectCards(pool, recipe) {
+      const selected = [];
+      const totalCards = recipe.defaultCardCount;
+      const pillarTargets = {};
+
+      // Calculate target count per pillar
+      Object.entries(recipe.pillarDistribution).forEach(([pillar, pct]) => {
+        pillarTargets[pillar] = Math.round(totalCards * pct);
+      });
+
+      // Group pool by pillar
+      const byPillar = {};
+      pool.forEach(card => {
+        const pillar = extractPillar(card);
+        if (!byPillar[pillar]) byPillar[pillar] = [];
+        byPillar[pillar].push(convertToCard(card));
+      });
+
+      // Select cards to meet targets
+      Object.entries(pillarTargets).forEach(([pillar, target]) => {
+        if (target === 0) return;
+
+        const available = byPillar[pillar] || [];
+        if (available.length === 0) return;
+
+        // Sort by brand score
+        const sorted = available.sort((a, b) =>
+          (b.brandAdherenceScore || 0) - (a.brandAdherenceScore || 0)
+        );
+
+        const take = Math.min(target, sorted.length);
+        selected.push(...sorted.slice(0, take));
+      });
+
+      // If we're short, fill with any remaining high-scoring cards
+      if (selected.length < totalCards) {
+        const allCards = Object.values(byPillar).flat();
+        const remaining = allCards.filter(card => !selected.includes(card));
+        const sorted = remaining.sort((a, b) =>
+          (b.brandAdherenceScore || 0) - (a.brandAdherenceScore || 0)
+        );
+        const needed = totalCards - selected.length;
+        selected.push(...sorted.slice(0, needed));
+      }
+
+      return selected.slice(0, totalCards);
+    }
+
+    function sequenceCards(cards, recipe) {
+      if (recipe.recipeType !== 'broadcast') {
+        return cards;
+      }
+
+      const sequenced = [];
+      const remaining = [...cards];
+      const rules = recipe.sequencingRules;
+
+      // Open with diverse pillars
+      if (rules.openWithContrast && remaining.length >= 3) {
+        const firstThree = selectDiverseOpening(remaining, 3);
+        sequenced.push(...firstThree);
+        firstThree.forEach(card => {
+          const idx = remaining.indexOf(card);
+          if (idx > -1) remaining.splice(idx, 1);
+        });
+      }
+
+      // Add remaining with run constraints
+      while (remaining.length > 0) {
+        const next = selectNextCard(remaining, sequenced, rules);
+        if (next) {
+          sequenced.push(next);
+          const idx = remaining.indexOf(next);
+          remaining.splice(idx, 1);
+        } else {
+          // No eligible card, take random
+          const random = remaining[Math.floor(Math.random() * remaining.length)];
+          sequenced.push(random);
+          const idx = remaining.indexOf(random);
+          remaining.splice(idx, 1);
+        }
+      }
+
+      return sequenced;
+    }
+
+    function selectDiverseOpening(pool, count) {
+      const selected = [];
+      const usedPillars = new Set();
+
+      for (let i = 0; i < count && pool.length > 0; i++) {
+        let card = pool.find(c => !usedPillars.has(c.tags.pillars[0]));
+        if (!card) {
+          card = pool[Math.floor(Math.random() * pool.length)];
+        }
+        selected.push(card);
+        usedPillars.add(card.tags.pillars[0]);
+      }
+
+      return selected;
+    }
+
+    function selectNextCard(pool, sequenced, rules) {
+      const lastN = sequenced.slice(-Math.max(rules.maxSamePillarRun, rules.maxSameTypeRun));
+
+      const eligible = pool.filter(card => {
+        const pillar = card.tags.pillars[0];
+        const type = card.cardType;
+
+        // Check pillar run
+        const lastPillars = lastN.slice(-rules.maxSamePillarRun).map(c => c.tags.pillars[0]);
+        if (lastPillars.length === rules.maxSamePillarRun) {
+          const allSamePillar = lastPillars.every(p => p === pillar);
+          if (allSamePillar) return false;
+        }
+
+        // Check type run
+        const lastTypes = lastN.slice(-rules.maxSameTypeRun).map(c => c.cardType);
+        if (lastTypes.length === rules.maxSameTypeRun) {
+          const allSameType = lastTypes.every(t => t === type);
+          if (allSameType) return false;
+        }
+
+        return true;
+      });
+
+      if (eligible.length === 0) return null;
+      return eligible[Math.floor(Math.random() * eligible.length)];
+    }
+
+    function convertToCard(img) {
+      const pillar = extractPillar(img);
+      const gender = extractGender(img);
+      const brandScore = extractBrandScore(img);
+      const subTerms = extractSubTerms(img);
+
+      return {
+        cardType: 'lifestyle',
+        cardId: `lifestyle_${img.imageId}`,
+        imageId: img.imageId,
+        imageUrl: img.imageUrl,
+        thumbnailUrl: img.thumbnailUrl || img.imageUrl,
+        source: img.source,
+        tags: {
+          pillars: [pillar],
+          gender: gender,
+          subDimension: subTerms[0] || null,
+          occasion: null,
+          formality: null,
+          colorFamily: null,
+          category: null
+        },
+        brandAdherenceScore: brandScore,
+        displayData: {
+          title: subTerms[0] || pillar,
+          backgroundColor: getBackgroundColor(pillar)
+        }
+      };
+    }
+
+    function extractPillar(img) {
+      const pillar = img.outfitAnalysis?.stylePillar || 'uncategorized';
+      return pillar.toLowerCase().replace(/_/g, '').replace(/\s+/g, '');
+    }
+
+    function extractGender(img) {
+      return img.outfitAnalysis?.gender || 'unknown';
+    }
+
+    function extractBrandScore(img) {
+      return img.brandAdherence?.score || 0;
+    }
+
+    function extractSubTerms(img) {
+      if (img.outfitAnalysis?.subTerm) {
+        return [img.outfitAnalysis.subTerm];
+      }
+      return img.outfitAnalysis?.subTerms || [];
+    }
+
+    function getBackgroundColor(pillar) {
+      const colors = {
+        minimal: '#f0f2f5',
+        classic: '#f0ebe0',
+        romantic: '#fef5f5',
+        bohemian: '#f5f0e8',
+        maximal: '#fef3e0',
+        streetwear: '#2c2c2c',
+        casual: '#f5f5f5',
+        athletic: '#f0f5f0',
+        utility: '#f0ebe0'
+      };
+      return colors[pillar] || '#f5f5f5';
+    }
+
+    function saveStackToStorage(stack) {
+      // Get existing stacks
+      let stacks = [];
+      const stored = localStorage.getItem('built-stacks');
+      if (stored) {
+        stacks = JSON.parse(stored);
+      }
+
+      // Add new stack
+      stacks.push(stack);
+
+      // Save back
+      localStorage.setItem('built-stacks', JSON.stringify(stacks));
+      console.log('💾 Stack saved to localStorage');
+    }
+
+    function showStatus(message, type) {
+      const status = document.getElementById('statusMessage');
+      status.textContent = message;
+      status.className = 'status-message show ' + type;
+
+      if (type === 'success' || type === 'error') {
+        setTimeout(() => {
+          status.classList.remove('show');
+        }, 5000);
+      }
+    }
+  </script>
+</body>
+</html>

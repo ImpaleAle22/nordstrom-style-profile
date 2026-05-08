@@ -21,7 +21,7 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import OutfitIngredientEditorConnected from '@/components/admin/OutfitIngredientEditorConnected';
+import OutfitIngredientEditorConnected from '@/components/OutfitIngredientEditorConnected';
 import {
   saveOutfitRecipe,
   generateRecipeTitle,

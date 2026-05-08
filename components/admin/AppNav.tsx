@@ -51,16 +51,16 @@ export default function AppNav() {
       label: 'Recipes',
       icon: <RecipeIcon />,
       type: 'link',
-      href: '/recipes',
+      href: '/admin/recipes',
     },
     {
       label: 'Outfits',
       icon: <OutfitIcon />,
       type: 'dropdown',
       items: [
-        { label: 'Browse Outfits', href: '/outfits' },
-        { label: 'Cook Outfits', href: '/cooker' },
-        { label: 'Validate Outfits', href: '/outfits/validate' },
+        { label: 'Browse Outfits', href: '/admin/outfits' },
+        { label: 'Cook Outfits', href: '/admin/cooker' },
+        { label: 'Validate Outfits', href: '/admin/outfits/validate' },
       ],
     },
     {
@@ -69,9 +69,9 @@ export default function AppNav() {
       primary: true, // Highlight as primary workflow
       type: 'dropdown',
       items: [
-        { label: 'Tag Outfits', href: '/test-tagging' },
-        { label: 'Outfit Coverage', href: '/outfit-coverage' },
-        { label: 'Auto Analysis', href: '/auto-analysis' },
+        { label: 'Tag Outfits', href: '/admin/test-tagging' },
+        { label: 'Outfit Coverage', href: '/admin/outfit-coverage' },
+        { label: 'Auto Analysis', href: '/admin/auto-analysis' },
       ],
     },
     {
@@ -79,9 +79,10 @@ export default function AppNav() {
       icon: <ProductIcon />,
       type: 'dropdown',
       items: [
-        { label: 'Product Coverage', href: '/products' },
-        { label: 'Vision Import', href: '/vision-import' },
-        { label: 'CLIP Search', href: '/clip-search' },
+        { label: 'Product Coverage', href: '/admin/products' },
+        { label: 'Vision Import', href: '/admin/vision-import' },
+        { label: 'CLIP Search', href: '/admin/clip-search' },
+        { label: 'Lifestyle Images', href: '/admin/lifestyle-images/import' },
       ],
     },
     {
@@ -89,8 +90,8 @@ export default function AppNav() {
       icon: <ToolsIcon />,
       type: 'dropdown',
       items: [
-        { label: 'Export Data', href: '/export-indexeddb' },
-        { label: 'Analytics', href: '/analytics' },
+        { label: 'Export Data', href: '/admin/export-indexeddb' },
+        { label: 'Analytics', href: '/admin/analytics' },
       ],
     },
   ];

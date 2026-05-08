@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Style Profile - Nordstrom</title>
+  <style>
+    /* Nordstrom Brand Colors & Typography */
+    :root {
+      --nordstrom-bg: #FAF9F5;
+      --nordstrom-white: #FFFFFF;
+      --nordstrom-black: #1a1a1a;
+      --nordstrom-gray: #6b7280;
+      --nordstrom-border: #e5e7eb;
+
+      /* Pillar accent colors */
+      --classic-accent: #8B7355;
+      --romantic-accent: #FBD3FA;
+      --minimal-accent: #9CA3AF;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--nordstrom-bg);
+      color: var(--nordstrom-black);
+      line-height: 1.6;
+    }
+
+    /* Typography */
+    .serif {
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* Top Banner */
+    .top-banner {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+
+    .top-banner a {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    /* Site Header */
+    .site-header {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .site-logo {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+    }
+
+    .site-search {
+      flex: 1;
+      max-width: 600px;
+    }
+
+    .site-search input {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1px solid var(--nordstrom-border);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .site-actions {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .site-action-link {
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Main Navigation */
+    .main-nav {
+      background: var(--nordstrom-white);
+      border-bottom: 1px solid var(--nordstrom-border);
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 12px 32px;
+    }
+
+    .main-nav a {
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .main-nav a:hover {
+      color: var(--nordstrom-gray);
+    }
+
+    .main-nav a.sale {
+      color: #dc2626;
+    }
+
+    /* Account Layout */
+    .account-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 160px);
+    }
+
+    /* Account Sidebar */
+    .account-sidebar {
+      background: #f9fafb;
+      border-right: 1px solid var(--nordstrom-border);
+      padding: 32px 0;
+    }
+
+    .account-header {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid var(--nordstrom-border);
+      margin-bottom: 8px;
+    }
+
+    .account-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .account-section {
+      margin: 16px 0;
+    }
+
+    .account-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--nordstrom-gray);
+      padding: 8px 24px;
+      margin-top: 16px;
+    }
+
+    .account-nav-item {
+      display: block;
+      padding: 10px 24px;
+      color: var(--nordstrom-black);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: background 0.2s;
+    }
+
+    .account-nav-item:hover {
+      background: #f3f4f6;
+    }
+
+    .account-nav-item.active {
+      background: var(--nordstrom-white);
+      border-left: 3px solid var(--nordstrom-black);
+      padding-left: 21px;
+      font-weight: 600;
+    }
+
+    .account-nav-icon {
+      font-size: 18px;
+      width: 20px;
+      flex-shrink: 0;
+    }
+
+    .account-nav-content {
+      flex: 1;
+    }
+
+    .account-nav-title {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .account-nav-subtitle {
+      font-size: 12px;
+      color: var(--nordstrom-gray);
+      font-weight: normal;
+    }
+
+    /* Content Area */
+    .account-content {
+      padding: 0;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 80px 0 60px;
+    }
+
+    .hero-title {
+      font-size: 56px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    .hero-title .pillar-name {
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .hero-subtitle {
+      font-size: 14px;
+      color: var(--nordstrom-gray);
+      margin-bottom: 40px;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 64px;
+      margin-top: 40px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 48px;
+      font-weight: 300;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--nordstrom-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Section Headers */
+    .section {
+      padding: 60px 0;
+    }
+
+    .section-title {
+      font-size: 36px;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    /* Pillar Cards */
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .pillar-card {
+      background: var(--nordstrom-white);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .pillar-card-image {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      display: block;
+    }
+
+    .pillar-card-content {
+      padding: 24px;
+    }
+
+    .pillar-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .pillar-card-name {
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pillar-card-percentage {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .pillar-card-description {
+      font-size: 14px;
+      color: var(--nordstrom-gray);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .pillar-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .pillar-tag {
+      padding: 4px 12px;
+      background: #f3f4f6;
+      border-radius: 16px;
+      font-size: 12px;
+      color: var(--nordstrom-gray);
+    }
+
+    .pillar-card-strength {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .pillar-card-strength-fill {
+      height: 100%;
+      background: var(--nordstrom-black);
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+
+    .pillar-card-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      border: 2px solid var(--nordstrom-black);
+    }
+
+    .btn-primary:hover {
+      background: #000;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--nordstrom-black);
+      border: 2px solid var(--nordstrom-black);
+    }
+
+    .btn-secondary:hover {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+    }
+
+    /* Style Spectrum */
+    .spectrum {
+      background: var(--nordstrom-white);
+      padding: 48px;
+      border-radius: 8px;
+      margin: 60px 0;
+    }
+
+    .spectrum-title {
+      font-size: 32px;
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    .spectrum-visual {
+      position: relative;
+      margin: 40px 0;
+    }
+
+    .spectrum-line {
+      height: 2px;
+      background: #e5e7eb;
+      position: relative;
+    }
+
+    .spectrum-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--nordstrom-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .spectrum-marker {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: var(--nordstrom-black);
+      border: 3px solid var(--nordstrom-white);
+      border-radius: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .spectrum-positions {
+      margin-top: 32px;
+      list-style: none;
+    }
+
+    .spectrum-positions li {
+      font-size: 15px;
+      margin-bottom: 12px;
+      padding-left: 24px;
+      position: relative;
+    }
+
+    .spectrum-positions li:before {
+      content: '●';
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .spectrum-positions .position-number {
+      color: var(--nordstrom-gray);
+      font-size: 14px;
+    }
+
+    .spectrum-description {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--nordstrom-border);
+      color: var(--nordstrom-gray);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Insight Cards */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .insight-card {
+      background: var(--nordstrom-white);
+      padding: 28px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .insight-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .insight-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .insight-description {
+      font-size: 13px;
+      color: var(--nordstrom-gray);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .insight-data {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--nordstrom-black);
+    }
+
+    .insight-colors {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .color-swatch {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Collections */
+    .collections-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .collection-card {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .collection-card:hover {
+      transform: scale(1.02);
+    }
+
+    .collection-image {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+    }
+
+    .collection-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+      color: white;
+    }
+
+    .collection-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .collection-subtitle {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 12px;
+    }
+
+    .collection-link {
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .collection-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Cross Links */
+    .cross-links {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      padding: 40px 0;
+    }
+
+    .cross-link-card {
+      background: var(--nordstrom-white);
+      padding: 32px 24px;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--nordstrom-black);
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .cross-link-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .cross-link-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .cross-link-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .cross-link-count {
+      font-size: 13px;
+      color: var(--nordstrom-gray);
+    }
+
+    /* Footer CTA */
+    .footer-cta {
+      text-align: center;
+      padding: 60px 0 80px;
+    }
+
+    .footer-cta-text {
+      font-size: 18px;
+      color: var(--nordstrom-gray);
+      margin-bottom: 20px;
+    }
+
+    .btn-dive-deeper {
+      background: var(--nordstrom-black);
+      color: var(--nordstrom-white);
+      border: 2px solid var(--nordstrom-black);
+      padding: 16px 48px;
+      font-size: 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-dive-deeper:hover {
+      background: #000;
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+      .pillar-grid,
+      .collections-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .insights-grid,
+      .cross-links {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero-title {
+        font-size: 36px;
+      }
+
+      .hero-stats {
+        gap: 32px;
+      }
+
+      .stat-value {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Banner -->
+  <div class="top-banner">
+    Mother's Day is coming! Find something special for every budget. <a href="#">Mother's Day Gifts</a>
+  </div>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <a href="#" class="site-logo">NORDSTROM</a>
+    <div class="site-search">
+      <input type="text" placeholder="Search for products or brands">
+    </div>
+    <div class="site-actions">
+      <a href="#" class="site-action-link">
+        <span>👤</span>
+        <span>Brian | Member</span>
+      </a>
+      <a href="#" class="site-action-link">
+        <span>📍</span>
+        <span>Your Store<br>Michigan Avenue</span>
+      </a>
+      <a href="#" class="site-action-link">
+        <span>🛍️</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Navigation -->
+  <nav class="main-nav">
+    <a href="#">New & Now</a>
+    <a href="#" class="sale">Sale</a>
+    <a href="#">Women</a>
+    <a href="#">Men</a>
+    <a href="#">Beauty</a>
+    <a href="#">Shoes</a>
+    <a href="#">Accessories</a>
+    <a href="#">Kids</a>
+    <a href="#">Designer</a>
+    <a href="#">Home</a>
+    <a href="#">Gifts</a>
+    <a href="#">Services</a>
+  </nav>
+
+  <!-- Account Layout -->
+  <div class="account-layout">
+    <!-- Account Sidebar -->
+    <aside class="account-sidebar">
+      <div class="account-header">
+        <h2>
+          <span class="account-nav-icon">👤</span>
+          Brian's Account
+        </h2>
+      </div>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">ℹ️</span>
+        <span class="account-nav-content">Account Info</span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">📦</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Purchases</span>
+          <span class="account-nav-subtitle">Track, Manage & Return</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">❤️</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Wish Lists</span>
+          <span class="account-nav-subtitle">Create & manage lists</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">💎</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Nordy Club Rewards</span>
+          <span class="account-nav-subtitle">$9.91 available towards...</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">💳</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Pay & Manage Nordstrom Card</span>
+          <span class="account-nav-subtitle">Opens in a new tab</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">💰</span>
+        <span class="account-nav-content">Payment Methods</span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">📍</span>
+        <span class="account-nav-content">Shipping Addresses</span>
+      </a>
+
+      <div class="account-section-title">Settings</div>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">👤</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Personal Info</span>
+          <span class="account-nav-subtitle">Password, email, mobile & more</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">✉️</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Communications</span>
+          <span class="account-nav-subtitle">Email & mail preferences</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">🏪</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Your Store</span>
+          <span class="account-nav-subtitle">Nordstrom Michigan Avenue</span>
+        </span>
+      </a>
+
+      <div class="account-section-title">Profile</div>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">🏷️</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Your Brands</span>
+          <span class="account-nav-subtitle">Save the brands you shop</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">📏</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Your Sizes</span>
+          <span class="account-nav-subtitle">See the sizes you shop</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item active">
+        <span class="account-nav-icon">✨</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Your Style</span>
+          <span class="account-nav-subtitle">Take a quiz to find your style</span>
+        </span>
+      </a>
+
+      <div class="account-section-title">Styling & Services</div>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">📅</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Your Appointments</span>
+          <span class="account-nav-subtitle">Book & manage</span>
+        </span>
+      </a>
+
+      <a href="#" class="account-nav-item">
+        <span class="account-nav-icon">👗</span>
+        <span class="account-nav-content">
+          <span class="account-nav-title">Your Stylists</span>
+          <span class="account-nav-subtitle">Personalized Notes</span>
+        </span>
+      </a>
+
+      <div style="padding: 16px 24px; margin-top: 24px; border-top: 1px solid var(--nordstrom-border);">
+        <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">We're here to help, 24/7</div>
+        <a href="#" style="color: var(--nordstrom-black); text-decoration: none; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+          <span>💬</span>
+          <span>Customer Service</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Account Content -->
+    <main class="account-content">
+      <!-- Hero Section -->
+      <section class="hero">
+    <div class="container">
+      <h1 class="hero-title serif">
+        Your style is <span class="pillar-name">Classic</span><br>
+        with <span class="pillar-name">Romantic</span> influences
+      </h1>
+      <p class="hero-subtitle">
+        Based on 47 saved outfits, 23 purchased items, and your Style Quiz<br>
+        Last updated: April 22, 2026
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">3</span>
+          <span class="stat-label">Core Pillars</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">6</span>
+          <span class="stat-label">Sub-Terms</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">2024</span>
+          <span class="stat-label">Since</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pillar Cards -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title serif">The pillars that define your style</h2>
+
+      <div class="pillar-grid">
+        <!-- Classic Card -->
+        <div class="pillar-card">
+          <img src="https://images.unsplash.com/photo-1507680434567-5739c80be1ac?w=800&q=80"
+               alt="Classic style"
+               class="pillar-card-image">
+          <div class="pillar-card-content">
+            <div class="pillar-card-header">
+              <div class="pillar-card-name">● Classic</div>
+              <div class="pillar-card-percentage">68%</div>
+            </div>
+            <p class="pillar-card-description">
+              Timeless, polished pieces that transcend seasons
+            </p>
+            <div class="pillar-card-tags">
+              <span class="pillar-tag">Tailored</span>
+              <span class="pillar-tag">Sophisticated</span>
+              <span class="pillar-tag">Timeless</span>
+            </div>
+            <div class="pillar-card-strength">
+              <div class="pillar-card-strength-fill" style="width: 68%"></div>
+            </div>
+            <div class="pillar-card-actions">
+              <a href="#" class="btn btn-primary">Shop Classic</a>
+              <a href="#" class="btn btn-secondary">See Outfits</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Romantic Card -->
+        <div class="pillar-card">
+          <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80"
+               alt="Romantic style"
+               class="pillar-card-image">
+          <div class="pillar-card-content">
+            <div class="pillar-card-header">
+              <div class="pillar-card-name">● Romantic</div>
+              <div class="pillar-card-percentage">22%</div>
+            </div>
+            <p class="pillar-card-description">
+              Soft, feminine details with flowing silhouettes
+            </p>
+            <div class="pillar-card-tags">
+              <span class="pillar-tag">Delicate</span>
+              <span class="pillar-tag">Feminine</span>
+            </div>
+            <div class="pillar-card-strength">
+              <div class="pillar-card-strength-fill" style="width: 22%"></div>
+            </div>
+            <div class="pillar-card-actions">
+              <a href="#" class="btn btn-primary">Shop Romantic</a>
+              <a href="#" class="btn btn-secondary">See Outfits</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Minimal Card -->
+        <div class="pillar-card">
+          <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80"
+               alt="Minimal style"
+               class="pillar-card-image">
+          <div class="pillar-card-content">
+            <div class="pillar-card-header">
+              <div class="pillar-card-name">● Minimal</div>
+              <div class="pillar-card-percentage">10%</div>
+            </div>
+            <p class="pillar-card-description">
+              Clean lines and understated elegance
+            </p>
+            <div class="pillar-card-tags">
+              <span class="pillar-tag">Understated</span>
+            </div>
+            <div class="pillar-card-strength">
+              <div class="pillar-card-strength-fill" style="width: 10%"></div>
+            </div>
+            <div class="pillar-card-actions">
+              <a href="#" class="btn btn-primary">Shop Minimal</a>
+              <a href="#" class="btn btn-secondary">See Outfits</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Style Spectrum -->
+  <div class="container">
+    <div class="spectrum">
+      <h2 class="spectrum-title serif">Where you live on the style spectrum</h2>
+
+      <div class="spectrum-visual">
+        <div class="spectrum-line">
+          <div class="spectrum-marker" style="left: 4.4%"></div>
+          <div class="spectrum-marker" style="left: 23.3%"></div>
+        </div>
+        <div class="spectrum-labels">
+          <span>Classic</span>
+          <span>Minimal</span>
+          <span>Romantic</span>
+          <span>Bohemian</span>
+          <span>Maximal</span>
+          <span>Fashion Forward</span>
+          <span>Utility</span>
+          <span>Athletic</span>
+          <span>Casual</span>
+        </div>
+      </div>
+
+      <ul class="spectrum-positions">
+        <li>
+          <strong>Your primary style: Classic <span class="position-number">(0.4)</span></strong><br>
+          <span style="color: #6b7280; font-size: 14px;">Refined, sophisticated, timeless aesthetics</span>
+        </li>
+        <li>
+          <strong>You also explore: Romantic <span class="position-number">(2.1)</span></strong><br>
+          <span style="color: #6b7280; font-size: 14px;">Delicate, feminine aesthetics</span>
+        </li>
+      </ul>
+
+      <p class="spectrum-description">
+        You gravitate toward the refined end of Classic (Tailored, Sophisticated) with occasional
+        pulls toward Delicate Romantic aesthetics.
+      </p>
+    </div>
+  </div>
+
+  <!-- Style Patterns -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title serif">Style patterns we've noticed</h2>
+
+      <div class="insights-grid">
+        <div class="insight-card">
+          <span class="insight-icon">👔</span>
+          <h3 class="insight-title">Smart Casual</h3>
+          <p class="insight-description">
+            Most of your saved outfits are polished but relaxed
+          </p>
+          <div class="insight-data">73% of favorites</div>
+        </div>
+
+        <div class="insight-card">
+          <span class="insight-icon">🎨</span>
+          <h3 class="insight-title">Neutral with Pops</h3>
+          <p class="insight-description">
+            You prefer neutral bases with colorful accents
+          </p>
+          <div class="insight-colors">
+            <div class="color-swatch" style="background: #1a1a2e"></div>
+            <div class="color-swatch" style="background: #000000"></div>
+            <div class="color-swatch" style="background: #C8B89C"></div>
+            <div class="color-swatch" style="background: #6B7280"></div>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <span class="insight-icon">📐</span>
+          <h3 class="insight-title">Tailored & Structured</h3>
+          <p class="insight-description">
+            You consistently choose fitted, defined shapes
+          </p>
+          <div class="insight-data">Top fit: Tailored</div>
+        </div>
+
+        <div class="insight-card">
+          <span class="insight-icon">💼</span>
+          <h3 class="insight-title">Workwear Focused</h3>
+          <p class="insight-description">
+            You shop most for professional occasions
+          </p>
+          <div class="insight-data">18 blazers saved</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Collections -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title serif">Curated collections for your style</h2>
+
+      <div class="collections-grid">
+        <div class="collection-card">
+          <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&q=80"
+               alt="Tailored Essentials"
+               class="collection-image">
+          <div class="collection-overlay">
+            <h3 class="collection-title">Tailored Essentials</h3>
+            <p class="collection-subtitle">Based on your Classic style</p>
+            <a href="#" class="collection-link">
+              View Collection →
+            </a>
+          </div>
+        </div>
+
+        <div class="collection-card">
+          <img src="https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&q=80"
+               alt="Modern Romantic"
+               class="collection-image">
+          <div class="collection-overlay">
+            <h3 class="collection-title">Modern Romantic</h3>
+            <p class="collection-subtitle">Soft pieces for your feminine side</p>
+            <a href="#" class="collection-link">
+              View Collection →
+            </a>
+          </div>
+        </div>
+
+        <div class="collection-card">
+          <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80"
+               alt="Spring Layers"
+               class="collection-image">
+          <div class="collection-overlay">
+            <h3 class="collection-title">Spring Layers</h3>
+            <p class="collection-subtitle">Season updates for your wardrobe</p>
+            <a href="#" class="collection-link">
+              View Collection →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cross Links -->
+  <section>
+    <div class="container">
+      <h2 class="section-title serif">More ways to explore your style</h2>
+
+      <div class="cross-links">
+        <a href="#" class="cross-link-card">
+          <span class="cross-link-icon">💾</span>
+          <div class="cross-link-title">Saved Outfits</div>
+          <div class="cross-link-count">47 outfits</div>
+        </a>
+
+        <a href="#" class="cross-link-card">
+          <span class="cross-link-icon">❤️</span>
+          <div class="cross-link-title">Favorites</div>
+          <div class="cross-link-count">89 items</div>
+        </a>
+
+        <a href="#" class="cross-link-card">
+          <span class="cross-link-icon">🎨</span>
+          <div class="cross-link-title">Style Quiz</div>
+          <div class="cross-link-count">Taken 2x</div>
+        </a>
+
+        <a href="#" class="cross-link-card">
+          <span class="cross-link-icon">📦</span>
+          <div class="cross-link-title">Recent Orders</div>
+          <div class="cross-link-count">12 items</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer CTA -->
+  <section class="footer-cta">
+    <div class="container">
+      <p class="footer-cta-text">Want to understand how we built your profile?</p>
+      <button class="btn-dive-deeper" onclick="window.location.href='style-profile-advanced.html'">
+        Dive Deeper: See Your Style Data →
+      </button>
+    </div>
+  </section>
+
+  <script>
+    // Animate strength bars on load
+    document.addEventListener('DOMContentLoaded', function() {
+      const fills = document.querySelectorAll('.pillar-card-strength-fill');
+      setTimeout(() => {
+        fills.forEach(fill => {
+          fill.style.width = fill.style.width;
+        });
+      }, 300);
+    });
+
+  </script>
+
+    </main>
+  </div>
+</body>
+</html>
