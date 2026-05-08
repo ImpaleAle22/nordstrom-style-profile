@@ -2,12 +2,29 @@
  * Public API: Outfit Details
  *
  * Get styled outfit information
+ *
+ * Authentication: Optional (higher rate limits with API key)
+ * Rate Limits: 100/day without key, 10,000/day with key
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase-client';
+import { validateApiKey, getRateLimitHeaders } from '@/lib/api-auth';
 
 export async function GET(request: NextRequest) {
+  // Validate API key and check rate limits
+  const auth = validateApiKey(request);
+
+  if (!auth.authenticated) {
+    return NextResponse.json(
+      { error: auth.error },
+      {
+        status: auth.error?.includes('rate limit') ? 429 : 401,
+        headers: getRateLimitHeaders(auth)
+      }
+    );
+  }
+
   try {
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
@@ -27,11 +44,11 @@ export async function GET(request: NextRequest) {
       if (error) {
         return NextResponse.json(
           { error: 'Outfit not found', message: error.message },
-          { status: 404 }
+          { status: 404, headers: getRateLimitHeaders(auth) }
         );
       }
 
-      return NextResponse.json({ outfit: data });
+      return NextResponse.json({ outfit: data }, { headers: getRateLimitHeaders(auth) });
     }
 
     // Multiple outfits by IDs (comma-separated)
@@ -46,14 +63,14 @@ export async function GET(request: NextRequest) {
       if (error) {
         return NextResponse.json(
           { error: 'Failed to fetch outfits', message: error.message },
-          { status: 500 }
+          { status: 500, headers: getRateLimitHeaders(auth) }
         );
       }
 
       return NextResponse.json({
         count: data?.length || 0,
         outfits: data || [],
-      });
+      }, { headers: getRateLimitHeaders(auth) });
     }
 
     // Build query
@@ -73,7 +90,7 @@ export async function GET(request: NextRequest) {
     if (error) {
       return NextResponse.json(
         { error: 'Failed to fetch outfits', message: error.message },
-        { status: 500 }
+        { status: 500, headers: getRateLimitHeaders(auth) }
       );
     }
 
@@ -84,7 +101,7 @@ export async function GET(request: NextRequest) {
       limit,
       pool: pool || 'all',
       outfits: data || [],
-    });
+    }, { headers: getRateLimitHeaders(auth) });
   } catch (error) {
     console.error('Outfits API error:', error);
     return NextResponse.json(
@@ -92,7 +109,7 @@ export async function GET(request: NextRequest) {
         error: 'Failed to fetch outfits',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500, headers: getRateLimitHeaders(auth) }
     );
   }
 }

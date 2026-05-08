@@ -5,13 +5,30 @@
  * to provide natural language product search.
  *
  * Example: "cozy warm fall sweaters" → returns matching products
+ *
+ * Authentication: Optional (higher rate limits with API key)
+ * Rate Limits: 100/day without key, 10,000/day with key
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { validateApiKey, getRateLimitHeaders } from '@/lib/api-auth';
 
 const CLIP_API_URL = process.env.NEXT_PUBLIC_CLIP_API_URL || 'https://briancassidy-style-clip-search.hf.space';
 
 export async function POST(request: NextRequest) {
+  // Validate API key and check rate limits
+  const auth = validateApiKey(request);
+
+  if (!auth.authenticated) {
+    return NextResponse.json(
+      { error: auth.error },
+      {
+        status: auth.error?.includes('rate limit') ? 429 : 401,
+        headers: getRateLimitHeaders(auth)
+      }
+    );
+  }
+
   try {
     const body = await request.json();
     const { query, limit = 12, gender = 'all' } = body;
@@ -45,7 +62,7 @@ export async function POST(request: NextRequest) {
     // CLIP API returns { results: [...], total: N, limit: N, offset: N }
     const results = data.results || [];
 
-    // Return formatted results
+    // Return formatted results with rate limit headers
     return NextResponse.json({
       query,
       count: results.length,
@@ -62,6 +79,8 @@ export async function POST(request: NextRequest) {
         colors: product.simplifiedColors,
         similarity_score: product.score,
       })),
+    }, {
+      headers: getRateLimitHeaders(auth)
     });
   } catch (error) {
     console.error('Search API error:', error);
@@ -76,11 +95,21 @@ export async function POST(request: NextRequest) {
 }
 
 // GET endpoint for testing/health check
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = validateApiKey(request);
+
   return NextResponse.json({
     endpoint: '/api/public/search',
     method: 'POST',
     description: 'Semantic product search using natural language',
+    authentication: {
+      required: false,
+      rateLimits: {
+        withoutKey: '100 requests/day',
+        withKey: '10,000 requests/day'
+      },
+      header: 'X-API-Key: your-api-key-here'
+    },
     example: {
       query: 'cozy warm fall sweaters',
       limit: 12,
@@ -88,5 +117,12 @@ export async function GET() {
     },
     clip_api: CLIP_API_URL,
     status: 'ready',
+    yourStatus: {
+      authenticated: auth.authenticated,
+      tier: auth.tier,
+      remainingRequests: auth.remainingRequests
+    }
+  }, {
+    headers: getRateLimitHeaders(auth)
   });
 }

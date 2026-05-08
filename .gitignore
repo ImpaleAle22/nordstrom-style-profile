@@ -42,3 +42,4 @@ next-env.d.ts
 
 # local symlinks
 /public/product-images
+API-KEY-INFO.md
