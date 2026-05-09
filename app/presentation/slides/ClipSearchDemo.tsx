@@ -9,39 +9,46 @@ import { useState } from 'react';
 
 export default function ClipSearchDemo() {
   const [query, setQuery] = useState('');
+  const [productType, setProductType] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [error, setError] = useState('');
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
-  const exampleQueries = [
-    'Coastal grandmother cardigan',
-    'Boardroom but make it interesting',
-    'Black turtleneck minimalist',
-    'Romantic pink dress',
-    'Sleek leather boots edgy',
-    'Vintage denim jacket',
-    'Effortless weekend brunch',
-    'Downtown art gallery opening',
+  const productTypes = [
+    { value: '', label: 'Select product type...' },
+    { value: 'dress', label: 'Dresses' },
+    { value: 'top', label: 'Tops & Blouses' },
+    { value: 'sweater', label: 'Sweaters & Cardigans' },
+    { value: 'jacket', label: 'Jackets & Coats' },
+    { value: 'pants', label: 'Pants & Trousers' },
+    { value: 'jeans', label: 'Jeans' },
+    { value: 'skirt', label: 'Skirts' },
+    { value: 'shoes', label: 'Shoes & Boots' },
   ];
 
-  // Query expansion map - translates short concepts into detailed CLIP prompts
-  const queryExpansion: Record<string, string> = {
-    'Downtown art gallery opening': 'Sophisticated elegant outfit for upscale art gallery opening, polished dressy pieces, refined tailored black dress sleek blazer, formal evening wear chic modern',
-    'Effortless weekend brunch': 'Relaxed casual weekend brunch outfit, comfortable soft sweater loose denim, laid-back effortless style, cozy morning coffee',
-    'Coastal grandmother cardigan': 'Cozy oversized coastal grandmother cardigan, soft neutral beige cream, relaxed coastal aesthetic, comfortable elegant knitwear',
-    'Boardroom but make it interesting': 'Professional office blazer with unexpected details, structured tailored workwear, business formal with unique twist, modern sophisticated power dressing',
-    'Black turtleneck minimalist': 'Clean minimal black turtleneck, sleek modern simple design, understated elegant basics, refined monochrome aesthetic',
-    'Romantic pink dress': 'Soft romantic pink dress, feminine flowing delicate, dreamy ethereal silhouette, gentle pastel spring',
-    'Sleek leather boots edgy': 'Edgy sleek black leather boots, modern urban cool, structured bold statement footwear, contemporary street style',
-    'Vintage denim jacket': 'Classic vintage denim jacket, retro washed blue jean, timeless casual staple, authentic worn-in style',
-  };
+  const exampleQueries = [
+    { type: 'sweater', query: 'Coastal grandmother cozy oversized' },
+    { type: 'jacket', query: 'Boardroom but make it interesting' },
+    { type: 'top', query: 'Black turtleneck minimalist' },
+    { type: 'dress', query: 'Romantic pink flowing' },
+    { type: 'shoes', query: 'Sleek leather boots edgy' },
+    { type: 'jacket', query: 'Vintage denim classic' },
+    { type: 'sweater', query: 'Effortless weekend brunch' },
+    { type: 'dress', query: 'Downtown art gallery opening' },
+  ];
 
-  const handleSearch = async (searchQuery?: string) => {
+  const handleSearch = async (searchQuery?: string, searchType?: string) => {
     const queryToUse = searchQuery || query;
-    if (!queryToUse.trim()) return;
+    const typeToUse = searchType || productType;
+
+    if (!queryToUse.trim() || !typeToUse) {
+      setError('Please select a product type and enter a search query');
+      return;
+    }
 
     if (searchQuery) setQuery(searchQuery);
+    if (searchType) setProductType(searchType);
 
     setLoading(true);
     setError('');
@@ -49,36 +56,16 @@ export default function ClipSearchDemo() {
     setImageErrors(new Set());
 
     try {
-      // Step 1: Expand query (use preset or call API)
-      let expandedQuery = queryExpansion[queryToUse];
-      let hasProductType = false;
+      // Construct search query with product type
+      const fullQuery = `${typeToUse} ${queryToUse}`;
 
-      if (!expandedQuery) {
-        // Call expansion API for dynamic queries
-        const expansionResponse = await fetch('/api/expand-query', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: queryToUse }),
-        });
-
-        if (expansionResponse.ok) {
-          const expansionData = await expansionResponse.json();
-          expandedQuery = expansionData.expandedQuery;
-          hasProductType = expansionData.hasProductType;
-        } else {
-          // Fallback to original query
-          expandedQuery = queryToUse;
-        }
-      }
-
-      // Step 2: Search with expanded query and product type flag
       const response = await fetch('/api/clip-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          query: expandedQuery,
+          query: fullQuery,
           limit: 12,
-          hasProductType
+          hasProductType: true
         }),
       });
 
@@ -110,18 +97,18 @@ export default function ClipSearchDemo() {
       {/* Intro Text */}
       <div className="max-w-3xl mx-auto text-center mb-6">
         <p className="text-xl text-gray-700 mb-4">
-          Type a concept — not a keyword. A feeling.
+          Select a product type, then describe the vibe you're after.
         </p>
         {/* Example Query Pills */}
         <div className="flex flex-wrap gap-3 justify-center mb-6">
           {exampleQueries.map((example) => (
             <button
-              key={example}
-              onClick={() => handleSearch(example)}
+              key={example.query}
+              onClick={() => handleSearch(example.query, example.type)}
               disabled={loading}
               className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors disabled:opacity-50 text-sm"
             >
-              "{example}"
+              "{example.query}"
             </button>
           ))}
         </div>
@@ -130,17 +117,28 @@ export default function ClipSearchDemo() {
       {/* Search Box */}
       <div className="mb-6">
         <div className="flex gap-3">
+          <select
+            value={productType}
+            onChange={(e) => setProductType(e.target.value)}
+            className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500 bg-white min-w-[200px]"
+          >
+            {productTypes.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="Describe what you're looking for..."
+            placeholder="Describe the vibe, style, or aesthetic..."
             className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-500"
           />
           <button
             onClick={() => handleSearch()}
-            disabled={loading || !query.trim()}
+            disabled={loading || !query.trim() || !productType}
             className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {loading ? 'Searching...' : 'Search'}
