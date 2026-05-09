@@ -88,7 +88,8 @@ export const slides: Slide[] = [
           <img
             src="/playlist-mockup.png"
             alt="Playlist concept mockup"
-            className="h-full w-auto object-contain object-bottom"
+            className="w-auto object-contain object-bottom"
+            style={{ maxHeight: 'calc(100% - 100px)' }}
           />
         </div>
       </div>
