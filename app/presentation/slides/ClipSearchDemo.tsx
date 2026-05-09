@@ -28,14 +28,14 @@ export default function ClipSearchDemo() {
   ];
 
   const exampleQueries = [
-    { type: 'sweater', query: 'Coastal grandmother cozy oversized' },
-    { type: 'jacket', query: 'Boardroom but make it interesting' },
+    { type: 'sweater', query: 'Coastal grandmother cardigan' },
+    { type: 'top', query: 'Nautical striped top' },
     { type: 'top', query: 'Black turtleneck minimalist' },
-    { type: 'dress', query: 'Romantic pink flowing' },
+    { type: 'dress', query: 'Romantic pink dress' },
     { type: 'shoes', query: 'Sleek leather boots edgy' },
-    { type: 'jacket', query: 'Vintage denim classic' },
-    { type: 'sweater', query: 'Effortless weekend brunch' },
-    { type: 'dress', query: 'Downtown art gallery opening' },
+    { type: 'jacket', query: 'Vintage denim jacket' },
+    { type: 'sweater', query: 'Effortless weekend brunch sweater' },
+    { type: 'dress', query: 'Minimal sleek art gallery dress' },
   ];
 
   const handleSearch = async (searchQuery?: string, searchType?: string) => {
