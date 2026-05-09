@@ -152,64 +152,58 @@ export default function OutfitTaggerDemo() {
 
     setTagging(true);
 
-    // Simulate AI tagging with a delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Build product array from selections
+      const products = slots.map((slot) => {
+        const selected = slot.options.find((opt) => opt.id === slot.selected);
+        return {
+          id: selected?.id || '',
+          name: selected?.name || '',
+          color: selected?.color || '',
+          imageUrl: selected?.imageUrl || '',
+          role: slot.id,
+        };
+      });
 
-    // Generate results based on selections
-    const selectedItems = slots.map((slot) => {
-      const selected = slot.options.find((opt) => opt.id === slot.selected);
-      return selected?.name || '';
-    });
+      // Call real AI tagging API
+      const response = await fetch('/api/tag-demo-outfit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ products }),
+      });
 
-    // Simple logic to determine style based on selections
-    const hasCashmere = selectedItems.some((item) => item.includes('Cashmere'));
-    const hasSilk = selectedItems.some((item) => item.includes('Silk'));
-    const hasTailored = selectedItems.some((item) => item.includes('Tailored'));
-    const hasSneakers = selectedItems.some((item) => item.includes('Sneakers'));
-    const hasJeans = selectedItems.some((item) => item.includes('Denim'));
+      if (!response.ok) {
+        throw new Error('Tagging failed');
+      }
 
-    let stylePillars = [];
-    let vibes = [];
-    let occasions = [];
-    let formality = 5;
+      const data = await response.json();
+      const attrs = data.attributes;
 
-    if (hasCashmere || hasSilk || hasTailored) {
-      stylePillars.push('Classic');
-      stylePillars.push('Minimal');
-      formality = 7;
-      vibes.push('Polished', 'Sophisticated');
-      occasions.push('Work', 'Business Lunch', 'Client Meeting');
+      // Format results for display
+      setResults({
+        stylePillars: attrs.stylePillar ? [attrs.stylePillar, attrs.subStyle].filter(Boolean) : ['Classic'],
+        vibes: attrs.vibes || ['Versatile'],
+        occasions: attrs.occasions || ['Everyday'],
+        formality: attrs.formalityLevel || 5,
+        colors: attrs.primaryColors || [],
+        season: attrs.season || [],
+        confidence: 0.85,
+      });
+    } catch (error) {
+      console.error('Tagging error:', error);
+      // Fallback to simple tags on error
+      setResults({
+        stylePillars: ['Classic'],
+        vibes: ['Versatile'],
+        occasions: ['Everyday'],
+        formality: 5,
+        colors: ['Neutral'],
+        season: ['All Season'],
+        confidence: 0.5,
+      });
+    } finally {
+      setTagging(false);
     }
-
-    if (hasSneakers || hasJeans) {
-      stylePillars.push('Casual');
-      formality = 4;
-      vibes.push('Effortless', 'Relaxed');
-      occasions.push('Weekend Brunch', 'Coffee Date', 'Casual Friday');
-    }
-
-    if (!hasSneakers && !hasJeans && (hasCashmere || hasSilk)) {
-      stylePillars.push('Romantic');
-      vibes.push('Elegant', 'Refined');
-      occasions.push('Dinner Date', 'Art Gallery Opening');
-    }
-
-    // Ensure we have at least some tags
-    if (stylePillars.length === 0) stylePillars = ['Classic', 'Minimal'];
-    if (vibes.length === 0) vibes = ['Versatile', 'Timeless'];
-    if (occasions.length === 0) occasions = ['Everyday', 'Work', 'Weekend'];
-
-    setResults({
-      stylePillars: [...new Set(stylePillars)],
-      vibes: [...new Set(vibes)],
-      occasions: [...new Set(occasions)],
-      formality,
-      colors: ['Neutral', 'Monochrome'],
-      season: ['Fall', 'Winter'],
-      confidence: 0.87,
-    });
-
-    setTagging(false);
   };
 
   return (
