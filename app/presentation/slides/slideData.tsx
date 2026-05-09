@@ -84,11 +84,11 @@ export const slides: Slide[] = [
         </div>
 
         {/* Right Column - Screenshot Collage */}
-        <div className="flex items-end justify-end">
+        <div className="flex items-end justify-end h-full">
           <img
             src="/playlist-mockup.png"
             alt="Playlist concept mockup"
-            className="w-full h-auto"
+            className="h-full w-auto object-contain object-bottom"
           />
         </div>
       </div>
