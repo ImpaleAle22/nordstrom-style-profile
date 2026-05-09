@@ -212,13 +212,13 @@ export default function PresentationContainer({
                 </div>
 
                 {/* Slide Body */}
-                <div className="flex-1 px-16 pb-16 overflow-auto">
+                <div className={`flex-1 px-16 pb-16 ${slide.layout === 'demo' ? 'overflow-auto' : ''}`}>
                   {slide.layout === 'demo' ? (
                     <div className="pb-5">
                       {slide.content}
                     </div>
                   ) : (
-                    <div className="min-h-full flex flex-col justify-center">
+                    <div className="h-full overflow-auto flex flex-col justify-center">
                       <div className="py-8">
                         {slide.content}
                       </div>
