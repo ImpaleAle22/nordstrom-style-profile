@@ -454,20 +454,20 @@ export const slides: Slide[] = [
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-3 gap-6">
           <div className="p-10 bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl text-center">
-            <div className="mb-6 flex justify-center">
-              <img src="/icon-style-pillar.svg" alt="Style Pillar" className="w-24 h-24" />
+            <div className="mb-6 flex justify-center items-center h-24">
+              <img src="/icon-style-pillar.svg" alt="Style Pillar" className="w-24 h-24 object-contain" />
             </div>
             <div className="text-2xl font-bold text-gray-900">Style Pillar</div>
           </div>
           <div className="p-10 bg-gradient-to-br from-violet-50 to-purple-50 rounded-3xl text-center">
-            <div className="mb-6 flex justify-center">
-              <img src="/icon-vibe.svg" alt="Vibe" className="w-24 h-24" />
+            <div className="mb-6 flex justify-center items-center h-24">
+              <img src="/icon-vibe.svg" alt="Vibe" className="w-24 h-24 object-contain" />
             </div>
             <div className="text-2xl font-bold text-gray-900">Vibe</div>
           </div>
           <div className="p-10 bg-gradient-to-br from-sky-50 to-blue-50 rounded-3xl text-center">
-            <div className="mb-6 flex justify-center">
-              <img src="/icon-occasion.svg" alt="Occasion" className="w-24 h-24" />
+            <div className="mb-6 flex justify-center items-center h-24">
+              <img src="/icon-occasion.svg" alt="Occasion" className="w-24 h-24 object-contain" />
             </div>
             <div className="text-2xl font-bold text-gray-900">Occasion</div>
           </div>
