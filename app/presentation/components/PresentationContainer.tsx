@@ -72,12 +72,12 @@ export default function PresentationContainer({
       <main className="flex-1 flex items-center justify-center px-12 py-2 relative">
         {/* Hidden text - visible only when viewport is narrow */}
         <div
-          className="absolute top-8 left-0 right-0 flex justify-center pointer-events-none"
+          className="absolute top-28 left-0 right-0 flex justify-center pointer-events-none"
           style={{ zIndex: 0 }}
         >
           <p
-            className="text-sm tracking-wide opacity-80 text-center max-w-md"
-            style={{ color: '#C85A3B' }}
+            className="text-sm tracking-wide opacity-50 text-center max-w-md"
+            style={{ color: '#8E8A82' }}
           >
             Best viewed on a wider screen, but content will scroll if cut off.
           </p>
