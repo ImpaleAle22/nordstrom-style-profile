@@ -454,15 +454,21 @@ export const slides: Slide[] = [
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-3 gap-6">
           <div className="p-10 bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl text-center">
-            <div className="text-5xl mb-4">🎨</div>
+            <div className="mb-4 flex justify-center">
+              <img src="/icon-style-pillar.svg" alt="Style Pillar" className="w-16 h-16" />
+            </div>
             <div className="text-2xl font-bold text-gray-900">Style Pillar</div>
           </div>
           <div className="p-10 bg-gradient-to-br from-violet-50 to-purple-50 rounded-3xl text-center">
-            <div className="text-5xl mb-4">✨</div>
+            <div className="mb-4 flex justify-center">
+              <img src="/icon-vibe.svg" alt="Vibe" className="w-16 h-16" />
+            </div>
             <div className="text-2xl font-bold text-gray-900">Vibe</div>
           </div>
           <div className="p-10 bg-gradient-to-br from-sky-50 to-blue-50 rounded-3xl text-center">
-            <div className="text-5xl mb-4">📅</div>
+            <div className="mb-4 flex justify-center">
+              <img src="/icon-occasion.svg" alt="Occasion" className="w-16 h-16" />
+            </div>
             <div className="text-2xl font-bold text-gray-900">Occasion</div>
           </div>
         </div>
