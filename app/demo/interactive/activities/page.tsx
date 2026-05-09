@@ -97,7 +97,7 @@ export default function ActivitiesHubPage() {
         {/* Logo - Standalone top left */}
         <div className="fixed top-8 left-12 z-50">
           <img
-            src="https://n.nordstrommedia.com/alias/nordstrom-logo.svg"
+            src="/logo-nordstrom.svg"
             alt="Nordstrom"
             className="h-6"
             style={{ filter: 'brightness(0)' }}

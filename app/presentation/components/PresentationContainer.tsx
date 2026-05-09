@@ -36,7 +36,7 @@ export default function PresentationContainer({
       <div className="px-12 py-4 flex justify-between items-center">
         {/* Logo - Left */}
         <img
-          src="https://n.nordstrommedia.com/alias/nordstrom-logo.svg"
+          src="/logo-nordstrom.svg"
           alt="Nordstrom"
           className="h-6"
           style={{ filter: 'brightness(0)' }}

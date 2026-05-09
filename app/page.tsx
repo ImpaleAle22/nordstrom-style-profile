@@ -38,7 +38,7 @@ export default function PasswordGate() {
         {/* Logo */}
         <div className="text-center mb-12">
           <img
-            src="https://n.nordstrommedia.com/alias/nordstrom-logo.svg"
+            src="/logo-nordstrom.svg"
             alt="Nordstrom"
             className="h-12 mx-auto mb-8"
             style={{ filter: 'brightness(0)' }}
