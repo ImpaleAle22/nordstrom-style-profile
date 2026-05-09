@@ -5,8 +5,7 @@
  * Pick items to create an outfit, then tag it with AI
  */
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase-client';
+import { useState } from 'react';
 
 interface ProductOption {
   id: string;
@@ -25,118 +24,113 @@ interface OutfitSlot {
 }
 
 export default function OutfitTaggerDemo() {
+  // Curated products - handpicked for demo presentation
   const [slots, setSlots] = useState<OutfitSlot[]>([
-    { id: 'top', label: 'Top', selected: null, options: [] },
-    { id: 'bottom', label: 'Bottom', selected: null, options: [] },
-    { id: 'shoes', label: 'Shoes', selected: null, options: [] },
-    { id: 'accessory', label: 'Accessory', selected: null, options: [] },
+    {
+      id: 'top',
+      label: 'Top',
+      selected: null,
+      options: [
+        {
+          id: 'hm-kaggle-0779853003',
+          name: 'Premium DINA blouse',
+          color: 'Cream',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0779853003_flat_lay_01.jpg'
+        },
+        {
+          id: 'hm-kaggle-0552743009',
+          name: 'PEBBLE knitted crewneck',
+          color: 'Grey',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0552743009_flat_lay_01.jpg'
+        },
+        {
+          id: 'hm-kaggle-0604971001',
+          name: 'Nicola rib tee',
+          color: 'White',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0604971001_flat_lay_01.jpg'
+        },
+      ],
+    },
+    {
+      id: 'bottom',
+      label: 'Bottom',
+      selected: null,
+      options: [
+        {
+          id: 'hm-kaggle-0806806001',
+          name: 'Jock athletic fit trs',
+          color: 'Black',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0806806001_flat_lay_01.jpg'
+        },
+        {
+          id: 'hm-kaggle-0719249001',
+          name: 'W NAPOLI SKIRT EQ',
+          color: 'Navy',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0719249001_flat_lay_01.jpg'
+        },
+        {
+          id: 'hm-kaggle-0776719001',
+          name: 'D1 PE NORI HIGHWAIST DENIM',
+          color: 'Blue',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0776719001_flat_lay_01.jpg'
+        },
+      ],
+    },
+    {
+      id: 'shoes',
+      label: 'Shoes',
+      selected: null,
+      options: [
+        {
+          id: 'hm-kaggle-0748588001',
+          name: 'Allie WL boot',
+          color: 'Black',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0748588001_flat_lay_01.jpg'
+        },
+        {
+          id: 'hm-kaggle-0782061002',
+          name: 'Theodora PQ loafer',
+          color: 'Brown',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0782061002_flat_lay_01.jpg'
+        },
+        {
+          id: 'hm-kaggle-0622966014',
+          name: 'Laura sneaker',
+          color: 'White',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0622966014_flat_lay_01.jpg'
+        },
+      ],
+    },
+    {
+      id: 'accessory',
+      label: 'Accessory',
+      selected: null,
+      options: [
+        {
+          id: 'hm-kaggle-0682771002',
+          name: 'Yuki shopper',
+          color: 'Tan',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0682771002_flat_lay_01.jpg'
+        },
+        {
+          id: 'hm-kaggle-0708638001',
+          name: 'Spritzer Shoulder Bag',
+          color: 'Black',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0708638001_flat_lay_01.jpg'
+        },
+        {
+          id: 'hm-kaggle-0613857001',
+          name: 'Class Rulle necklace',
+          color: 'Gold',
+          imageUrl: 'https://pub-37f4813beace4fddaab945f302abbf4a.r2.dev/products/hm-kaggle-0613857001_flat_lay_01.jpg'
+        },
+      ],
+    },
   ]);
 
   const [tagging, setTagging] = useState(false);
   const [results, setResults] = useState<any>(null);
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
-
-  // Load curated products using CLIP search on mount
-  useEffect(() => {
-    async function loadCuratedProducts() {
-      try {
-        // Define search queries for each slot/option - all womenswear, prefer flat lay shots
-        const searches = [
-          // Tops
-          { slot: 'top', query: 'women cream silk blouse feminine elegant flat lay', limit: 2, index: 1 }, // Skip to 2nd result
-          { slot: 'top', query: 'women grey cashmere sweater soft cozy flat lay', limit: 1, index: 0 },
-          { slot: 'top', query: 'women white t-shirt classic simple flat lay', limit: 1, index: 0 },
-          // Bottoms
-          { slot: 'bottom', query: 'women black tailored trousers professional flat lay', limit: 3, index: 2 },
-          { slot: 'bottom', query: 'women navy pleated midi skirt flat lay', limit: 1, index: 0 },
-          { slot: 'bottom', query: 'women blue denim jeans classic flat lay', limit: 3, index: 2 },
-          // Shoes
-          { slot: 'shoes', query: 'women black heeled boots ankle flat lay', limit: 1, index: 0 },
-          { slot: 'shoes', query: 'women brown leather loafers flat lay', limit: 1, index: 0 },
-          { slot: 'shoes', query: 'women white sneakers clean minimal flat lay', limit: 1, index: 0 },
-          // Accessories
-          { slot: 'accessory', query: 'women tan leather tote bag flat lay', limit: 1, index: 0 },
-          { slot: 'accessory', query: 'women black crossbody bag flat lay', limit: 1, index: 0 },
-          { slot: 'accessory', query: 'women silver chain necklace delicate flat lay', limit: 1, index: 0 },
-        ];
-
-        // Fetch all products in parallel
-        const searchPromises = searches.map(async ({ query, limit, index }) => {
-          const response = await fetch('/api/clip-search', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query, limit }),
-          });
-          const data = await response.json();
-          return data.results?.[index] || null;
-        });
-
-        const products = await Promise.all(searchPromises);
-
-        // Group products by slot
-        const groupedSlots = {
-          top: products.slice(0, 3).filter(Boolean),
-          bottom: products.slice(3, 6).filter(Boolean),
-          shoes: products.slice(6, 9).filter(Boolean),
-          accessory: products.slice(9, 12).filter(Boolean),
-        };
-
-        setSlots([
-          {
-            id: 'top',
-            label: 'Top',
-            selected: null,
-            options: groupedSlots.top.map(p => ({
-              id: p.productId,
-              name: p.title,
-              color: p.color || '',
-              imageUrl: p.imageUrl,
-            })),
-          },
-          {
-            id: 'bottom',
-            label: 'Bottom',
-            selected: null,
-            options: groupedSlots.bottom.map(p => ({
-              id: p.productId,
-              name: p.title,
-              color: p.color || '',
-              imageUrl: p.imageUrl,
-            })),
-          },
-          {
-            id: 'shoes',
-            label: 'Shoes',
-            selected: null,
-            options: groupedSlots.shoes.map(p => ({
-              id: p.productId,
-              name: p.title,
-              color: p.color || '',
-              imageUrl: p.imageUrl,
-            })),
-          },
-          {
-            id: 'accessory',
-            label: 'Accessory',
-            selected: null,
-            options: groupedSlots.accessory.map(p => ({
-              id: p.productId,
-              name: p.title,
-              color: p.color || '',
-              imageUrl: p.imageUrl,
-            })),
-          },
-        ]);
-      } catch (error) {
-        console.error('Failed to load curated products:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadCuratedProducts();
-  }, []);
 
   const handleImageError = (productId: string) => {
     setImageErrors(prev => new Set(prev).add(productId));
@@ -227,22 +221,7 @@ export default function OutfitTaggerDemo() {
         </p>
       </div>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p className="mt-4 text-gray-600">Loading products...</p>
-        </div>
-      )}
-
-      {!loading && slots.every(slot => slot.options.length === 0) && (
-        <div className="text-center py-12">
-          <p className="text-gray-600">Unable to load products. Please check your connection.</p>
-        </div>
-      )}
-
       {/* Outfit Builder */}
-      {!loading && slots.some(slot => slot.options.length > 0) && (
       <>
       <div className="grid md:grid-cols-4 gap-4 mb-6">
         {slots.map((slot) => (
@@ -387,7 +366,6 @@ export default function OutfitTaggerDemo() {
         </div>
       )}
       </>
-      )}
 
     </div>
   );
