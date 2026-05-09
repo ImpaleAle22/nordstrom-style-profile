@@ -84,21 +84,13 @@ export const slides: Slide[] = [
         </div>
 
         {/* Right Column - Screenshot Collage */}
-        <div className="flex items-center justify-center">
-          <div
-            className="rounded-lg overflow-hidden"
-            style={{
-              backgroundColor: '#EDECEB',
-              aspectRatio: '1/1',
-              width: '100%',
-              maxWidth: '400px'
-            }}
-          >
-            {/* Placeholder for concept collage image */}
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-center px-4">
-              Concept Screenshots<br/>Collage
-            </div>
-          </div>
+        <div className="flex items-end justify-end pr-10 pb-10">
+          <img
+            src="/playlist-mockup.png"
+            alt="Playlist concept mockup"
+            className="max-w-full h-auto"
+            style={{ maxHeight: '500px' }}
+          />
         </div>
       </div>
     ),
