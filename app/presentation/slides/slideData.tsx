@@ -66,20 +66,16 @@ export const slides: Slide[] = [
     layout: 'content',
     content: (
       <div className="relative h-full">
-        {/* Background Image - Bottom Right */}
-        <div
-          className="absolute bottom-0 right-0 bg-no-repeat pointer-events-none"
-          style={{
-            backgroundImage: 'url(/playlist-mockup.png)',
-            backgroundSize: 'auto 600px',
-            backgroundPosition: 'bottom right',
-            width: '60%',
-            height: '100%',
-          }}
+        {/* Image - Absolutely positioned in bottom right */}
+        <img
+          src="/playlist-mockup.png"
+          alt="Playlist concept mockup"
+          className="absolute bottom-0 right-0 pointer-events-none"
+          style={{ height: '500px', width: 'auto' }}
         />
 
         {/* Text Content - Left Half */}
-        <div className="relative space-y-6 pl-10 max-w-[45%]">
+        <div className="relative space-y-6 pl-10 pr-10 max-w-[50%]">
           <p className="text-xl text-gray-700 leading-relaxed">
             The Playlist concept that Clair has championed and the Personalized Edit concept I explored share a lot of DNA.
           </p>
