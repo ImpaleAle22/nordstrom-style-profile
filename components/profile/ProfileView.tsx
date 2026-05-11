@@ -145,17 +145,18 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
       {/* Main Navigation */}
       <nav className="main-nav">
+        <a href="#" className="main-nav-link">New & Now</a>
         <a href="#" className="main-nav-link sale">Sale</a>
         <a href="#" className="main-nav-link">Women</a>
         <a href="#" className="main-nav-link">Men</a>
+        <a href="#" className="main-nav-link">Beauty</a>
+        <a href="#" className="main-nav-link">Shoes</a>
+        <a href="#" className="main-nav-link">Accessories</a>
         <a href="#" className="main-nav-link">Kids</a>
         <a href="#" className="main-nav-link">Designer</a>
-        <a href="#" className="main-nav-link">Brands</a>
-        <a href="#" className="main-nav-link">Young Adult</a>
-        <a href="#" className="main-nav-link">Activewear</a>
         <a href="#" className="main-nav-link">Home</a>
-        <a href="#" className="main-nav-link">Beauty</a>
         <a href="#" className="main-nav-link">Gifts</a>
+        <a href="#" className="main-nav-link">Services</a>
       </nav>
 
       {/* Account Layout */}
