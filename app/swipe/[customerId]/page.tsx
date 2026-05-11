@@ -6,13 +6,25 @@
 import { supabase } from '@/lib/supabase-client';
 import type { SwipeStack } from '@/lib/types';
 import SwipeUI from './SwipeUI';
+import { cookies } from 'next/headers';
 
 async function getSwipeStacks(customerId: string): Promise<SwipeStack[]> {
   // Check if this is a demo user
   const isDemoUser = customerId.startsWith('demo_');
   let targetGender: 'womenswear' | 'menswear' = 'womenswear'; // Default for demo users
 
-  if (!isDemoUser) {
+  if (isDemoUser) {
+    // For demo users, read gender from cookie
+    const cookieStore = await cookies();
+    const genderCookie = cookieStore.get('demo_gender')?.value as 'womens' | 'mens' | undefined;
+
+    // Convert from localStorage format ('womens'/'mens') to database format ('womenswear'/'menswear')
+    if (genderCookie === 'mens') {
+      targetGender = 'menswear';
+    } else {
+      targetGender = 'womenswear'; // Default to womenswear
+    }
+  } else {
     // Get customer profile to filter by gender
     const { data: profile } = await supabase
       .from('customer_profiles')

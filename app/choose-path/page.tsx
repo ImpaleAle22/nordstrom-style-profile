@@ -70,12 +70,12 @@ export default function ChoosePathPage() {
 
           {/* Path 2: Interactive Demo */}
           <Link
-            href="/interactive/name"
+            href="/playground"
             className="group bg-black text-white rounded-2xl border-2 border-black p-8 hover:shadow-2xl hover:scale-105 transition-all"
           >
             <div className="mb-6">
               <div className="text-4xl mb-4">✨</div>
-              <h2 className="text-2xl font-semibold mb-3">Try Interactive Demo</h2>
+              <h2 className="text-2xl font-semibold mb-3">Try Interactive Playground</h2>
               <p className="text-gray-300 leading-relaxed">
                 Experience personalized style intelligence for yourself through our interactive swipe sessions
               </p>

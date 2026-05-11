@@ -272,7 +272,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
             href={`/profile/${customerId}`}
             className="inline-block bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-900"
           >
-            Back to Profile
+            Back to Playground
           </Link>
         </div>
       </div>
@@ -282,7 +282,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
   // Stack Selector
   if (!selectedStack) {
     const isDemoUser = customerId.startsWith('demo_');
-    const profileUrl = isDemoUser ? `/demo/interactive/activities` : `/profile/${customerId}`;
+    const profileUrl = isDemoUser ? `/playground/activities` : `/profile/${customerId}`;
 
     return (
       <div className="min-h-screen bg-[#FAF9F5]">
@@ -292,7 +292,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
               NORDSTROM
             </Link>
             <Link href={profileUrl} className="text-sm hover:opacity-60">
-              Back to Profile
+              Back to Playground
             </Link>
           </div>
         </header>
@@ -333,7 +333,7 @@ export default function SwipeUI({ customerId, stacks }: SwipeUIProps) {
     const yesCount = swipeHistory.filter((s) => s.verdict === 'yes').length;
     const noCount = swipeHistory.filter((s) => s.verdict === 'no').length;
     const isDemoUser = customerId.startsWith('demo_');
-    const profileUrl = isDemoUser ? `/demo/interactive/activities` : `/profile/${customerId}`;
+    const profileUrl = isDemoUser ? `/playground/activities` : `/profile/${customerId}`;
 
     return (
       <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center px-6">

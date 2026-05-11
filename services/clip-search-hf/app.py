@@ -4,6 +4,8 @@ CLIP Search API Service
 
 Provides visual similarity search using FashionSigLIP embeddings.
 Supports text queries and returns similar products from the catalog.
+
+Updated: 2026-05-09 - Added prompt ensembling for richer pillar understanding
 """
 
 from flask import Flask, jsonify, request, send_from_directory
@@ -456,17 +458,67 @@ def similar():
     return jsonify({'results': results[:limit]})
 
 # Style concepts ontology (Nordstrom-specific)
+# Rich pillar descriptions for prompt ensembling
+# Multiple descriptions per pillar capture different aspects and improve CLIP understanding
+PILLAR_DESCRIPTIONS = {
+    'romantic': [
+        'romantic fashion with soft flowing fabrics, delicate details, feminine silhouettes, and gentle colors',
+        'ethereal romantic style featuring lace, ruffles, floral patterns, and graceful draping',
+        'feminine romantic outfit with whimsical details, soft textures, and ladylike elegance'
+    ],
+    'classic': [
+        'classic fashion with timeless tailoring, polished silhouettes, sophisticated details, and refined elegance',
+        'traditional classic style featuring structured pieces, clean lines, and enduring sophistication',
+        'polished classic outfit with tailored fit, quality fabrics, and timeless wardrobe staples'
+    ],
+    'bohemian': [
+        'bohemian fashion with free-spirited layering, eclectic patterns, natural textures, and artistic flair',
+        'boho style featuring flowing fabrics, ethnic prints, artisanal details, and relaxed silhouettes',
+        'earthy bohemian outfit with vintage-inspired pieces, worldly patterns, and carefree aesthetic'
+    ],
+    'casual': [
+        'casual fashion with comfortable relaxed fit, effortless styling, approachable aesthetic, and everyday wearability',
+        'easygoing casual style featuring simple pieces, comfortable fabrics, and laid-back versatility',
+        'relaxed casual outfit with unpretentious design, comfortable silhouettes, and effortless appeal'
+    ],
+    'minimal': [
+        'minimal fashion with clean lines, monochromatic palette, refined simplicity, and modern sophistication',
+        'minimalist style featuring sleek silhouettes, understated details, and architectural precision',
+        'pared-down minimal outfit with essential pieces, neutral colors, and elegant restraint'
+    ],
+    'maximal': [
+        'maximal fashion with bold bright colors, vibrant patterns, and dramatic embellishments',
+        'high-intensity maximalist outfit with pattern mixing, saturated colors, and ornate decorative details',
+        'fearless maximalist style featuring bright color combinations, busy prints, and statement accessories'
+    ],
+    'streetwear': [
+        'streetwear fashion with urban style, relaxed fit, graphic prints, and sneaker culture aesthetic',
+        'contemporary streetwear outfit featuring oversized silhouettes, logo details, and casual urban vibe',
+        'edgy street style with layered pieces, athletic-inspired details, and subcultural references'
+    ],
+    'athletic': [
+        'athletic fashion with performance fabrics, sporty silhouettes, functional details, and active lifestyle aesthetic',
+        'sport-inspired style featuring technical materials, streamlined fit, and athletic functionality',
+        'dynamic athletic outfit with activewear elements, movement-ready design, and sporty sophistication'
+    ],
+    'utility': [
+        'utility fashion with functional pockets, durable fabrics, workwear details, and practical design',
+        'rugged utility style featuring cargo elements, military-inspired details, and purpose-driven construction',
+        'utilitarian outfit with outdoor-ready features, sturdy materials, and functional aesthetic'
+    ]
+}
+
 STYLE_CONCEPTS = {
     'pillars': [
         'romantic fashion style outfit',
         'classic fashion style outfit',
+        'bohemian fashion style outfit',
         'casual fashion style outfit',
-        'dramatic fashion style outfit',
-        'creative fashion style outfit',
-        'alluring fashion style outfit',
-        'modern fashion style outfit',
-        'natural fashion style outfit',
-        'timeless fashion style outfit'
+        'minimal fashion style outfit',
+        'maximal fashion style outfit',
+        'streetwear fashion style outfit',
+        'athletic fashion style outfit',
+        'utility fashion style outfit'
     ],
     'sub_terms': {
         'romantic': [
@@ -704,14 +756,39 @@ def embed_concepts():
         result = {}
         total_concepts = 0
 
-        # Embed pillars
+        # Embed pillars using prompt ensembling for better nuanced understanding
         if 'pillars' in categories:
             pillar_embeddings = {}
             for pillar in STYLE_CONCEPTS['pillars']:
-                text_tokens = tokenizer([pillar])
-                with torch.no_grad():
-                    embedding = model.encode_text(text_tokens, normalize=True)
-                    pillar_embeddings[pillar] = embedding.cpu().numpy()[0].tolist()
+                # Extract pillar key (e.g., 'romantic' from 'romantic fashion style outfit')
+                pillar_key = pillar.replace(' fashion style outfit', '')
+
+                # Use rich descriptions if available, otherwise fall back to simple prompt
+                if pillar_key in PILLAR_DESCRIPTIONS:
+                    descriptions = PILLAR_DESCRIPTIONS[pillar_key]
+                    embeddings_list = []
+
+                    # Embed each description
+                    for desc in descriptions:
+                        text_tokens = tokenizer([desc])
+                        with torch.no_grad():
+                            emb = model.encode_text(text_tokens, normalize=True)
+                            embeddings_list.append(emb.cpu().numpy()[0])
+
+                    # Average embeddings (prompt ensembling)
+                    avg_embedding = np.mean(embeddings_list, axis=0)
+
+                    # Re-normalize
+                    avg_embedding = avg_embedding / np.linalg.norm(avg_embedding)
+
+                    pillar_embeddings[pillar] = avg_embedding.tolist()
+                else:
+                    # Fallback to simple prompt
+                    text_tokens = tokenizer([pillar])
+                    with torch.no_grad():
+                        embedding = model.encode_text(text_tokens, normalize=True)
+                        pillar_embeddings[pillar] = embedding.cpu().numpy()[0].tolist()
+
                 total_concepts += 1
             result['pillars'] = pillar_embeddings
 

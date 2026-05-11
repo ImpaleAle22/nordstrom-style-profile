@@ -15,6 +15,7 @@ import type {
   OutfitInput,
 } from './axis-types';
 import { tokenTracker } from './token-tracker';
+import { callGemini } from './gemini-client';
 
 // ============================================================================
 // AI PROMPT TEMPLATES
@@ -230,34 +231,22 @@ async function refineAxisWithAI(
 
   try {
     // Use Gemini Flash Lite - fast, cheap, good for structured tagging
-    const response = await fetch('/api/gemini-proxy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'gemini-2.5-flash-lite',
-        prompt: prompt,
-        generationConfig: {
-          temperature: temperatures[axisName],
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 300, // Reduced from 500
-          responseMimeType: 'application/json',
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const { text, usageMetadata } = await callGemini(
+      'gemini-2.5-flash-lite',
+      prompt,
+      {
+        temperature: temperatures[axisName],
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 300, // Reduced from 500
+        responseMimeType: 'application/json',
+      }
+    );
 
     // Log and track token usage
-    const usage = data.usageMetadata;
-    if (usage) {
-      tokenTracker.record(usage.promptTokenCount, usage.candidatesTokenCount);
-      console.log(`🔢 ${axisName}: ${usage.promptTokenCount} in + ${usage.candidatesTokenCount} out = ${usage.totalTokenCount} | Running: ${tokenTracker.getSummaryString()}`);
+    if (usageMetadata) {
+      tokenTracker.record(usageMetadata.promptTokenCount, usageMetadata.candidatesTokenCount);
+      console.log(`🔢 ${axisName}: ${usageMetadata.promptTokenCount} in + ${usageMetadata.candidatesTokenCount} out = ${usageMetadata.totalTokenCount} | Running: ${tokenTracker.getSummaryString()}`);
     }
 
     if (!text) {

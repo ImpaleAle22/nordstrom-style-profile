@@ -184,7 +184,7 @@ export default function OutfitTaggerDemo() {
         stylePillars: attrs.stylePillar ? [attrs.stylePillar, attrs.subStyle].filter(Boolean) : ['Classic'],
         vibes: attrs.vibes || ['Versatile'],
         occasions: attrs.occasions || ['Everyday'],
-        formality: attrs.formalityLevel || 5,
+        formality: attrs.formality || 5,  // Fixed: was formalityLevel, should be formality
         colors: attrs.primaryColors || [],
         season: attrs.season || [],
         confidence: 0.85,

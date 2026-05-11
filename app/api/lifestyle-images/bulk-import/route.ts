@@ -31,6 +31,16 @@ export interface TaggedImage {
       reasoning?: string;
     };
   };
+  // CLIP validation data (optional)
+  embedding?: number[];
+  clipValidation?: {
+    similarity: number;
+    confidence: 'high' | 'medium' | 'low';
+    topPillars?: Array<{
+      name: string;
+      score: number;
+    }>;
+  };
 }
 
 /**
@@ -60,7 +70,7 @@ export async function POST(request: NextRequest) {
     const records = images.map((img: TaggedImage) => {
       const { outfitAnalysis, brandAdherence } = img.lifestyleData;
 
-      return {
+      const record: any = {
         id: img.id,
         image_url: img.url,
         source: img.source,
@@ -82,6 +92,20 @@ export async function POST(request: NextRequest) {
         status: 'active',
         created_at: new Date().toISOString()
       };
+
+      // Add CLIP validation data if available
+      if (img.embedding) {
+        record.embedding = img.embedding;
+      }
+      if (img.clipValidation) {
+        record.clip_validation = {
+          similarity: img.clipValidation.similarity,
+          confidence: img.clipValidation.confidence,
+          topPillars: img.clipValidation.topPillars || []
+        };
+      }
+
+      return record;
     });
 
     // Validate records before insertion

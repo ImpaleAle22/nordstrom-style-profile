@@ -5,6 +5,8 @@
 
 import { jsonrepair } from 'jsonrepair';
 import type { LifestyleImage, ImageSource } from './lifestyle-image-types';
+import { deriveOccasions } from './occasion-mapping';
+import type { ActivityContext, SocialRegister } from './axis-types';
 
 const GEMINI_MODEL = 'gemini-2.5-flash';
 const TEMPERATURE = 0.2;
@@ -68,11 +70,31 @@ CRITICAL SUB-TERM CLARIFICATIONS:
 VIBES (1–3 terms only)
 Fresh, Bold, Confident, Understated, Playful, Dreamy, Edgy, Polished, Relaxed, Effortless, Romantic, Dramatic, Earthy, Vibrant, Mysterious, Minimal, Luxe, Sporty, Intellectual, Whimsical, Nostalgic, Coastal, Maximalist, Urban, Wanderlust, Artsy, Sophisticated, Timeless
 
-OCCASIONS (1–4 terms, only what is visually evident)
-Everyday Casual, Brunch, Date Night, Girls Night Out, Casual Dinner, Work From Home, Office Casual, Business Professional, Business Meeting, Wedding Guest, Cocktail Party, Black Tie, Graduation, Baby Shower, Beach, Pool, Vacation, Resort, Festival, Concert, Farmers Market, Hiking, Running, Gym, Yoga, Golf, Tennis, Ski, Snowboard, Travel, City Exploring, Weekend Errands, School, Night Out
+ACTIVITY CONTEXT (exactly one, optional secondary)
+What category of activity is this outfit appropriate for?
+- casual-low-key: Relaxed, everyday activities. Loungewear, simple jeans+tee, beach casual, road trips.
+- social-daytime: Daytime social plans. Brunch, shopping, farmers market, coffee dates, casual lunch.
+- social-evening: Evening social plans. Dinner out, date night, wine bar, happy hour, night out dancing.
+- professional: Work contexts. Office wear, business meetings, work-from-home polish, interviews.
+- event: Structured events with dress codes. Weddings, cocktail parties, galas, graduations, holiday parties.
+- active: Physical activity, sports. Gym, running, yoga, hiking, skiing, athletic wear.
 
-FORMALITY LEVEL (1.0–10.0)
-1.0–2.5: Athletic/loungewear | 2.5–4.0: Casual | 4.0–5.5: Smart casual | 5.5–7.0: Business casual/cocktail-adjacent | 7.0–8.5: Formal/evening | 8.5–10.0: Black tie
+Secondary: If outfit bridges two contexts (e.g., blazer + jeans = social-evening + professional), provide secondary.
+
+SOCIAL REGISTER (exactly one)
+What social context and audience does this outfit address?
+- intimate: Close relationships. Date nights, romantic dinners, spa days with partner.
+- peer-social: Friends, equals. Brunch with friends, casual parties, social gatherings.
+- evaluative: Being judged/assessed. Job interviews, first dates, client meetings, presentations.
+- public-facing: General public. Office environments, conferences, professional networking.
+- celebratory: Special occasions. Weddings, galas, formal events, milestone celebrations.
+
+CRITICAL: Determine Activity Context and Social Register from the OUTFIT'S intended use, NOT where the photo was taken. Street style photography captures outfits for various occasions — a cocktail dress on a city street is still event + celebratory, not social-evening. A formal blazer photographed in a bedroom is still professional + evaluative.
+
+FORMALITY LEVEL (1.0–6.0)
+1.0–2.0: Athletic/loungewear | 2.0–3.0: Casual | 3.0–4.0: Smart casual | 4.0–5.0: Business casual/cocktail-adjacent | 5.0–5.5: Formal/evening | 5.5–6.0: Black tie
+
+CRITICAL: Use 1.0–6.0 scale (not 1.0–10.0). This formality score is used to mechanically derive occasions.
 
 SEASON — spring | summer | fall | winter | all-season (one or more)
 GENDER — womenswear | menswear | unisex
@@ -128,7 +150,9 @@ Return ONLY this JSON:
     "spectrumCoordinate": 0.0,
     "pillarConfidence": 0.0,
     "vibes": [],
-    "occasions": [],
+    "activityContext": "",
+    "activityContextSecondary": null,
+    "socialRegister": "",
     "formalityLevel": 0.0,
     "season": [],
     "gender": "",
@@ -367,6 +391,43 @@ export async function scanLifestyleImage(
     console.warn('⚠️ Missing recipeGenerationCandidate, defaulting to true');
     parsedResponse.recipeGenerationCandidate = true;
   }
+
+  // Derive occasions mechanically from the four axes
+  const occasions = deriveOccasions(
+    {
+      formality: {
+        value: parsedResponse.outfitAnalysis.formalityLevel,
+        confidence: parsedResponse.outfitAnalysis.pillarConfidence || 0.8,
+        reason: 'AI-tagged formality level',
+        source: 'ai'
+      },
+      activityContext: {
+        value: parsedResponse.outfitAnalysis.activityContext as ActivityContext,
+        secondary: parsedResponse.outfitAnalysis.activityContextSecondary as ActivityContext | undefined,
+        confidence: parsedResponse.outfitAnalysis.pillarConfidence || 0.8,
+        reason: 'AI-tagged activity context',
+        source: 'ai'
+      },
+      season: {
+        value: parsedResponse.outfitAnalysis.season,
+        confidence: 0.9,
+        reason: 'AI-tagged seasons',
+        source: 'ai'
+      },
+      socialRegister: {
+        value: parsedResponse.outfitAnalysis.socialRegister as SocialRegister,
+        confidence: parsedResponse.outfitAnalysis.pillarConfidence || 0.8,
+        reason: 'AI-tagged social register',
+        source: 'ai'
+      }
+    },
+    // Check for bold signal (Maximal pillar or bold vibes)
+    parsedResponse.outfitAnalysis.stylePillar === 'Maximal' ||
+    parsedResponse.outfitAnalysis.vibes.some(v => ['Bold', 'Vibrant', 'Dramatic'].includes(v))
+  );
+
+  // Add derived occasions to outfitAnalysis
+  parsedResponse.outfitAnalysis.occasions = occasions;
 
   // Build complete LifestyleImage object
   const lifestyleImage: LifestyleImage = {

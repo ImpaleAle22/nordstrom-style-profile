@@ -5,15 +5,69 @@
  * Upload or fetch a lifestyle image and decompose it into a recipe
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function RecipeScoutDemo() {
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<{ step: number; label: string } | null>(null);
+  const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<any>(null);
   const [dragActive, setDragActive] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'duplicate' | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Smooth progress animation effect
+  useEffect(() => {
+    if (!loadingStep) {
+      setProgress(0);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      return;
+    }
+
+    // Define progress ranges and timing for each step
+    const stepConfig = {
+      1: { start: 0, target: 45, duration: 4000 },   // Step 1: 0% -> 45% over 4 seconds
+      2: { start: 50, target: 95, duration: 5000 },  // Step 2: 50% -> 95% over 5 seconds
+    };
+
+    const config = stepConfig[loadingStep.step as 1 | 2];
+    if (!config) return;
+
+    // Set initial progress for this step
+    setProgress(config.start);
+
+    // Calculate how often to update (60fps = ~16ms)
+    const updateInterval = 50; // Update every 50ms for smooth animation
+    const steps = config.duration / updateInterval;
+    const increment = (config.target - config.start) / steps;
+
+    let currentProgress = config.start;
+
+    progressIntervalRef.current = setInterval(() => {
+      currentProgress += increment;
+      if (currentProgress >= config.target) {
+        setProgress(config.target);
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+          progressIntervalRef.current = null;
+        }
+      } else {
+        setProgress(currentProgress);
+      }
+    }, updateInterval);
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+    };
+  }, [loadingStep]);
 
   const exampleImages = [
     'street style fall outfit',
@@ -38,6 +92,7 @@ export default function RecipeScoutDemo() {
 
     try {
       // Step 1: Scan the lifestyle image for overall analysis
+      setLoadingStep({ step: 1, label: 'Analyzing outfit style, occasions, and formality...' });
       const scanResponse = await fetch('/api/lifestyle-scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,6 +116,7 @@ export default function RecipeScoutDemo() {
       const lifestyleImage = scanData.image;
 
       // Step 2: Generate recipe from the scanned image
+      setLoadingStep({ step: 2, label: 'Detecting individual garments and creating recipe...' });
       const recipeResponse = await fetch('/api/generate-recipes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,8 +131,19 @@ export default function RecipeScoutDemo() {
 
       const recipeData = await recipeResponse.json();
 
-      if (!recipeData.success || !recipeData.recipes || recipeData.recipes.length === 0) {
-        throw new Error('No recipes generated');
+      console.log('Recipe generation response:', recipeData);
+
+      if (!recipeData.success) {
+        throw new Error(recipeData.error || 'Recipe generation failed');
+      }
+
+      if (!recipeData.recipes || recipeData.recipes.length === 0) {
+        // Check if it was skipped as duplicate
+        if (recipeData.skippedDuplicates > 0) {
+          throw new Error('This image has already been analyzed. Try a different image.');
+        }
+        // Otherwise, likely insufficient items detected
+        throw new Error('Could not detect enough garments to create a recipe. Try an image with a more complete outfit (tops, bottoms, shoes).');
       }
 
       const recipe = recipeData.recipes[0];
@@ -89,11 +156,12 @@ export default function RecipeScoutDemo() {
       }
 
       // Transform recipe slots into display format
+      // Note: Style pillar is an OUTFIT-level attribute, not item-level
       const slots = recipe.slots.map((slot: any) => ({
         id: slot.role,
         label: slot.role.charAt(0).toUpperCase() + slot.role.slice(1),
         detected: slot.ingredient?.ingredientTitle || slot.ingredient?.searchQuery || 'Item detected',
-        pillar: lifestyleImage.outfitAnalysis.stylePillar,
+        // Removed: pillar tag (outfit-level attribute shouldn't apply to individual items)
       }));
 
       if (slots.length === 0) {
@@ -115,6 +183,10 @@ export default function RecipeScoutDemo() {
         season: lifestyleImage.outfitAnalysis.season.join('/') || 'All Season',
         formality: Math.round(lifestyleImage.outfitAnalysis.formalityLevel),
       });
+
+      // Complete! Set progress to 100% and show briefly before displaying results
+      setProgress(100);
+      await new Promise(resolve => setTimeout(resolve, 300)); // Brief pause to show completion
     } catch (error) {
       console.error('Scan error:', error);
       setResults({
@@ -126,6 +198,12 @@ export default function RecipeScoutDemo() {
       });
     } finally {
       setLoading(false);
+      setLoadingStep(null);
+      // Clean up progress animation
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
     }
   };
 
@@ -300,8 +378,40 @@ export default function RecipeScoutDemo() {
       {loading && (
         <div className="bg-white rounded-xl border-2 border-blue-200 p-12 text-center">
           <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-700 font-medium">Analyzing image...</p>
-          <p className="text-sm text-gray-500 mt-2">Detecting garments and extracting attributes</p>
+
+          {loadingStep && (
+            <>
+              <p className="text-gray-700 font-medium mb-2">
+                Step {loadingStep.step} of 2
+              </p>
+              <p className="text-sm text-gray-600 mb-4">{loadingStep.label}</p>
+
+              {/* Progress bar */}
+              <div className="max-w-md mx-auto">
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500 transition-all duration-300 ease-out"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span className={loadingStep.step >= 1 ? 'text-blue-600 font-medium' : ''}>
+                    {loadingStep.step === 1 ? '→ ' : '✓ '}Outfit Analysis
+                  </span>
+                  <span className={loadingStep.step >= 2 ? 'text-blue-600 font-medium' : ''}>
+                    {loadingStep.step === 2 ? '→ ' : ''}Recipe Generation
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+
+          {!loadingStep && (
+            <>
+              <p className="text-gray-700 font-medium">Analyzing image...</p>
+              <p className="text-sm text-gray-500 mt-2">Detecting garments and extracting attributes</p>
+            </>
+          )}
         </div>
       )}
 
@@ -376,14 +486,23 @@ export default function RecipeScoutDemo() {
             {/* Slots */}
             <div className="space-y-3 mb-6">
               {results.slots.map((slot: any, index: number) => (
-                <div key={`${slot.id}-${index}`} className="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                <div key={`${slot.id}-${index}`} className={`rounded-lg p-3 border shadow-sm ${
+                  slot.id === 'error' || slot.id === 'notice'
+                    ? 'bg-red-50 border-red-200'
+                    : 'bg-white border-gray-200'
+                }`}>
                   <div className="flex items-start justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-600">{slot.label}</span>
-                    <span className="text-xs px-2 py-1 bg-purple-100 text-purple-900 rounded-full">
-                      {slot.pillar}
-                    </span>
+                    <span className={`text-sm font-medium ${
+                      slot.id === 'error' || slot.id === 'notice'
+                        ? 'text-red-700'
+                        : 'text-gray-600'
+                    }`}>{slot.label}</span>
                   </div>
-                  <p className="text-sm text-gray-900">{slot.detected}</p>
+                  <p className={`text-sm ${
+                    slot.id === 'error' || slot.id === 'notice'
+                      ? 'text-red-900'
+                      : 'text-gray-900'
+                  }`}>{slot.detected}</p>
                 </div>
               ))}
             </div>

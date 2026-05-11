@@ -8,9 +8,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import ProfileView from '@/app/personas/ProfileView';
-import ProfileStyleLoader from '@/app/personas/components/ProfileStyleLoader';
+import ProfileView from '@/components/profile/ProfileView';
+import ProfileStyleLoader from '@/components/profile/ProfileStyleLoader';
 import type { CustomerProfile } from '@/lib/types';
+import { loadDemoProfile } from '@/lib/demo-profile-adapter';
 
 interface DemoUser {
   userId: string;
@@ -31,6 +32,7 @@ export default function InteractiveDemoProfile() {
   const userId = params?.userId as string;
 
   const [user, setUser] = useState<DemoUser | null>(null);
+  const [customerProfile, setCustomerProfile] = useState<CustomerProfile | null>(null);
   const [profileData, setProfileData] = useState<ProfileData>({
     totalSwipes: 0,
     completedStacks: 0,
@@ -46,12 +48,17 @@ export default function InteractiveDemoProfile() {
       setUser(JSON.parse(stored));
     }
 
-    // Load profile data from localStorage
+    // Load profile data and convert to CustomerProfile
     const loadProfile = () => {
-      const profileKey = `demo_profile_${userId}`;
-      const storedProfile = localStorage.getItem(profileKey);
-      if (storedProfile) {
-        setProfileData(JSON.parse(storedProfile));
+      const profile = loadDemoProfile(userId);
+      if (profile) {
+        setCustomerProfile(profile);
+        // Also load raw profile data for cold start detection
+        const profileKey = `demo_profile_${userId}`;
+        const storedProfile = localStorage.getItem(profileKey);
+        if (storedProfile) {
+          setProfileData(JSON.parse(storedProfile));
+        }
       }
     };
 
@@ -63,34 +70,6 @@ export default function InteractiveDemoProfile() {
   }, [userId]);
 
   const isColdStart = profileData.totalSwipes === 0 && !profileData.quizCompleted;
-
-  // Convert profileData to CustomerProfile format for ProfileView
-  const customerProfile: CustomerProfile | null = user ? {
-    customer_id: userId,
-    customer_name: user.name,
-    pillars: profileData.topPillars.length > 0
-      ? profileData.topPillars.reduce((acc, p) => {
-          acc[p.name] = p.weight;
-          return acc;
-        }, {} as Record<string, number>)
-      : {
-          // Default balanced profile
-          romantic: 11,
-          bohemian: 11,
-          casual: 11,
-          classic: 11,
-          minimal: 12,
-          maximal: 11,
-          fashionForward: 11,
-          athletic: 11,
-          utility: 11
-        },
-    confidence_score: profileData.confidence,
-    style_personality: `${user.name} is just beginning their style journey. As you interact and swipe on looks you love, your unique style profile will emerge.`,
-    memory: null,
-    created_at: user.createdAt,
-    updated_at: new Date().toISOString(),
-  } : null;
 
   if (!user) {
     return (

@@ -40,6 +40,7 @@ import {
 } from './axis-ai-refiner';
 import { deriveOccasions } from './occasion-mapping';
 import { tokenTracker } from './token-tracker';
+import { callGemini } from './gemini-client';
 
 // ============================================================================
 // CONFIGURATION
@@ -1172,45 +1173,22 @@ async function getStyleVibeTags(
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
-      // Use server-side proxy to avoid SSL issues in browser
-      const response = await fetch('/api/gemini-proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: GEMINI_MODEL,
-          prompt: prompt,
-          generationConfig: {
-            temperature: 0.7, // INCREASED for more diversity, less bias toward common answers
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 600, // Increased for rich product metadata prompt
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        // Check if it's a rate limit or server error
-        if (response.status === 429 || response.status === 503 || response.status === 500) {
-          // Exponential backoff: 1s, 2s, 4s, 8s, 16s
-          const delayMs = Math.min(1000 * Math.pow(2, attempt), 16000);
-          console.log(
-            `⏳ Rate limited (${response.status}), retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`
-          );
-          await new Promise(resolve => setTimeout(resolve, delayMs));
-          lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
-          continue;
+      // Call Gemini directly
+      const { text, usageMetadata } = await callGemini(
+        GEMINI_MODEL,
+        prompt,
+        {
+          temperature: 0.7, // INCREASED for more diversity, less bias toward common answers
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 600, // Increased for rich product metadata prompt
         }
-        throw new Error(`Gemini API error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      );
 
       // Log and track token usage
-      const usage = data.usageMetadata;
-      if (usage) {
-        tokenTracker.record(usage.promptTokenCount, usage.candidatesTokenCount);
-        console.log(`🔢 style/vibes: ${usage.promptTokenCount} in + ${usage.candidatesTokenCount} out = ${usage.totalTokenCount} | Running: ${tokenTracker.getSummaryString()}`);
+      if (usageMetadata) {
+        tokenTracker.record(usageMetadata.promptTokenCount, usageMetadata.candidatesTokenCount);
+        console.log(`🔢 style/vibes: ${usageMetadata.promptTokenCount} in + ${usageMetadata.candidatesTokenCount} out = ${usageMetadata.totalTokenCount} | Running: ${tokenTracker.getSummaryString()}`);
       }
 
       if (!text) {

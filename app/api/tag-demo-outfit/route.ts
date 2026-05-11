@@ -31,11 +31,11 @@ export async function POST(request: NextRequest) {
       alignmentScore: 0.85,
       poolTier: 'primary',
       scoreBreakdown: {
-        styleRegisterCoherence: 0.85,
-        colorHarmony: 0.85,
-        silhouetteBalance: 0.85,
-        occasionAlignment: 0.85,
-        seasonFabricWeight: 0.85,
+        styleRegisterCoherence: 85,
+        colorHarmony: 85,
+        silhouetteBalance: 85,
+        occasionAlignment: 85,  // 0-100 scale, not 0-1!
+        seasonFabricWeight: 85,
       },
       items: products.map((product: any) => ({
         role: product.role || 'top',
@@ -56,6 +56,16 @@ export async function POST(request: NextRequest) {
 
     // Call real AI tagging
     const attributes = await tagOutfit(demoOutfit);
+
+    // Debug logging
+    console.log('=== OUTFIT TAGGING DEBUG ===');
+    console.log('Products:', products.map(p => `${p.role}: ${p.name} (${p.color})`));
+    console.log('Formality:', attributes.formality);
+    console.log('Activity Context:', attributes.activityContext);
+    console.log('Social Register:', attributes.socialRegister);
+    console.log('Occasions:', attributes.occasions);
+    console.log('Full Response:', JSON.stringify(attributes, null, 2));
+    console.log('===========================');
 
     return NextResponse.json({
       success: true,

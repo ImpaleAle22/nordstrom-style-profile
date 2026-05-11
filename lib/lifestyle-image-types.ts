@@ -17,6 +17,21 @@ export type Gender = 'womenswear' | 'menswear' | 'unisex';
 
 export type Season = 'spring' | 'summer' | 'fall' | 'winter' | 'all-season';
 
+export type ActivityContext =
+  | 'casual-low-key'
+  | 'social-daytime'
+  | 'social-evening'
+  | 'professional'
+  | 'event'
+  | 'active';
+
+export type SocialRegister =
+  | 'intimate'
+  | 'peer-social'
+  | 'evaluative'
+  | 'public-facing'
+  | 'celebratory';
+
 export type DisqualifyingReason =
   | 'no_person_visible'
   | 'explicit_or_inappropriate'
@@ -35,9 +50,17 @@ export interface OutfitAnalysis {
   spectrumCoordinate: number;   // 0.0–8.8, one decimal place
   pillarConfidence: number;     // 0.0–1.0
   vibes: string[];              // 1–3 from canonical list
-  occasions: string[];          // 1–4 from canonical list
-  formalityLevel: number;       // 1.0–10.0
+
+  // Four axes (occasions derived from these)
+  activityContext: ActivityContext;
+  activityContextSecondary?: ActivityContext;
+  socialRegister: SocialRegister;
+  formalityLevel: number;       // 1.0–6.0 (updated from 1.0–10.0)
   season: Season[];
+
+  // Derived from four axes (not tagged directly)
+  occasions: string[];          // Mechanically derived from axes via occasion-mapping.ts
+
   gender: Gender;
   isCompleteOutfit: boolean;
   visibleItemCount: number;
