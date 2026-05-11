@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import type { CustomerProfile } from '@/lib/types';
-import ProfileView from './ProfileView';
+import ProfileView from '@/components/profile/ProfileView';
 import DemoControls from './components/DemoControls';
 import PersonaModal from './components/PersonaModal';
 

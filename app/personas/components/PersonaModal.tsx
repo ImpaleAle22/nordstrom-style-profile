@@ -7,6 +7,7 @@
 
 import { useEffect } from 'react';
 import type { CustomerProfile } from '@/lib/types';
+import { getPersonaStory } from '../data/persona-stories';
 
 interface PersonaModalProps {
   profiles: CustomerProfile[];
@@ -139,6 +140,7 @@ export default function PersonaModal({
 
             const firstName = profile.customer_name.split(' ')[0];
             const isSelected = selectedPersona?.customer_id === profile.customer_id;
+            const story = getPersonaStory(profile.customer_id);
 
             return (
               <button
@@ -231,34 +233,104 @@ export default function PersonaModal({
                       fontSize: '18px',
                       fontWeight: 600,
                       color: '#fff',
-                      marginBottom: '4px',
                       margin: 0
                     }}>
                       {profile.customer_name}
                     </h3>
-                    <p style={{ fontSize: '14px', color: '#9ca3af', margin: 0 }}>{profile.gender}</p>
+                    {story && (
+                      <p style={{
+                        fontSize: '13px',
+                        color: '#9ca3af',
+                        margin: 0,
+                        marginTop: '4px'
+                      }}>
+                        {story.tagline}
+                      </p>
+                    )}
                   </div>
                 </div>
 
+                {/* Customer Journey Stats */}
+                {story && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                      {/* Tenure Badge */}
+                      <span style={{
+                        padding: '4px 10px',
+                        borderRadius: '4px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        background: profile.sessions_processed < 5 ? 'rgba(59, 130, 246, 0.2)' : profile.sessions_processed < 10 ? 'rgba(168, 85, 247, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                        color: profile.sessions_processed < 5 ? '#60a5fa' : profile.sessions_processed < 10 ? '#a78bfa' : '#34d399',
+                        border: '1px solid',
+                        borderColor: profile.sessions_processed < 5 ? 'rgba(59, 130, 246, 0.3)' : profile.sessions_processed < 10 ? 'rgba(168, 85, 247, 0.3)' : 'rgba(16, 185, 129, 0.3)',
+                      }}>
+                        {profile.sessions_processed < 5 ? '🆕 Brand New' : profile.sessions_processed < 10 ? '📈 Established' : '⭐ Long-term'}
+                      </span>
+
+                      {/* Engagement Badge */}
+                      <span style={{
+                        padding: '4px 10px',
+                        borderRadius: '4px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        background: profile.total_signals > 150 ? 'rgba(239, 68, 68, 0.2)' : profile.total_signals > 80 ? 'rgba(251, 146, 60, 0.2)' : 'rgba(156, 163, 175, 0.2)',
+                        color: profile.total_signals > 150 ? '#f87171' : profile.total_signals > 80 ? '#fb923c' : '#9ca3af',
+                        border: '1px solid',
+                        borderColor: profile.total_signals > 150 ? 'rgba(239, 68, 68, 0.3)' : profile.total_signals > 80 ? 'rgba(251, 146, 60, 0.3)' : 'rgba(156, 163, 175, 0.3)',
+                      }}>
+                        {profile.total_signals > 150 ? '🔥 Very High' : profile.total_signals > 80 ? '📊 High' : profile.total_signals > 30 ? '📉 Medium' : '💤 Low'} Engagement
+                      </span>
+
+                      {/* Confidence Badge */}
+                      <span style={{
+                        padding: '4px 10px',
+                        borderRadius: '4px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        background: profile.confidence_score > 0.8 ? 'rgba(34, 197, 94, 0.2)' : profile.confidence_score > 0.6 ? 'rgba(234, 179, 8, 0.2)' : 'rgba(251, 146, 60, 0.2)',
+                        color: profile.confidence_score > 0.8 ? '#4ade80' : profile.confidence_score > 0.6 ? '#facc15' : '#fb923c',
+                        border: '1px solid',
+                        borderColor: profile.confidence_score > 0.8 ? 'rgba(34, 197, 94, 0.3)' : profile.confidence_score > 0.6 ? 'rgba(234, 179, 8, 0.3)' : 'rgba(251, 146, 60, 0.3)',
+                      }}>
+                        {(profile.confidence_score * 100).toFixed(0)}% Confidence
+                      </span>
+                    </div>
+
+                    {/* One-line description */}
+                    <p style={{
+                      fontSize: '12px',
+                      lineHeight: '1.5',
+                      color: 'rgba(255,255,255,0.7)',
+                      margin: 0,
+                    }}>
+                      {story.journey}
+                    </p>
+                  </div>
+                )}
+
                 {/* Style pillars */}
-                <div style={{ marginBottom: '16px' }}>
+                <div style={{ marginBottom: '12px' }}>
                   <div style={{
-                    fontSize: '12px',
-                    fontWeight: 500,
+                    fontSize: '11px',
+                    fontWeight: 600,
                     color: '#9ca3af',
-                    marginBottom: '8px'
-                  }}>TOP STYLE PILLARS</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    marginBottom: '6px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>Top Pillars</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {topPillars.map(([pillar, weight]) => (
                       <span
                         key={pillar}
                         style={{
-                          padding: '4px 12px',
-                          borderRadius: '9999px',
-                          fontSize: '12px',
-                          fontWeight: 500,
-                          background: 'rgba(255, 255, 255, 0.1)',
-                          color: '#fff'
+                          padding: '3px 10px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          color: '#e5e7eb',
+                          border: '1px solid rgba(255, 255, 255, 0.1)'
                         }}
                       >
                         {pillar.charAt(0).toUpperCase() + pillar.slice(1)} {weight}%
@@ -267,17 +339,28 @@ export default function PersonaModal({
                   </div>
                 </div>
 
-                {/* Stats */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#9ca3af' }}>Sessions:</span>
-                    <span style={{ fontWeight: 600, color: '#fff' }}>{profile.sessions_processed}</span>
+                {/* Stats Row */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '8px',
+                  fontSize: '11px',
+                  paddingTop: '12px',
+                  borderTop: '1px solid rgba(255,255,255,0.08)'
+                }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ color: '#9ca3af', marginBottom: '2px' }}>Sessions</div>
+                    <div style={{ fontWeight: 700, fontSize: '16px', color: '#fff' }}>{profile.sessions_processed}</div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#9ca3af' }}>Confidence:</span>
-                    <span style={{ fontWeight: 600, color: '#fff' }}>
-                      {(profile.confidence_score * 100).toFixed(0)}%
-                    </span>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ color: '#9ca3af', marginBottom: '2px' }}>Signals</div>
+                    <div style={{ fontWeight: 700, fontSize: '16px', color: '#fff' }}>{profile.total_signals}</div>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ color: '#9ca3af', marginBottom: '2px' }}>Gender</div>
+                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#fff', textTransform: 'capitalize' }}>
+                      {profile.gender === 'womenswear' ? 'Women' : 'Men'}
+                    </div>
                   </div>
                 </div>
               </button>

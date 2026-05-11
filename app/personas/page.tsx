@@ -6,7 +6,7 @@
 import { supabase } from '@/lib/supabase-client';
 import type { CustomerProfile } from '@/lib/types';
 import PersonaDemoUI from './PersonaDemoUI';
-import ProfileStyleLoader from './components/ProfileStyleLoader';
+import ProfileStyleLoader from '@/components/profile/ProfileStyleLoader';
 
 export const metadata = {
   title: 'Demo Personas - Nordstrom Style Profile',
@@ -23,7 +23,12 @@ async function getCustomerProfiles(): Promise<CustomerProfile[]> {
     return [];
   }
 
-  return data as CustomerProfile[];
+  // Filter out test profiles
+  const filtered = (data as CustomerProfile[]).filter(profile =>
+    profile.customer_name !== 'Brian' && profile.customer_name !== 'Test User'
+  );
+
+  return filtered;
 }
 
 export default async function PersonasPage() {

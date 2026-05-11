@@ -95,11 +95,27 @@ export default function DemoPage() {
                   Sorry, something is wrong with the demo. It should be back up soon.
                 </p>
                 <p
-                  className="text-base"
+                  className="text-base mb-8"
                   style={{ color: '#78716C' }}
                 >
                   In the meantime, check out the <strong>ADMIN</strong> link in the top right corner to explore the content engine and admin tools.
                 </p>
+
+                {/* Preview Button */}
+                <Link
+                  href="/profile/preview"
+                  className="inline-flex items-center gap-3 px-6 py-3 rounded-lg transition-all hover:scale-105"
+                  style={{
+                    backgroundColor: '#0C0C0C',
+                    color: '#FFFFFF',
+                  }}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <span className="font-medium">Preview Style Profile Demo</span>
+                </Link>
               </div>
             </div>
           )}
@@ -191,7 +207,7 @@ export default function DemoPage() {
 
             {/* Path 2: Try Interactive Demo */}
             <Link
-              href="/demo/interactive"
+              href="/playground"
               className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
               style={{
                 backgroundColor: '#0C0C0C',
