@@ -181,26 +181,38 @@ export default function LifestyleImagesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this image from the database?')) return;
+    console.log('🗑️ Delete requested for image:', id);
+
+    if (!confirm('Delete this image from the database?')) {
+      console.log('Delete cancelled by user');
+      return;
+    }
 
     try {
+      console.log('Sending DELETE request to:', `/api/lifestyle-images/${id}`);
+
       const response = await fetch(`/api/lifestyle-images/${id}`, {
         method: 'DELETE',
       });
 
+      console.log('Delete response status:', response.status, response.statusText);
+
       const result = await response.json();
-      console.log('Delete response:', result);
+      console.log('Delete response body:', result);
 
       if (!response.ok) {
-        console.error('Delete failed:', result);
-        showStatus('Failed to delete: ' + (result.error || 'Unknown error'), '#dc2626');
+        console.error('❌ Delete failed:', result);
+        showStatus(`Failed to delete: ${result.error || 'Unknown error'} (${response.status})`, '#dc2626');
         return;
       }
 
-      setImages(images.filter(img => img.id !== id));
-      showStatus('✓ Image deleted', '#10b981');
+      console.log('✅ Delete successful, removing from UI');
+      const newImages = images.filter(img => img.id !== id);
+      console.log('Images before:', images.length, 'after:', newImages.length);
+      setImages(newImages);
+      showStatus('✓ Image deleted successfully', '#10b981');
     } catch (error) {
-      console.error('Failed to delete image:', error);
+      console.error('❌ Exception during delete:', error);
       showStatus('Failed to delete image: ' + String(error), '#dc2626');
     }
   };
