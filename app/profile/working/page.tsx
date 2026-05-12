@@ -9,6 +9,7 @@
 import ProfileView from '@/components/profile/ProfileView';
 import ProfileStyleLoader from '@/components/profile/ProfileStyleLoader';
 import type { CustomerProfile } from '@/lib/types';
+import Link from 'next/link';
 
 export default function WorkingProfilePage() {
   // Rich dummy data with all fields populated
@@ -208,6 +209,30 @@ export default function WorkingProfilePage() {
         borderBottomLeftRadius: '4px',
       }}>
         🔧 WORKING PAGE - Dev Reference
+      </div>
+
+      {/* Session Timeline Link */}
+      <div style={{
+        position: 'fixed',
+        top: '50px',
+        right: 0,
+        zIndex: 10000,
+      }}>
+        <Link
+          href="/profile/working/sessions"
+          style={{
+            display: 'block',
+            background: '#3b82f6',
+            color: '#fff',
+            padding: '8px 16px',
+            fontSize: '12px',
+            fontFamily: 'monospace',
+            borderBottomLeftRadius: '4px',
+            textDecoration: 'none',
+          }}
+        >
+          📊 View Session Timeline
+        </Link>
       </div>
 
       <ProfileStyleLoader>
