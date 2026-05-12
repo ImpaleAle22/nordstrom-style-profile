@@ -69,8 +69,8 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
     <>
       {/* Persona Header Card */}
       <div style={{
-        background: 'rgb(61, 61, 61)',
-        borderBottom: '1px solid #333',
+        background: '#0C0C0D',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         padding: '12px 24px',
         position: 'sticky',
         top: 0,
@@ -103,10 +103,10 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
 
             {/* Persona Card */}
             <div style={{
-              background: 'rgba(0,0,0,0.1)',
-              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '12px',
               padding: '12px 16px',
-              border: '1px solid rgba(255,255,255,0.1)',
+              border: '2px solid rgba(255, 255, 255, 0.1)',
               flex: 1
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
