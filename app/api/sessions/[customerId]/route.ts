@@ -6,18 +6,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Use service role key for admin access to sessions
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 export async function GET(
   request: NextRequest,
   { params }: { params: { customerId: string } }
 ) {
   try {
     const { customerId } = params;
+
+    // Create Supabase client with service role key for admin access
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    console.log('[Sessions API] Fetching sessions for:', customerId);
+    console.log('[Sessions API] Service role key available:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
 
     // Get all sessions for this customer, ordered by session number
     const { data: sessions, error } = await supabase
@@ -31,7 +34,10 @@ export async function GET(
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    console.log('[Sessions API] Found sessions:', sessions?.length || 0);
+
     if (!sessions || sessions.length === 0) {
+      console.log('[Sessions API] No sessions found for customer:', customerId);
       return NextResponse.json({
         sessions: [],
         stats: {
