@@ -57,9 +57,17 @@ export default function Phase5Review({
       console.log('[Phase5] Response status:', response.status, response.statusText);
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('[Phase5] Import failed:', errorData);
-        throw new Error(errorData.details || errorData.error || 'Import failed');
+        const responseText = await response.text();
+        console.error('[Phase5] Import failed - Raw response:', responseText);
+
+        try {
+          const errorData = JSON.parse(responseText);
+          console.error('[Phase5] Import failed - Parsed error:', errorData);
+          throw new Error(errorData.details || errorData.error || 'Import failed');
+        } catch (parseError) {
+          console.error('[Phase5] Could not parse error response as JSON');
+          throw new Error(`Import failed: ${response.status} ${response.statusText}`);
+        }
       }
 
       const result = await response.json();

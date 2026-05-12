@@ -40,6 +40,11 @@ export default function Phase4Tagging({ selectedImages, onTaggingComplete, onBac
         useCache: true
       });
       addLog(`✓ CLIP concepts loaded (${styleConcepts.metadata.totalConcepts} concepts)`);
+
+      // Debug: Log available pillar keys
+      const pillarKeys = Object.keys(styleConcepts.pillars);
+      console.log('[CLIP Debug] Available pillar keys:', pillarKeys);
+      console.log('[CLIP Debug] Sample embedding dimension:', styleConcepts.pillars[pillarKeys[0]]?.length);
     } catch (clipError) {
       addLog(`⚠️  CLIP concepts failed to load - validation will be skipped`);
       console.error('CLIP concepts error:', clipError);
@@ -117,12 +122,20 @@ export default function Phase4Tagging({ selectedImages, onTaggingComplete, onBac
                   const { embedding } = await embedImage(result.image.imageUrl);
                   tagged.embedding = embedding;
 
+                  console.log('[CLIP Debug] Image embedding dimension:', embedding.length);
+                  console.log('[CLIP Debug] Gemini tagged as:', result.image.outfitAnalysis.stylePillar);
+
                   // Validate Gemini's pillar assignment with CLIP
                   const pillarKey = `${result.image.outfitAnalysis.stylePillar.toLowerCase()} fashion style outfit`;
+                  console.log('[CLIP Debug] Looking for pillar key:', pillarKey);
+
                   const pillarEmbedding = styleConcepts.pillars[pillarKey];
 
                   if (pillarEmbedding) {
+                    console.log('[CLIP Debug] Found pillar embedding, dimension:', pillarEmbedding.length);
                     const similarity = cosineSimilarity(embedding, pillarEmbedding);
+                    console.log('[CLIP Debug] Similarity score:', similarity);
+
                     const confidence = similarity > 0.6 ? 'high'
                                      : similarity > 0.4 ? 'medium'
                                      : 'low';
@@ -133,6 +146,8 @@ export default function Phase4Tagging({ selectedImages, onTaggingComplete, onBac
                       score: cosineSimilarity(embedding, emb)
                     })).sort((a, b) => b.score - a.score);
 
+                    console.log('[CLIP Debug] Top 3 pillars:', pillarScores.slice(0, 3));
+
                     tagged.clipValidation = {
                       similarity,
                       confidence,
@@ -141,6 +156,9 @@ export default function Phase4Tagging({ selectedImages, onTaggingComplete, onBac
 
                     const emoji = confidence === 'high' ? '✅' : confidence === 'medium' ? '⚠️' : '❌';
                     addLog(`  ${emoji} CLIP validation: ${confidence} confidence (${(similarity * 100).toFixed(1)}%)`);
+                  } else {
+                    console.warn('[CLIP Debug] Pillar key not found in concepts:', pillarKey);
+                    console.warn('[CLIP Debug] Available keys:', Object.keys(styleConcepts.pillars));
                   }
                 } catch (clipError) {
                   addLog(`  ⚠️  CLIP embedding failed: ${clipError instanceof Error ? clipError.message : 'Unknown error'}`);
