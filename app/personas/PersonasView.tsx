@@ -69,7 +69,7 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
     <>
       {/* Persona Header Card */}
       <div style={{
-        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+        background: 'rgb(61, 61, 61)',
         borderBottom: '1px solid #333',
         padding: '12px 24px',
         position: 'sticky',
@@ -103,7 +103,7 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
 
             {/* Persona Card */}
             <div style={{
-              background: 'rgb(61, 61, 61)',
+              background: 'rgba(255,255,255,0.05)',
               borderRadius: '8px',
               padding: '12px 16px',
               border: '1px solid rgba(255,255,255,0.1)',
