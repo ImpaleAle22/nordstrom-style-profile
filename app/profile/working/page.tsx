@@ -6,14 +6,17 @@
  * This is for developers to see what a fully populated profile looks like
  */
 
+import { useState, useEffect } from 'react';
 import ProfileView from '@/components/profile/ProfileView';
 import ProfileStyleLoader from '@/components/profile/ProfileStyleLoader';
-import OutfitRecommendationTray from '@/components/profile/OutfitRecommendationTray';
+import OutfitRecommendationTray, { OutfitRecommendation } from '@/components/profile/OutfitRecommendationTray';
 import type { CustomerProfile } from '@/lib/types';
-import { SAMPLE_OUTFITS, TRENDING_OUTFITS, NEW_ARRIVALS, SEASONAL_PICKS } from '@/lib/sample-outfits';
 import Link from 'next/link';
 
 export default function WorkingProfilePage() {
+  const [outfits, setOutfits] = useState<OutfitRecommendation[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const handleOutfitClick = (outfit: any) => {
     console.log('Outfit clicked:', outfit);
     // In real implementation: navigate to outfit detail page or open modal
@@ -205,6 +208,86 @@ export default function WorkingProfilePage() {
     last_interaction_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
   };
 
+  // Fetch real outfits from Supabase filtered by customer's top pillars
+  useEffect(() => {
+    async function fetchOutfits() {
+      try {
+        // Get top 3 pillars from profile
+        const topPillars = Object.entries(workingProfile.pillars)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([pillar]) => pillar.toLowerCase());
+
+        console.log('[Working Profile] Fetching outfits for pillars:', topPillars);
+
+        // Fetch outfits from Supabase
+        const response = await fetch(
+          `/api/outfits?pillars=${topPillars.join(',')}&department=${workingProfile.gender}&limit=20&minConfidence=0.7`
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch outfits');
+        }
+
+        const data = await response.json();
+        console.log('[Working Profile] Fetched outfits:', data.count, 'of', data.total);
+
+        // Transform Supabase outfits to OutfitRecommendation format
+        const transformedOutfits: OutfitRecommendation[] = data.outfits.map((outfit: any) => {
+          const items = outfit.items || [];
+          const totalPrice = items.reduce((sum: number, item: any) =>
+            sum + (item.product?.price || 0), 0
+          );
+
+          // Determine match score based on pillar alignment
+          const outfitPillars = outfit.attributes?.pillars || outfit.pillars || [];
+          const matchScore = outfit.confidence_score || 0.85;
+
+          // Generate match reason based on pillars
+          const matchingPillars = outfitPillars
+            .filter((p: string) => topPillars.includes(p.toLowerCase()))
+            .slice(0, 2);
+          const matchReason = matchingPillars.length > 0
+            ? `Matches your ${matchingPillars.join(' and ')} style`
+            : 'Curated for your aesthetic';
+
+          // Determine confidence level
+          const confidence = matchScore > 0.85 ? 'high' : matchScore > 0.75 ? 'medium' : 'low';
+
+          return {
+            outfit_id: outfit.outfit_id || outfit.id,
+            title: outfit.title || `${outfitPillars[0] || 'Styled'} Outfit`,
+            description: outfit.description || `A complete look featuring ${items.length} carefully selected pieces`,
+            match_score: matchScore,
+            match_reason: matchReason,
+            pillars: outfitPillars.slice(0, 3),
+            occasions: outfit.attributes?.occasions || outfit.occasions || ['Versatile'],
+            items: items.map((item: any) => ({
+              product_id: item.product?.id || item.product_id,
+              title: item.product?.title || item.title || 'Item',
+              brand: item.product?.brand || 'Brand',
+              price: item.product?.price || 0,
+              image_url: item.product?.imageUrl || item.product?.image_url || '',
+              product_type: item.product?.productType1 || item.role || 'Item',
+              role: item.role
+            })),
+            total_price: totalPrice,
+            confidence
+          };
+        });
+
+        setOutfits(transformedOutfits);
+      } catch (error) {
+        console.error('[Working Profile] Error fetching outfits:', error);
+        // Keep empty array on error
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchOutfits();
+  }, []);
+
   return (
     <>
       {/* Dev Badge */}
@@ -263,41 +346,63 @@ export default function WorkingProfilePage() {
             <p className="text-slate-400 text-lg">Complete looks styled just for you</p>
           </div>
 
-          {/* Personalized Picks */}
-          <OutfitRecommendationTray
-            title="Curated For You"
-            subtitle="Based on your minimal and classic style preferences"
-            outfits={SAMPLE_OUTFITS}
-            onOutfitClick={handleOutfitClick}
-            onSaveOutfit={handleSaveOutfit}
-          />
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              <p className="text-white mt-4">Loading your personalized outfits...</p>
+            </div>
+          ) : outfits.length === 0 ? (
+            <div className="text-center py-12 bg-slate-800/50 rounded-lg border border-slate-700">
+              <p className="text-slate-400 text-lg">No outfits found matching your style.</p>
+              <p className="text-slate-500 text-sm mt-2">Try generating some outfits in the admin panel.</p>
+            </div>
+          ) : (
+            <>
+              {/* Personalized Picks - Top confidence outfits */}
+              {outfits.length > 0 && (
+                <OutfitRecommendationTray
+                  title="Curated For You"
+                  subtitle="Based on your minimal and classic style preferences"
+                  outfits={outfits.slice(0, 6)}
+                  onOutfitClick={handleOutfitClick}
+                  onSaveOutfit={handleSaveOutfit}
+                />
+              )}
 
-          {/* Trending Now */}
-          <OutfitRecommendationTray
-            title="Trending in Minimal"
-            subtitle="What others with your style are loving"
-            outfits={TRENDING_OUTFITS}
-            onOutfitClick={handleOutfitClick}
-            onSaveOutfit={handleSaveOutfit}
-          />
+              {/* High Confidence Matches */}
+              {outfits.filter(o => o.confidence === 'high').length > 3 && (
+                <OutfitRecommendationTray
+                  title="Perfect Matches"
+                  subtitle="High confidence recommendations for your style"
+                  outfits={outfits.filter(o => o.confidence === 'high').slice(0, 5)}
+                  onOutfitClick={handleOutfitClick}
+                  onSaveOutfit={handleSaveOutfit}
+                />
+              )}
 
-          {/* New Arrivals */}
-          <OutfitRecommendationTray
-            title="New Arrivals"
-            subtitle="Fresh pieces matching your aesthetic"
-            outfits={NEW_ARRIVALS}
-            onOutfitClick={handleOutfitClick}
-            onSaveOutfit={handleSaveOutfit}
-          />
+              {/* Different pillar exploration */}
+              {outfits.length > 6 && (
+                <OutfitRecommendationTray
+                  title="More To Explore"
+                  subtitle="Additional looks matching your aesthetic"
+                  outfits={outfits.slice(6, 12)}
+                  onOutfitClick={handleOutfitClick}
+                  onSaveOutfit={handleSaveOutfit}
+                />
+              )}
 
-          {/* Seasonal Picks */}
-          <OutfitRecommendationTray
-            title="Spring Essentials"
-            subtitle="Season-perfect outfits for your style"
-            outfits={SEASONAL_PICKS}
-            onOutfitClick={handleOutfitClick}
-            onSaveOutfit={handleSaveOutfit}
-          />
+              {/* All remaining outfits */}
+              {outfits.length > 12 && (
+                <OutfitRecommendationTray
+                  title="Complete Your Look"
+                  subtitle="Even more outfit inspiration"
+                  outfits={outfits.slice(12, 20)}
+                  onOutfitClick={handleOutfitClick}
+                  onSaveOutfit={handleSaveOutfit}
+                />
+              )}
+            </>
+          )}
         </div>
       </div>
     </>
