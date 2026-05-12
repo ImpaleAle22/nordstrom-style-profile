@@ -394,7 +394,7 @@ INSERT INTO customer_sessions (session_id, customer_id, session_number, session_
   '{"Utility": 52, "Casual": 24, "Outdoor": 16, "Minimal": 8}'::jsonb,
   '{"Utility": 57, "Casual": 22, "Outdoor": 14, "Minimal": 7}'::jsonb,
   0.65, 0.80,
-  '{"brands_discovered": ["Carhartt", "Patagonia", "Arc\'teryx"], "price_range": "90-400", "insights": ["Buy it for life mentality"]}'::jsonb,
+  '{"brands_discovered": ["Carhartt", "Patagonia", "Arcteryx"], "price_range": "90-400", "insights": ["Buy it for life mentality"]}'::jsonb,
   13,
   NOW() - INTERVAL '24 days', NOW() - INTERVAL '24 days' + INTERVAL '15 minutes', 900),
 
@@ -441,7 +441,7 @@ INSERT INTO customer_sessions (session_id, customer_id, session_number, session_
   '{"Casual": 55, "Minimal": 21, "Classic": 15, "Comfortable": 9}'::jsonb,
   '{"Casual": 58, "Minimal": 20, "Classic": 14, "Comfortable": 8}'::jsonb,
   0.73, 0.83,
-  '{"brands_discovered": ["Madewell", "Levi\'s", "Everlane"], "price_range": "50-250", "insights": ["Quality basics investment"]}'::jsonb,
+  '{"brands_discovered": ["Madewell", "Levis", "Everlane"], "price_range": "50-250", "insights": ["Quality basics investment"]}'::jsonb,
   12,
   NOW() - INTERVAL '11 days', NOW() - INTERVAL '11 days' + INTERVAL '9 minutes', 540),
 
