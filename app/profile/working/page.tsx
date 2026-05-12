@@ -247,47 +247,58 @@ export default function WorkingProfilePage() {
         </Link>
       </div>
 
-      <ProfileStyleLoader>
-        <ProfileView profile={workingProfile} />
-      </ProfileStyleLoader>
+      {/* Profile Section */}
+      <div className="pb-12">
+        <ProfileStyleLoader>
+          <ProfileView profile={workingProfile} />
+        </ProfileStyleLoader>
+      </div>
 
-      {/* Outfit Recommendation Trays */}
-      <div className="max-w-7xl mx-auto px-4 py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        {/* Personalized Picks */}
-        <OutfitRecommendationTray
-          title="Curated For You"
-          subtitle="Based on your minimal and classic style preferences"
-          outfits={SAMPLE_OUTFITS}
-          onOutfitClick={handleOutfitClick}
-          onSaveOutfit={handleSaveOutfit}
-        />
+      {/* Outfit Recommendation Trays Section */}
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          {/* Section Header */}
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-white mb-2">Outfit Recommendations</h2>
+            <p className="text-slate-400 text-lg">Complete looks styled just for you</p>
+          </div>
 
-        {/* Trending Now */}
-        <OutfitRecommendationTray
-          title="Trending in Minimal"
-          subtitle="What others with your style are loving"
-          outfits={TRENDING_OUTFITS}
-          onOutfitClick={handleOutfitClick}
-          onSaveOutfit={handleSaveOutfit}
-        />
+          {/* Personalized Picks */}
+          <OutfitRecommendationTray
+            title="Curated For You"
+            subtitle="Based on your minimal and classic style preferences"
+            outfits={SAMPLE_OUTFITS}
+            onOutfitClick={handleOutfitClick}
+            onSaveOutfit={handleSaveOutfit}
+          />
 
-        {/* New Arrivals */}
-        <OutfitRecommendationTray
-          title="New Arrivals"
-          subtitle="Fresh pieces matching your aesthetic"
-          outfits={NEW_ARRIVALS}
-          onOutfitClick={handleOutfitClick}
-          onSaveOutfit={handleSaveOutfit}
-        />
+          {/* Trending Now */}
+          <OutfitRecommendationTray
+            title="Trending in Minimal"
+            subtitle="What others with your style are loving"
+            outfits={TRENDING_OUTFITS}
+            onOutfitClick={handleOutfitClick}
+            onSaveOutfit={handleSaveOutfit}
+          />
 
-        {/* Seasonal Picks */}
-        <OutfitRecommendationTray
-          title="Spring Essentials"
-          subtitle="Season-perfect outfits for your style"
-          outfits={SEASONAL_PICKS}
-          onOutfitClick={handleOutfitClick}
-          onSaveOutfit={handleSaveOutfit}
-        />
+          {/* New Arrivals */}
+          <OutfitRecommendationTray
+            title="New Arrivals"
+            subtitle="Fresh pieces matching your aesthetic"
+            outfits={NEW_ARRIVALS}
+            onOutfitClick={handleOutfitClick}
+            onSaveOutfit={handleSaveOutfit}
+          />
+
+          {/* Seasonal Picks */}
+          <OutfitRecommendationTray
+            title="Spring Essentials"
+            subtitle="Season-perfect outfits for your style"
+            outfits={SEASONAL_PICKS}
+            onOutfitClick={handleOutfitClick}
+            onSaveOutfit={handleSaveOutfit}
+          />
+        </div>
       </div>
     </>
   );
