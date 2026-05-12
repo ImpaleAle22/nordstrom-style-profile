@@ -68,45 +68,51 @@ export async function POST(request: NextRequest) {
     console.log(`[Bulk Import] First image input:`, JSON.stringify(images[0], null, 2));
 
     // Transform tagged images to database format
-    const records = images.map((img: TaggedImage) => {
-      const { outfitAnalysis, brandAdherence } = img.lifestyleData;
+    const records = images.map((img: TaggedImage, index: number) => {
+      try {
+        const { outfitAnalysis, brandAdherence } = img.lifestyleData;
 
-      const record: any = {
-        id: img.id,
-        image_url: img.url,
-        source: img.source,
-        style_pillar: outfitAnalysis.stylePillar.toLowerCase(),
-        sub_term: outfitAnalysis.subTerm,
-        spectrum_coordinate: outfitAnalysis.spectrumCoordinate,
-        pillar_confidence: outfitAnalysis.pillarConfidence,
-        vibes: outfitAnalysis.vibes,
-        occasions: outfitAnalysis.occasions,
-        formality_level: outfitAnalysis.formalityLevel,
-        season: outfitAnalysis.season,
-        gender: outfitAnalysis.gender,
-        is_complete_outfit: outfitAnalysis.isCompleteOutfit,
-        visible_item_count: outfitAnalysis.visibleItemCount,
-        brand_adherence_score: brandAdherence.score,
-        brand_adherence_reasoning: brandAdherence.reasoning || null,
-        photographer: img.photographer || null,
-        photographer_url: img.photographerUrl || null,
-        status: 'active',
-        created_at: new Date().toISOString()
-      };
-
-      // Add CLIP validation data if available
-      if (img.embedding) {
-        record.embedding = img.embedding;
-      }
-      if (img.clipValidation) {
-        record.clip_validation = {
-          similarity: img.clipValidation.similarity,
-          confidence: img.clipValidation.confidence,
-          topPillars: img.clipValidation.topPillars || []
+        const record: any = {
+          id: img.id,
+          image_url: img.url,
+          source: img.source,
+          style_pillar: outfitAnalysis.stylePillar.toLowerCase(),
+          sub_term: outfitAnalysis.subTerm,
+          spectrum_coordinate: outfitAnalysis.spectrumCoordinate,
+          pillar_confidence: outfitAnalysis.pillarConfidence,
+          vibes: outfitAnalysis.vibes,
+          occasions: outfitAnalysis.occasions,
+          formality_level: outfitAnalysis.formalityLevel,
+          season: Array.isArray(outfitAnalysis.season) ? outfitAnalysis.season : [outfitAnalysis.season],
+          gender: outfitAnalysis.gender,
+          is_complete_outfit: outfitAnalysis.isCompleteOutfit,
+          visible_item_count: outfitAnalysis.visibleItemCount,
+          brand_adherence_score: brandAdherence.score,
+          brand_adherence_reasoning: brandAdherence.reasoning || null,
+          photographer: img.photographer || null,
+          photographer_url: img.photographerUrl || null,
+          status: 'active',
+          created_at: new Date().toISOString()
         };
-      }
 
-      return record;
+        // Add CLIP validation data if available
+        if (img.embedding) {
+          record.embedding = img.embedding;
+        }
+        if (img.clipValidation) {
+          record.clip_validation = {
+            similarity: img.clipValidation.similarity,
+            confidence: img.clipValidation.confidence,
+            topPillars: img.clipValidation.topPillars || []
+          };
+        }
+
+        return record;
+      } catch (transformError) {
+        console.error(`[Bulk Import] Error transforming record ${index}:`, transformError);
+        console.error(`[Bulk Import] Failed image data:`, JSON.stringify(img, null, 2));
+        throw transformError;
+      }
     });
 
     console.log(`[Bulk Import] First transformed record:`, JSON.stringify(records[0], null, 2));
@@ -177,10 +183,21 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[Bulk Import] Error:', error);
+    console.error('[Bulk Import] Error type:', typeof error);
+    console.error('[Bulk Import] Error instanceof Error:', error instanceof Error);
+    console.error('[Bulk Import] Error keys:', error ? Object.keys(error) : 'null');
+    console.error('[Bulk Import] Error stringified:', JSON.stringify(error, null, 2));
+
+    const errorMessage = error instanceof Error
+      ? error.message
+      : typeof error === 'string'
+        ? error
+        : JSON.stringify(error);
+
     return NextResponse.json(
       {
         error: 'Failed to import images',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: errorMessage || 'Unknown error'
       },
       { status: 500 }
     );
