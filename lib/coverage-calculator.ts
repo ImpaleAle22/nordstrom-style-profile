@@ -14,160 +14,164 @@ export interface CoverageMatrix {
   priority: 'high' | 'medium' | 'low';
 }
 
+// Canonical style pillars (9 pillars)
 export const PILLARS = [
-  'romantic',
   'classic',
+  'minimal',
+  'romantic',
+  'bohemian',
+  'maximal',
   'casual',
-  'dramatic',
-  'creative',
-  'alluring',
-  'modern',
-  'natural',
-  'timeless'
+  'streetwear',
+  'athletic',
+  'utility'
 ];
 
 // Query templates for each pillar and gender combination
+// Optimized for: full-body shots, solid color backgrounds, fashion editorial style
 const QUERY_TEMPLATES: Record<string, { womenswear: string[], menswear: string[] }> = {
-  romantic: {
-    womenswear: [
-      'romantic fashion woman portrait white background',
-      'feminine elegant dress studio clean',
-      'delicate floral outfit simple background',
-      'soft pastel fashion woman minimal',
-      'lace dress portrait white backdrop'
-    ],
-    menswear: [
-      'elegant men fashion portrait clean background',
-      'soft tailored men fashion minimal',
-      'refined gentleman style white background'
-    ]
-  },
   classic: {
     womenswear: [
-      'classic fashion woman portrait white background',
-      'timeless elegant woman studio clean',
-      'tailored blazer woman minimal background',
-      'sophisticated woman fashion simple backdrop',
-      'structured outfit woman white background'
+      'woman full body fashion model studio solid background tailored blazer',
+      'elegant woman full length portrait clean backdrop structured outfit',
+      'woman fashion editorial full body timeless classic style',
+      'professional woman full body studio minimal background',
+      'woman fashion model full body neutral background elegant'
     ],
     menswear: [
-      'classic men suit portrait white background',
-      'tailored menswear studio clean',
-      'traditional suit man minimal background',
-      'formal business man white backdrop',
-      'structured menswear portrait simple'
+      'man full body fashion model studio solid background tailored suit',
+      'elegant man full length portrait clean backdrop structured',
+      'man fashion editorial full body timeless style',
+      'professional man full body studio minimal background',
+      'man fashion model full body neutral background formal'
+    ]
+  },
+  minimal: {
+    womenswear: [
+      'woman full body minimalist fashion studio solid background clean',
+      'woman full length portrait monochrome outfit simple backdrop',
+      'minimalist woman fashion editorial full body neutral',
+      'woman fashion model full body modern minimal style',
+      'sleek woman full body studio clean background simple'
+    ],
+    menswear: [
+      'man full body minimalist fashion studio solid background',
+      'man full length portrait monochrome outfit clean backdrop',
+      'minimalist man fashion editorial full body neutral',
+      'man fashion model full body modern minimal style',
+      'sleek man full body studio clean background simple'
+    ]
+  },
+  romantic: {
+    womenswear: [
+      'woman full body romantic fashion studio pastel background dress',
+      'feminine woman full length portrait soft colors clean backdrop',
+      'woman fashion editorial full body flowing dress romantic',
+      'woman fashion model full body feminine style florals',
+      'soft romantic woman full body studio light background'
+    ],
+    menswear: [
+      'man full body elegant fashion studio neutral background',
+      'refined man full length portrait clean backdrop tailored',
+      'man fashion editorial full body soft sophisticated',
+      'gentleman fashion model full body elegant style',
+      'polished man full body studio neutral background'
+    ]
+  },
+  bohemian: {
+    womenswear: [
+      'woman full body bohemian fashion studio warm background',
+      'boho woman full length portrait earthy colors clean backdrop',
+      'woman fashion editorial full body free spirit style',
+      'woman fashion model full body bohemian flowing outfit',
+      'bohemian woman full body studio warm earth tones'
+    ],
+    menswear: [
+      'man full body bohemian fashion studio warm background',
+      'boho man full length portrait earthy clean backdrop',
+      'man fashion editorial full body relaxed bohemian',
+      'man fashion model full body casual bohemian style',
+      'bohemian man full body studio neutral warm background'
+    ]
+  },
+  maximal: {
+    womenswear: [
+      'woman full body bold colorful fashion studio bright background',
+      'woman full length portrait vibrant colors clean backdrop',
+      'maximalist woman fashion editorial full body statement outfit',
+      'woman fashion model full body bold patterns bright',
+      'colorful woman full body studio bright solid background'
+    ],
+    menswear: [
+      'man full body bold colorful fashion studio bright background',
+      'man full length portrait vibrant colors clean backdrop',
+      'maximalist man fashion editorial full body statement',
+      'man fashion model full body bold patterns bright',
+      'colorful man full body studio bright solid background'
     ]
   },
   casual: {
     womenswear: [
-      'casual fashion woman portrait white background',
-      'relaxed comfortable outfit woman studio',
-      'everyday fashion woman minimal background',
-      'jeans tshirt woman simple backdrop',
-      'laid back style woman white background'
+      'woman full body casual fashion studio neutral background jeans',
+      'relaxed woman full length portrait clean backdrop everyday',
+      'woman fashion editorial full body comfortable casual style',
+      'woman fashion model full body casual outfit studio',
+      'casual woman full body studio solid background simple'
     ],
     menswear: [
-      'casual men fashion portrait white background',
-      'relaxed menswear studio clean',
-      'everyday outfit man minimal background',
-      'jeans shirt man simple backdrop',
-      'comfortable menswear white background'
+      'man full body casual fashion studio neutral background',
+      'relaxed man full length portrait clean backdrop everyday',
+      'man fashion editorial full body comfortable casual',
+      'man fashion model full body casual outfit studio',
+      'casual man full body studio solid background simple'
     ]
   },
-  dramatic: {
+  streetwear: {
     womenswear: [
-      'dramatic fashion woman portrait white background',
-      'bold statement outfit woman studio',
-      'edgy fashion woman minimal background',
-      'striking outfit woman simple backdrop',
-      'avant garde fashion woman white background'
+      'woman full body streetwear fashion studio bold background urban',
+      'urban woman full length portrait bright colors clean',
+      'woman fashion editorial full body street style',
+      'woman fashion model full body streetwear sneakers',
+      'streetwear woman full body studio solid background urban'
     ],
     menswear: [
-      'dramatic menswear portrait white background',
-      'bold fashion man studio clean',
-      'edgy outfit man minimal background',
-      'striking menswear simple backdrop',
-      'statement fashion man white background'
+      'man full body streetwear fashion studio bold background',
+      'urban man full length portrait bright colors clean',
+      'man fashion editorial full body street style',
+      'man fashion model full body streetwear sneakers',
+      'streetwear man full body studio solid background urban'
     ]
   },
-  creative: {
+  athletic: {
     womenswear: [
-      'creative fashion woman portrait white background',
-      'artistic outfit woman studio clean',
-      'eclectic fashion woman minimal background',
-      'unique style woman simple backdrop',
-      'bohemian fashion woman white background'
+      'woman full body athletic fashion studio clean background sporty',
+      'athletic woman full length portrait solid backdrop activewear',
+      'woman fashion editorial full body sporty athletic style',
+      'woman fashion model full body athletic wear studio',
+      'sporty woman full body studio bright solid background'
     ],
     menswear: [
-      'creative menswear portrait white background',
-      'artistic fashion man studio clean',
-      'eclectic outfit man minimal background',
-      'unique menswear simple backdrop',
-      'bohemian style man white background'
+      'man full body athletic fashion studio clean background',
+      'athletic man full length portrait solid backdrop activewear',
+      'man fashion editorial full body sporty athletic',
+      'man fashion model full body athletic wear studio',
+      'sporty man full body studio bright solid background'
     ]
   },
-  alluring: {
+  utility: {
     womenswear: [
-      'alluring fashion woman portrait white background',
-      'elegant evening dress woman studio',
-      'sophisticated cocktail outfit woman minimal',
-      'glamorous fashion woman simple backdrop',
-      'chic evening wear woman white background'
+      'woman full body utility fashion studio neutral background functional',
+      'utilitarian woman full length portrait clean backdrop workwear',
+      'woman fashion editorial full body utility style cargo',
+      'woman fashion model full body functional utility outfit',
+      'utility woman full body studio solid neutral background'
     ],
     menswear: [
-      'alluring menswear portrait white background',
-      'sophisticated evening suit man studio',
-      'elegant formal wear man minimal background',
-      'polished menswear simple backdrop',
-      'refined evening outfit man white background'
-    ]
-  },
-  modern: {
-    womenswear: [
-      'modern fashion woman portrait white background',
-      'contemporary outfit woman studio clean',
-      'sleek fashion woman minimal background',
-      'minimalist style woman simple backdrop',
-      'urban chic woman white background'
-    ],
-    menswear: [
-      'modern menswear portrait white background',
-      'contemporary fashion man studio clean',
-      'sleek outfit man minimal background',
-      'minimalist menswear simple backdrop',
-      'urban style man white background'
-    ]
-  },
-  natural: {
-    womenswear: [
-      'natural fashion woman portrait white background',
-      'organic style outfit woman studio',
-      'earthy fashion woman minimal background',
-      'relaxed natural look woman simple backdrop',
-      'sustainable fashion woman white background'
-    ],
-    menswear: [
-      'natural menswear portrait white background',
-      'organic style man studio clean',
-      'earthy fashion man minimal background',
-      'relaxed natural outfit man simple backdrop',
-      'sustainable menswear white background'
-    ]
-  },
-  timeless: {
-    womenswear: [
-      'timeless fashion woman portrait white background',
-      'elegant classic outfit woman studio',
-      'enduring style woman minimal background',
-      'sophisticated timeless look woman simple backdrop',
-      'refined fashion woman white background'
-    ],
-    menswear: [
-      'timeless menswear portrait white background',
-      'classic elegant suit man studio',
-      'enduring style man minimal background',
-      'sophisticated timeless outfit man simple backdrop',
-      'refined menswear white background'
+      'man full body utility fashion studio neutral background',
+      'utilitarian man full length portrait clean backdrop workwear',
+      'man fashion editorial full body utility style cargo',
+      'man fashion model full body functional utility outfit',
+      'utility man full body studio solid neutral background'
     ]
   }
 };

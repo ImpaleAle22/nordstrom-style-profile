@@ -115,7 +115,8 @@ async function searchPexels(query: string, perPage: number): Promise<StockImage[
   }
 
   try {
-    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${perPage}&orientation=portrait`;
+    // Add size=large for full body shots, exclude black & white
+    const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=${perPage}&orientation=portrait&size=large`;
 
     const response = await fetch(url, {
       headers: {
@@ -138,7 +139,25 @@ async function searchPexels(query: string, perPage: number): Promise<StockImage[
       return [];
     }
 
-    return data.photos.map((photo: any) => ({
+    // Filter out black & white images (grayscale colors)
+    const colorPhotos = data.photos.filter((photo: any) => {
+      const color = photo.avg_color?.toLowerCase();
+      if (!color) return true; // Keep if no color data
+
+      // Check if it's grayscale (R=G=B approximately)
+      const hex = color.replace('#', '');
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+
+      // If R, G, B are very similar, it's likely grayscale
+      const maxDiff = Math.max(Math.abs(r - g), Math.abs(g - b), Math.abs(r - b));
+      return maxDiff > 15; // Allow color if components differ by more than 15
+    });
+
+    console.log(`[Pexels] Filtered ${data.photos.length} photos -> ${colorPhotos.length} color photos`);
+
+    return colorPhotos.map((photo: any) => ({
       id: `pexels_${photo.id}`,
       source: 'pexels' as const,
       url: photo.src.large2x,
