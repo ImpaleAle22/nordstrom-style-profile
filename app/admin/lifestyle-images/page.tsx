@@ -33,14 +33,15 @@ interface LifestyleImage {
   created_at?: string;
 }
 
+// Canonical style pillars - matches lib/pillar-normalization.ts
 const PILLAR_COLORS: Record<string, string> = {
-  romantic: '#e8a5c5',
-  bohemian: '#d4a574',
-  casual: '#7fb3d5',
   classic: '#2c3e50',
   minimal: '#95a5a6',
+  romantic: '#e8a5c5',
+  bohemian: '#d4a574',
   maximal: '#f39c12',
-  fashion_forward: '#e74c3c',
+  casual: '#7fb3d5',
+  streetwear: '#e74c3c',
   athletic: '#27ae60',
   utility: '#8b6f47',
 };
@@ -377,6 +378,18 @@ export default function LifestyleImagesPage() {
                   {status.message}
                 </span>
               )}
+              <label className="btn-secondary cursor-pointer">
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+                Import JSON
+              </label>
+              <button onClick={handleExport} className="btn-secondary">
+                Export JSON
+              </button>
               <button onClick={() => setShowCoverageModal(true)} className="btn-secondary">
                 Coverage Report
               </button>
