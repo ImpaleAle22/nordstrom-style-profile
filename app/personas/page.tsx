@@ -12,6 +12,10 @@ export const metadata = {
   title: 'Demo Personas - Nordstrom Style Profile',
 };
 
+// Force dynamic rendering to get fresh profile data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getCustomerProfiles(): Promise<CustomerProfile[]> {
   const { data, error } = await supabase
     .from('customer_profiles')
