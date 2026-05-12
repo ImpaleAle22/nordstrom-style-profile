@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
       try {
         const { outfitAnalysis, brandAdherence } = img.lifestyleData;
 
+        // Map to actual database columns (no photographer fields, no brand_adherence_reasoning)
         const record: any = {
           id: img.id,
           image_url: img.url,
@@ -88,10 +89,7 @@ export async function POST(request: NextRequest) {
           is_complete_outfit: outfitAnalysis.isCompleteOutfit,
           visible_item_count: outfitAnalysis.visibleItemCount,
           brand_adherence_score: brandAdherence.score,
-          // Store reasoning in the 'reasoning' column instead
           reasoning: brandAdherence.reasoning || outfitAnalysis.reasoning || null,
-          photographer: img.photographer || null,
-          photographer_url: img.photographerUrl || null,
           status: 'active',
           created_at: new Date().toISOString()
         };
