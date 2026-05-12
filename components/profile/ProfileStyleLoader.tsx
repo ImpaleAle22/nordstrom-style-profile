@@ -23,7 +23,7 @@ export default function ProfileStyleLoader({ children }: { children: React.React
     document.body.style.flexDirection = '';
     document.body.style.margin = '0';
     document.body.style.padding = '0';
-    document.body.style.overflow = 'hidden';
+    // Don't set overflow: hidden - it blocks page scrolling
 
     // Check if styles are already loaded
     const existingStyles = document.querySelectorAll('link[href*="profile-ui"]');
