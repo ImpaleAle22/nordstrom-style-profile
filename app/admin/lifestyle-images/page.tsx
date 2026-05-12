@@ -378,6 +378,9 @@ export default function LifestyleImagesPage() {
                   {status.message}
                 </span>
               )}
+              <Link href="/admin/lifestyle-images/import" className="btn-primary">
+                ✨ Add New Images
+              </Link>
               <label className="btn-secondary cursor-pointer">
                 <input
                   type="file"
