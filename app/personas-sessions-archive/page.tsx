@@ -1,11 +1,11 @@
 /**
- * Demo Personas Page - Simplified Static Version
- * Shows current state of various customer personas
+ * Demo Personas Page
+ * Step-through demo showing how profiles build over time
  */
 
 import { supabase } from '@/lib/supabase-client';
 import type { CustomerProfile } from '@/lib/types';
-import PersonasView from './PersonasView';
+import PersonaDemoUI from './PersonaDemoUI';
 import ProfileStyleLoader from '@/components/profile/ProfileStyleLoader';
 
 export const metadata = {
@@ -27,7 +27,7 @@ async function getCustomerProfiles(): Promise<CustomerProfile[]> {
     return [];
   }
 
-  // Filter out test profiles and sort by engagement/maturity
+  // Filter out test profiles
   const filtered = (data as CustomerProfile[]).filter(profile =>
     profile.customer_name !== 'Brian' && profile.customer_name !== 'Test User'
   );
@@ -53,7 +53,7 @@ export default async function PersonasPage() {
 
   return (
     <ProfileStyleLoader>
-      <PersonasView profiles={profiles} />
+      <PersonaDemoUI profiles={profiles} />
     </ProfileStyleLoader>
   );
 }
