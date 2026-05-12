@@ -43,6 +43,9 @@ export default function Phase5Review({
     setImportError(null);
 
     try {
+      console.log('[Phase5] Starting import of', localTaggedResults.length, 'images');
+      console.log('[Phase5] First image sample:', localTaggedResults[0]);
+
       const response = await fetch('/api/lifestyle-images/bulk-import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,13 +54,16 @@ export default function Phase5Review({
         })
       });
 
+      console.log('[Phase5] Response status:', response.status, response.statusText);
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Import failed');
+        console.error('[Phase5] Import failed:', errorData);
+        throw new Error(errorData.details || errorData.error || 'Import failed');
       }
 
       const result = await response.json();
-      console.log('Import successful:', result);
+      console.log('[Phase5] Import successful:', result);
 
       setImportSuccess(true);
 

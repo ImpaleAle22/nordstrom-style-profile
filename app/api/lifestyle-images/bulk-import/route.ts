@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`[Bulk Import] Starting import of ${images.length} images`);
+    console.log(`[Bulk Import] First image input:`, JSON.stringify(images[0], null, 2));
 
     // Transform tagged images to database format
     const records = images.map((img: TaggedImage) => {
@@ -108,18 +109,34 @@ export async function POST(request: NextRequest) {
       return record;
     });
 
+    console.log(`[Bulk Import] First transformed record:`, JSON.stringify(records[0], null, 2));
+
     // Validate records before insertion
     const invalidRecords = records.filter(record => {
-      return !record.id ||
-             !record.image_url ||
-             !record.style_pillar ||
-             !record.gender ||
-             record.pillar_confidence === undefined ||
-             record.brand_adherence_score === undefined;
+      const isValid = record.id &&
+                      record.image_url &&
+                      record.style_pillar &&
+                      record.gender &&
+                      record.pillar_confidence !== undefined &&
+                      record.brand_adherence_score !== undefined;
+
+      if (!isValid) {
+        console.error('[Bulk Import] Invalid record:', {
+          id: record.id,
+          has_image_url: !!record.image_url,
+          has_style_pillar: !!record.style_pillar,
+          has_gender: !!record.gender,
+          has_pillar_confidence: record.pillar_confidence !== undefined,
+          has_brand_adherence_score: record.brand_adherence_score !== undefined
+        });
+      }
+
+      return !isValid;
     });
 
     if (invalidRecords.length > 0) {
       console.error('[Bulk Import] Invalid records found:', invalidRecords.length);
+      console.error('[Bulk Import] First invalid record:', JSON.stringify(invalidRecords[0], null, 2));
       return NextResponse.json(
         {
           error: 'Some records are missing required fields',
@@ -131,6 +148,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert into Supabase
+    console.log(`[Bulk Import] Attempting to insert ${records.length} records into Supabase...`);
     const { data, error } = await supabase
       .from('lifestyle_images')
       .upsert(records, {
@@ -141,6 +159,12 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('[Bulk Import] Supabase error:', error);
+      console.error('[Bulk Import] Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
       throw error;
     }
 
