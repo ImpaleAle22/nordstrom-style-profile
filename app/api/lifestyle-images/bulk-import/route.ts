@@ -88,7 +88,8 @@ export async function POST(request: NextRequest) {
           is_complete_outfit: outfitAnalysis.isCompleteOutfit,
           visible_item_count: outfitAnalysis.visibleItemCount,
           brand_adherence_score: brandAdherence.score,
-          brand_adherence_reasoning: brandAdherence.reasoning || null,
+          // Store reasoning in the 'reasoning' column instead
+          reasoning: brandAdherence.reasoning || outfitAnalysis.reasoning || null,
           photographer: img.photographer || null,
           photographer_url: img.photographerUrl || null,
           status: 'active',
