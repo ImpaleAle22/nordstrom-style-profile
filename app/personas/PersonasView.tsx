@@ -71,14 +71,14 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
       <div style={{
         background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
         borderBottom: '1px solid #333',
-        padding: '20px 24px',
+        padding: '12px 24px',
         position: 'sticky',
         top: 0,
         zIndex: 10
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           {/* Persona Card with Navigation Arrows */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {/* Previous Arrow */}
             <button
               onClick={handlePrevious}
@@ -86,7 +86,7 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
               style={{
                 background: 'transparent',
                 border: 'none',
-                padding: '8px',
+                padding: '4px',
                 color: currentIndex === 0 ? '#444' : '#fff',
                 cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
                 display: 'flex',
@@ -96,7 +96,7 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
               }}
               title="Previous persona (←)"
             >
-              <svg width="32" height="32" viewBox="0 0 20 20" fill="currentColor">
+              <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M12 4l-8 6 8 6V4z"/>
               </svg>
             </button>
@@ -104,22 +104,22 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
             {/* Persona Card */}
             <div style={{
               background: 'rgba(255,255,255,0.05)',
-              borderRadius: '12px',
-              padding: '20px',
+              borderRadius: '8px',
+              padding: '12px 16px',
               border: '1px solid rgba(255,255,255,0.1)',
               flex: 1
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               {/* Avatar */}
               <div style={{
-                width: '80px',
-                height: '80px',
+                width: '60px',
+                height: '60px',
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '32px',
+                fontSize: '24px',
                 color: '#fff',
                 fontWeight: '600',
                 flexShrink: 0
@@ -142,10 +142,10 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
 
               {/* Persona Info */}
               <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
                   <h1 style={{
                     color: '#fff',
-                    fontSize: '28px',
+                    fontSize: '22px',
                     fontWeight: '600',
                     margin: 0
                   }}>
@@ -153,13 +153,13 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
                   </h1>
                   <span style={{
                     color: '#666',
-                    fontSize: '14px',
+                    fontSize: '13px',
                     fontWeight: '500'
                   }}>
                     {currentIndex + 1} / {profiles.length}
                   </span>
                 </div>
-                <div style={{ display: 'flex', gap: '24px', color: '#999', fontSize: '14px' }}>
+                <div style={{ display: 'flex', gap: '20px', color: '#999', fontSize: '13px' }}>
                   <div>
                     <span style={{ color: '#666' }}>Gender:</span>{' '}
                     <span style={{ color: '#fff' }}>{currentPersona.gender || 'Not specified'}</span>
@@ -182,9 +182,9 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
                   background: '#fff',
                   color: '#000',
                   border: 'none',
-                  borderRadius: '8px',
-                  padding: '12px 24px',
-                  fontSize: '14px',
+                  borderRadius: '6px',
+                  padding: '8px 20px',
+                  fontSize: '13px',
                   fontWeight: '600',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap'
@@ -202,7 +202,7 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
               style={{
                 background: 'transparent',
                 border: 'none',
-                padding: '8px',
+                padding: '4px',
                 color: currentIndex === profiles.length - 1 ? '#444' : '#fff',
                 cursor: currentIndex === profiles.length - 1 ? 'not-allowed' : 'pointer',
                 display: 'flex',
@@ -212,7 +212,7 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
               }}
               title="Next persona (→)"
             >
-              <svg width="32" height="32" viewBox="0 0 20 20" fill="currentColor">
+              <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M8 4v12l8-6-8-6z"/>
               </svg>
             </button>
