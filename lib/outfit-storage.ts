@@ -1,6 +1,16 @@
 /**
- * Outfit Storage
- * Manages cooked outfits in IndexedDB (migrated from localStorage for 100MB+ capacity)
+ * Outfit Storage - CLIENT-SIDE CACHE ONLY
+ *
+ * ARCHITECTURE CLARIFICATION:
+ * - **Supabase `outfits` table** = Source of truth for all outfits (server-side)
+ * - **IndexedDB** = Client-side cache for user's personal saves/edits (browser only)
+ *
+ * This file manages LOCAL browser storage (IndexedDB) for:
+ * - User's saved outfits (favorites, shopping cart)
+ * - Recently viewed outfits
+ * - User's edited/customized outfit versions
+ *
+ * For outfit recommendations and global outfit data, query Supabase directly via /api/outfits
  */
 
 import type { ScoredOutfit } from './recipe-cooking/types';
