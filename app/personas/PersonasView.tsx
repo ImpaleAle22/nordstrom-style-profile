@@ -70,7 +70,7 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
       {/* Persona Header Card */}
       <div style={{
         background: '#0C0C0D',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        borderBottom: '2px solid rgba(255, 255, 255, 0.1)',
         padding: '12px 24px',
         position: 'sticky',
         top: 0,
