@@ -8,10 +8,22 @@
 
 import ProfileView from '@/components/profile/ProfileView';
 import ProfileStyleLoader from '@/components/profile/ProfileStyleLoader';
+import OutfitRecommendationTray from '@/components/profile/OutfitRecommendationTray';
 import type { CustomerProfile } from '@/lib/types';
+import { SAMPLE_OUTFITS, TRENDING_OUTFITS, NEW_ARRIVALS, SEASONAL_PICKS } from '@/lib/sample-outfits';
 import Link from 'next/link';
 
 export default function WorkingProfilePage() {
+  const handleOutfitClick = (outfit: any) => {
+    console.log('Outfit clicked:', outfit);
+    // In real implementation: navigate to outfit detail page or open modal
+  };
+
+  const handleSaveOutfit = (outfitId: string) => {
+    console.log('Outfit saved:', outfitId);
+    // In real implementation: save to user's favorites
+  };
+
   // Rich dummy data with all fields populated
   const workingProfile: CustomerProfile = {
     // Identity
@@ -238,6 +250,45 @@ export default function WorkingProfilePage() {
       <ProfileStyleLoader>
         <ProfileView profile={workingProfile} />
       </ProfileStyleLoader>
+
+      {/* Outfit Recommendation Trays */}
+      <div className="max-w-7xl mx-auto px-4 py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Personalized Picks */}
+        <OutfitRecommendationTray
+          title="Curated For You"
+          subtitle="Based on your minimal and classic style preferences"
+          outfits={SAMPLE_OUTFITS}
+          onOutfitClick={handleOutfitClick}
+          onSaveOutfit={handleSaveOutfit}
+        />
+
+        {/* Trending Now */}
+        <OutfitRecommendationTray
+          title="Trending in Minimal"
+          subtitle="What others with your style are loving"
+          outfits={TRENDING_OUTFITS}
+          onOutfitClick={handleOutfitClick}
+          onSaveOutfit={handleSaveOutfit}
+        />
+
+        {/* New Arrivals */}
+        <OutfitRecommendationTray
+          title="New Arrivals"
+          subtitle="Fresh pieces matching your aesthetic"
+          outfits={NEW_ARRIVALS}
+          onOutfitClick={handleOutfitClick}
+          onSaveOutfit={handleSaveOutfit}
+        />
+
+        {/* Seasonal Picks */}
+        <OutfitRecommendationTray
+          title="Spring Essentials"
+          subtitle="Season-perfect outfits for your style"
+          outfits={SEASONAL_PICKS}
+          onOutfitClick={handleOutfitClick}
+          onSaveOutfit={handleSaveOutfit}
+        />
+      </div>
     </>
   );
 }
