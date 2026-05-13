@@ -39,14 +39,14 @@ const RADAR_COLORS = {
 };
 
 // Pillar positions in radar chart (clockwise from top)
-// Order: Classic → Minimal → Romantic → Bohemian → Maximal → Fashion Forward → Utility → Athletic → Casual
+// Order: Classic · Minimal · Romantic · Bohemian · Maximal · Streetwear · Utility · Athletic · Casual
 const RADAR_PILLARS = [
   { key: 'classic', label: 'Classic', angle: 0 },
   { key: 'minimal', label: 'Minimal', angle: 40 },
   { key: 'romantic', label: 'Romantic', angle: 80 },
   { key: 'bohemian', label: 'Bohemian', angle: 120 },
   { key: 'maximal', label: 'Maximal', angle: 160 },
-  { key: 'fashionForward', label: 'Fashion\nForward', angle: 200 },
+  { key: 'streetwear', label: 'Streetwear', angle: 200 },
   { key: 'utility', label: 'Utility', angle: 240 },
   { key: 'athletic', label: 'Athletic', angle: 280 },
   { key: 'casual', label: 'Casual', angle: 320 },
@@ -160,11 +160,13 @@ function renderStyleRadarChart(containerId, config) {
   }
 
   /**
-   * Get polygon points for a profile (top N pillars for good visual shape)
+   * Get polygon points for a profile
    *
-   * Always shows top 5-6 pillars instead of filtering by threshold.
-   * This ensures the chart always has a visually pleasing polygon shape,
-   * even for highly focused profiles (e.g., 80% classic, 5% everything else).
+   * Only shows pillars with scores > 5% (significant pillars).
+   * Takes top 5 max to avoid visual clutter.
+   * This naturally adapts as profiles mature:
+   * - New profiles (evenly distributed): show 5+ pillars
+   * - Focused profiles: show 2-3 dominant pillars
    */
   function getPolygonPoints(scores, topN = 5) {
     // Get all points with their scores
@@ -182,8 +184,9 @@ function renderStyleRadarChart(containerId, config) {
       };
     });
 
-    // Sort by score descending and take top N
+    // Filter pillars > 5%, sort by score descending, and take top N
     const topPoints = allPoints
+      .filter(point => point.score > 5) // Only show significant pillars
       .sort((a, b) => b.score - a.score)
       .slice(0, topN);
 
