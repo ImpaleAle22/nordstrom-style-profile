@@ -489,19 +489,19 @@ export const slides: Slide[] = [
             <span className="text-gray-400">·</span>
             <span>Minimal</span>
             <span className="text-gray-400">·</span>
-            <span>Casual</span>
+            <span>Romantic</span>
             <span className="text-gray-400">·</span>
             <span>Bohemian</span>
-            <span className="text-gray-400">·</span>
-            <span>Romantic</span>
             <span className="text-gray-400">·</span>
             <span>Maximal</span>
             <span className="text-gray-400">·</span>
             <span>Streetwear</span>
             <span className="text-gray-400">·</span>
+            <span>Utility</span>
+            <span className="text-gray-400">·</span>
             <span>Athletic</span>
             <span className="text-gray-400">·</span>
-            <span>Utility</span>
+            <span>Casual</span>
           </div>
         </div>
         <p className="text-xl font-bold text-gray-900 text-center leading-relaxed">
