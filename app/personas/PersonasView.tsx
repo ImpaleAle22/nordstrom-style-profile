@@ -133,7 +133,7 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
                 {imageLoaded ? (
                   <img
                     key={currentPersona.customer_id} // Force re-render on persona change
-                    src={`/customers/${encodeURIComponent(currentPersona.customer_name)}.png`}
+                    src={`/personas/${encodeURIComponent(currentPersona.customer_name)}.png`}
                     alt={currentPersona.customer_name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                     onError={() => setImageLoaded(false)}
