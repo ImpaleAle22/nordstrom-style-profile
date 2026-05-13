@@ -17,9 +17,15 @@ interface PersonasViewProps {
 export default function PersonasView({ profiles }: PersonasViewProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPersonaSelector, setShowPersonaSelector] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(true); // Assume image loads initially
 
   const currentPersona = profiles[currentIndex];
   const firstName = currentPersona?.customer_name?.split(' ')[0] || 'Unknown';
+
+  // Reset image loaded state when persona changes
+  useEffect(() => {
+    setImageLoaded(true);
+  }, [currentIndex]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -124,18 +130,13 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
                 fontWeight: '600',
                 flexShrink: 0
               }}>
-                {currentPersona.customer_name ? (
+                {imageLoaded ? (
                   <img
+                    key={currentPersona.customer_id} // Force re-render on persona change
                     src={`/customers/${encodeURIComponent(currentPersona.customer_name)}.png`}
                     alt={currentPersona.customer_name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-                    onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
-                      const parent = (e.target as HTMLElement).parentElement;
-                      const personaName = currentPersona.customer_name || '';
-                      const initial = personaName.split(' ')[0]?.charAt(0) || '?';
-                      if (parent) parent.textContent = initial;
-                    }}
+                    onError={() => setImageLoaded(false)}
                   />
                 ) : (
                   firstName.charAt(0)
