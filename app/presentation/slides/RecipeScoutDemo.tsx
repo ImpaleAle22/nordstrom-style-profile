@@ -507,25 +507,7 @@ export default function RecipeScoutDemo() {
               ))}
             </div>
 
-            {/* Metadata */}
-            <div className="border-t border-purple-200 pt-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Overall Style:</span>
-                <span className="font-medium">{results.overallStyle.join(', ')}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Occasion:</span>
-                <span className="font-medium">{results.occasion}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Season:</span>
-                <span className="font-medium">{results.season}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Formality:</span>
-                <span className="font-medium">{results.formality}/10</span>
-              </div>
-            </div>
+            {/* Metadata - Hidden until Slide 12 (tagging) */}
           </div>
         </div>
       )}
