@@ -8,8 +8,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { CustomerProfile } from '@/lib/types';
 import ProfileView from '@/components/profile/ProfileView';
-import DemoControls from './components/DemoControls';
-import PersonaModal from './components/PersonaModal';
+import DemoControls from './DemoControls';
+import PersonaModal from '../personas/components/PersonaModal';
 
 interface PersonaDemoUIProps {
   profiles: CustomerProfile[];
