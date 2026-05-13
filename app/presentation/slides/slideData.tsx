@@ -732,14 +732,14 @@ export const slides: Slide[] = [
     content: (
       <div className="max-w-4xl mx-auto space-y-10 text-center">
         <p className="text-xl text-gray-700 leading-relaxed">
-          The style profile is still a work in progress, but you can explore what's built so far. There are two ways to experience it: explore nine pre-built personas with months of interaction history, or build your own profile from scratch by swiping through outfits. Either way, you'll see how the system learns and adapts in real time.
+          Nine demo personas showcase how the style profile adapts to different customers. Click through to see how the same components render differently based on each persona's unique style intelligence.
         </p>
         <div className="pt-8">
           <a
-            href="/demo"
+            href="/personas"
             className="inline-flex items-center gap-3 px-10 py-5 bg-black text-white text-xl font-semibold rounded-2xl hover:bg-gray-800 transition-all hover:scale-105"
           >
-            Launch Demo
+            View Personas
             <span className="text-2xl">→</span>
           </a>
         </div>

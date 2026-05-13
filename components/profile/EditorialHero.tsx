@@ -6,6 +6,7 @@
 'use client';
 
 import { getGradientForIndex } from '@/lib/gradient-placeholders';
+import { getPersonaHeroText } from '@/lib/persona-hero-text';
 
 interface EditorialHeroProps {
   topPillars: Array<[string, number]>;
@@ -13,6 +14,8 @@ interface EditorialHeroProps {
   sessionsProcessed: number;
   lifestyleImages?: any[];
   gender?: string;
+  totalSignals?: number;
+  confidenceScore?: number;
 }
 
 export default function EditorialHero({
@@ -20,11 +23,15 @@ export default function EditorialHero({
   customerName,
   sessionsProcessed,
   lifestyleImages = [],
-  gender
+  gender,
+  totalSignals = 0,
+  confidenceScore = 0
 }: EditorialHeroProps) {
   const top3 = topPillars.slice(0, 3);
+  const heroText = getPersonaHeroText(customerName, topPillars, totalSignals, confidenceScore);
 
   // Get lifestyle image for a pillar or return gradient placeholder
+  // Uses stable selection (first match) to prevent flickering
   const getImageOrGradient = (pillarName: string, index: number): { type: 'image' | 'gradient', value: string } => {
     const pillarKey = pillarName === 'fashionForward' ? 'fashion_forward' : pillarName.toLowerCase();
 
@@ -38,8 +45,9 @@ export default function EditorialHero({
     }
 
     if (matches.length > 0) {
-      const random = Math.floor(Math.random() * matches.length);
-      const imageUrl = matches[random].imageUrl || matches[random].url || matches[random].image_url;
+      // Use stable index based on pillar name to prevent flickering
+      const stableIndex = pillarName.length % matches.length;
+      const imageUrl = matches[stableIndex].imageUrl || matches[stableIndex].url || matches[stableIndex].image_url;
       return { type: 'image', value: imageUrl };
     }
 
@@ -51,14 +59,13 @@ export default function EditorialHero({
     <div className="editorial-hero">
       <div className="editorial-hero-text">
         <h1 className="hero-headline" id="heroHeadline">
-          <span className="hero-headline-display">Your style is</span>
-          <span className="hero-headline-emphasis">refined, intentional,</span>
-          <span className="hero-headline-display">and built on</span>
-          <span className="hero-headline-emphasis">timeless foundations.</span>
+          <span className="hero-headline-display">{heroText.headline[0]}</span>
+          <span className="hero-headline-emphasis">{heroText.headline[1]}</span>
+          <span className="hero-headline-display">{heroText.headline[2]}</span>
+          <span className="hero-headline-emphasis">{heroText.headline[3]}</span>
         </h1>
         <p className="hero-supporting-text">
-          You gravitate toward pieces that feel effortless yet considered,
-          with a clear point of view that balances simplicity and sophistication.
+          {heroText.supportingText}
         </p>
 
         <div className="hero-stats-row">

@@ -13,6 +13,7 @@ import ProfileOverview from './ProfileOverview';
 import PillarCards from './PillarCards';
 import StylePatterns from './StylePatterns';
 import CrossLinks from './CrossLinks';
+import OutfitRecommendationTray, { OutfitRecommendation } from './OutfitRecommendationTray';
 import { normalizePillars, validatePillars } from '@/lib/pillar-normalization';
 
 interface ProfileViewProps {
@@ -22,6 +23,8 @@ interface ProfileViewProps {
 export default function ProfileView({ profile }: ProfileViewProps) {
   const radarChartRef = useRef<HTMLDivElement>(null);
   const [lifestyleImages, setLifestyleImages] = useState<any[]>([]);
+  const [outfits, setOutfits] = useState<OutfitRecommendation[]>([]);
+  const [outfitsLoading, setOutfitsLoading] = useState(true);
   const firstName = profile?.customer_name?.split(' ')[0] || 'Customer';
 
   // Normalize pillars to ensure only canonical pillars are used
@@ -44,22 +47,34 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
   const top3Pillars = topPillars.slice(0, 3);
 
-  // Debug log
+  // Debug log (runs once on mount)
   useEffect(() => {
     console.log('✅ ProfileView mounted');
     console.log('  - Customer:', profile?.customer_name);
     console.log('  - Top pillars:', topPillars.map(([name, weight]) => `${name}: ${weight}%`));
-    console.log('  - Lifestyle images loaded:', lifestyleImages.length);
-  }, [profile, lifestyleImages]);
+  }, []); // Only log on mount, not on every state change
 
-  // Load lifestyle images
+  // Outfit interaction handlers
+  const handleOutfitClick = (outfit: any) => {
+    console.log('Outfit clicked:', outfit);
+    // In real implementation: navigate to outfit detail page or open modal
+  };
+
+  const handleSaveOutfit = (outfitId: string) => {
+    console.log('Outfit saved:', outfitId);
+    // In real implementation: save to user's favorites
+  };
+
+  // Load lifestyle images (once only)
   useEffect(() => {
+    let isMounted = true;
+
     async function loadLifestyleImages() {
       try {
         const response = await fetch('/api/lifestyle-images');
         if (response.ok) {
           const data = await response.json();
-          if (data.results && data.results.length > 0) {
+          if (isMounted && data.results && data.results.length > 0) {
             setLifestyleImages(data.results);
           }
         }
@@ -69,7 +84,97 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     }
 
     loadLifestyleImages();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Load once on mount
+
+  // Load outfits filtered by customer's top pillars
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchOutfits() {
+      try {
+        setOutfitsLoading(true);
+
+        // Capitalize first letter to match Supabase data format (Womenswear/Menswear)
+        const department = profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1);
+
+        console.log('[ProfileView] Fetching outfits for department:', department);
+
+        const response = await fetch(
+          `/api/outfits?department=${department}&limit=20&minConfidence=60`
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch outfits');
+        }
+
+        const data = await response.json();
+
+        if (!isMounted) return; // Don't update state if component unmounted
+
+        console.log('[ProfileView] Fetched outfits:', data.count, 'of', data.total);
+
+        // Transform Supabase outfits to OutfitRecommendation format
+        const transformedOutfits: OutfitRecommendation[] = data.outfits.map((outfit: any) => {
+          const items = outfit.items || [];
+          const totalPrice = items.reduce((sum: number, item: any) =>
+            sum + (item.product?.price || 0), 0
+          );
+
+          // Determine match score based on pillar alignment
+          const outfitPillars = outfit.attributes?.pillars || outfit.pillars || [];
+          // confidence_score is 0-100 integer, convert to 0.0-1.0 for display
+          const matchScore = outfit.confidence_score ? outfit.confidence_score / 100 : 0.85;
+
+          const matchReason = 'Curated for your aesthetic';
+
+          // Determine confidence level (using 0.0-1.0 scale)
+          const confidence = matchScore > 0.85 ? 'high' : matchScore > 0.75 ? 'medium' : 'low';
+
+          return {
+            outfit_id: outfit.outfit_id || outfit.id,
+            title: outfit.title || `${outfitPillars[0] || 'Styled'} Outfit`,
+            description: outfit.description || `A complete look featuring ${items.length} carefully selected pieces`,
+            match_score: matchScore,
+            match_reason: matchReason,
+            pillars: outfitPillars.slice(0, 3),
+            occasions: outfit.attributes?.occasions || outfit.occasions || ['Versatile'],
+            items: items.map((item: any) => ({
+              product_id: item.product?.id || item.product_id,
+              title: item.product?.title || item.title || 'Item',
+              brand: item.product?.brand || 'Brand',
+              price: item.product?.price || 0,
+              image_url: item.product?.imageUrl || item.product?.image_url || '',
+              product_type: item.product?.productType1 || item.role || 'Item',
+              role: item.role
+            })),
+            total_price: totalPrice,
+            confidence
+          };
+        });
+
+        setOutfits(transformedOutfits);
+      } catch (error) {
+        console.error('[ProfileView] Error fetching outfits:', error);
+        // Keep empty array on error
+      } finally {
+        if (isMounted) {
+          setOutfitsLoading(false);
+        }
+      }
+    }
+
+    if (profile?.gender) {
+      fetchOutfits();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [profile?.customer_id]); // Only re-fetch when customer changes
 
   return (
     <>
@@ -351,6 +456,8 @@ export default function ProfileView({ profile }: ProfileViewProps) {
               sessionsProcessed={profile.sessions_processed}
               lifestyleImages={lifestyleImages}
               gender={profile.gender}
+              totalSignals={profile.total_signals}
+              confidenceScore={profile.confidence_score}
             />
             </div>
 
@@ -370,6 +477,63 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                 lifestyleImages={lifestyleImages}
                 gender={profile.gender}
               />
+            </div>
+
+            {/* Outfit Recommendations */}
+            <div className="profile-section-animated" style={{ marginTop: '48px', marginBottom: '48px' }}>
+              {outfitsLoading ? (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '80px 24px',
+                  background: 'rgba(255,255,255,0.03)',
+                  borderRadius: '16px'
+                }}>
+                  <div style={{
+                    display: 'inline-block',
+                    width: '48px',
+                    height: '48px',
+                    border: '4px solid rgba(255,255,255,0.2)',
+                    borderTopColor: '#fff',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }} />
+                  <p style={{
+                    color: '#fff',
+                    marginTop: '24px',
+                    fontSize: '18px',
+                    fontWeight: '500'
+                  }}>Loading outfit recommendations...</p>
+                  <p style={{
+                    color: 'rgba(255,255,255,0.5)',
+                    marginTop: '8px',
+                    fontSize: '14px'
+                  }}>Finding looks that match your style</p>
+                </div>
+              ) : outfits.length === 0 ? (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '64px 24px',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '16px' }}>No outfits available yet</p>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', marginTop: '8px' }}>Check back soon for personalized recommendations</p>
+                </div>
+              ) : (
+                <>
+                  {/* Curated Picks - Top confidence outfits */}
+                  {outfits.length > 0 && (
+                    <OutfitRecommendationTray
+                      title="Curated For You"
+                      subtitle={`Based on your ${top3Pillars.map(([name]) => name.toLowerCase()).join(', ')} style`}
+                      outfits={outfits}
+                      onOutfitClick={handleOutfitClick}
+                      onSaveOutfit={handleSaveOutfit}
+                    />
+                  )}
+                </>
+              )}
             </div>
 
             {/* Style Patterns - Insights */}
