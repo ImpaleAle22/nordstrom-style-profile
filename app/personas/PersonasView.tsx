@@ -126,13 +126,15 @@ export default function PersonasView({ profiles }: PersonasViewProps) {
               }}>
                 {currentPersona.customer_name ? (
                   <img
-                    src={`/personas/${encodeURIComponent(currentPersona.customer_name)}.png`}
+                    src={`/customers/${encodeURIComponent(currentPersona.customer_name)}.png`}
                     alt={currentPersona.customer_name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                     onError={(e) => {
                       (e.target as HTMLElement).style.display = 'none';
                       const parent = (e.target as HTMLElement).parentElement;
-                      if (parent) parent.textContent = firstName.charAt(0);
+                      const personaName = currentPersona.customer_name || '';
+                      const initial = personaName.split(' ')[0]?.charAt(0) || '?';
+                      if (parent) parent.textContent = initial;
                     }}
                   />
                 ) : (
