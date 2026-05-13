@@ -205,7 +205,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       <main className="customer-view">
         {/* Top Banner */}
         <div className="top-banner">
-          Free shipping on orders $89+. <a href="#">See Details</a>
+          Nordy Club members get free 2-day shipping on select items in select locations. <a href="#">Learn More</a>
         </div>
 
       {/* Site Header */}
