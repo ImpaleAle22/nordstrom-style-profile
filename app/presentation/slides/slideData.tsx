@@ -739,8 +739,7 @@ export const slides: Slide[] = [
             href="/personas"
             className="inline-flex items-center gap-3 px-10 py-5 bg-black text-white text-xl font-semibold rounded-2xl hover:bg-gray-800 transition-all hover:scale-105"
           >
-            View Personas
-            <span className="text-2xl">→</span>
+            View Style Profile →
           </a>
         </div>
       </div>
