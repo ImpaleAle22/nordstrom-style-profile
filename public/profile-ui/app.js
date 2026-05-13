@@ -835,7 +835,7 @@ function getCustomerImagePath(customerName) {
     'Tyler Chen': '../customers/Tyler Chen.png',
     'Priya Sharma': '../customers/Priya Sharma.png',
     'Derek Johnson': '../customers/Derek Johnson.png',
-    'Alex Chen': null, // Cold start - no image
+    'Alex Chen': '../customers/Alex Chen.png',
     'New Customer': null // Cold start - no image
   };
 
