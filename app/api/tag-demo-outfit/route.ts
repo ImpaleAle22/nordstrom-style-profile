@@ -1,11 +1,11 @@
 /**
  * Demo Outfit Tagging API
- * Tags a single outfit for the presentation demo
+ * Tags a single outfit for the presentation demo using v2 pipeline
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { tagOutfit } from '@/lib/attribute-tagger';
-import type { StoredOutfit } from '@/lib/outfit-storage';
+import { tagOutfitV2 } from '@/lib/attribute-tagger-v2';
+import type { OutfitInput } from '@/lib/axis-types';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,27 +18,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build a simple StoredOutfit from demo products
-    const demoOutfit: StoredOutfit = {
+    // Build OutfitInput for v2 tagging system
+    const demoOutfit: OutfitInput = {
       outfitId: `demo-${Date.now()}`,
       recipeId: 'demo-recipe',
       recipeTitle: 'Demo Outfit',
       department: 'womens',
-      generatedAt: new Date().toISOString(),
-      strategy: 'demo',
-      confidenceScore: 0.85,
-      qualityScore: 0.85,
-      alignmentScore: 0.85,
-      poolTier: 'primary',
       scoreBreakdown: {
         styleRegisterCoherence: 85,
         colorHarmony: 85,
         silhouetteBalance: 85,
-        occasionAlignment: 85,  // 0-100 scale, not 0-1!
+        occasionAlignment: 85,
         seasonFabricWeight: 85,
       },
       items: products.map((product: any) => ({
-        role: product.role || 'top',
+        role: product.role || 'tops',
         ingredientTitle: product.name,
         product: {
           id: product.id,
@@ -49,23 +43,33 @@ export async function POST(request: NextRequest) {
           department: 'womens',
           colors: product.color ? [product.color] : [],
           description: product.name,
-          productType: product.productType || 'top',
+          productType1: product.productType || 'top',
         },
       })),
     };
 
-    // Call real AI tagging
-    const attributes = await tagOutfit(demoOutfit);
+    // Call v2 tagging pipeline (dry-run mode for demo)
+    const result = await tagOutfitV2(demoOutfit, null, { mode: 'dry-run' });
+
+    if (!result.success || !result.attributes) {
+      throw new Error(result.error || 'Tagging failed');
+    }
+
+    const attributes = result.attributes;
 
     // Debug logging
-    console.log('=== OUTFIT TAGGING DEBUG ===');
+    console.log('=== OUTFIT TAGGING V2 DEBUG ===');
     console.log('Products:', products.map(p => `${p.role}: ${p.name} (${p.color})`));
     console.log('Formality:', attributes.formality);
     console.log('Activity Context:', attributes.activityContext);
     console.log('Social Register:', attributes.socialRegister);
+    console.log('Style Pillar:', attributes.stylePillar);
+    console.log('Sub Style:', attributes.subStyle);
+    console.log('Vibes:', attributes.vibes);
     console.log('Occasions:', attributes.occasions);
-    console.log('Full Response:', JSON.stringify(attributes, null, 2));
-    console.log('===========================');
+    console.log('Needs Review:', attributes.needsReview);
+    console.log('Confidence:', JSON.stringify(attributes.confidence, null, 2));
+    console.log('================================');
 
     return NextResponse.json({
       success: true,
