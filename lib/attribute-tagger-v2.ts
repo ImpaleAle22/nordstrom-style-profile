@@ -93,15 +93,21 @@ function validateAttributes(
   let reviewReason: string | undefined;
 
   // Rule 1: Vibe-pillar coherence
+  console.log(`[POST-PROCESSING] Before validation - pillar: ${stylePillar}, vibes:`, vibes);
+
   if (stylePillar) {
     const coherentVibes = PILLAR_VIBE_COHERENCE[stylePillar];
+    console.log(`[POST-PROCESSING] Coherent vibes for ${stylePillar}:`, coherentVibes);
+
     const validVibes = vibes.filter(v => coherentVibes.includes(v));
 
     if (validVibes.length < vibes.length) {
       const invalidVibes = vibes.filter(v => !coherentVibes.includes(v));
-      console.warn(`Out-of-list vibes after station: ${invalidVibes.join(', ')}`);
+      console.warn(`[POST-PROCESSING] Out-of-list vibes detected: ${invalidVibes.join(', ')}`);
       vibes = validVibes;
     }
+
+    console.log(`[POST-PROCESSING] After validation - vibes:`, vibes);
   }
 
   // Rule 2: Sub-term canonicalness
@@ -280,6 +286,14 @@ export async function tagOutfitV2(
       // Dry-run mode: append to local JSON file
       appendToDryRunFile(outfit.outfitId, currentAttributes, attributes);
     }
+
+    console.log(`[TAGGER V2] Final attributes being returned:`, {
+      pillar: attributes.stylePillar,
+      subStyle: attributes.subStyle,
+      vibes: attributes.vibes,
+      needsReview: attributes.needsReview,
+      reviewReason: attributes.reviewReason,
+    });
 
     return {
       outfitId: outfit.outfitId,

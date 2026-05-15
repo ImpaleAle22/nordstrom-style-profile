@@ -240,8 +240,13 @@ export async function runVibesStation(
     // Step 3: AI call to select vibes
     let result = await selectVibes(payload, pillar, candidateVibes, false);
 
+    console.log(`[VIBES STATION] AI returned vibes:`, result.vibes);
+    console.log(`[VIBES STATION] Candidate vibes for ${pillar}:`, candidateVibes);
+
     // Step 4: Validate vibes against candidate list
     let { valid, invalid } = validateVibes(result.vibes, candidateVibes);
+
+    console.log(`[VIBES STATION] After validation - valid:`, valid, 'invalid:', invalid);
 
     let retriedForOutOfList = false;
 
