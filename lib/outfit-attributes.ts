@@ -40,7 +40,7 @@ export const STYLE_PILLAR_METADATA: Record<StylePillar, {
 }> = {
   'Romantic': {
     description: 'Emotionally expressive, ornamental dressing',
-    subTerms: ['Effortless Romantic', 'Feminine', 'Whimsical', 'Ladylike', 'Delicate', 'Ethereal', 'Dandy'],
+    subTerms: ['Effortless', 'Feminine', 'Whimsical', 'Ladylike', 'Delicate', 'Ethereal', 'Dandy', 'Cottagecore'],
     tiebreakers: ['Intentionally beautiful/delicate (vs Bohemian\'s earthy/found quality)', 'Menswear: floral prints, ruffled/pleated details, soft tailoring, womenswear-inspired silhouettes']
   },
   'Bohemian': {
@@ -50,37 +50,37 @@ export const STYLE_PILLAR_METADATA: Record<StylePillar, {
   },
   'Casual': {
     description: 'Relaxed, unfussy, everyday',
-    subTerms: ['Pragmatic Casual', 'Sporty Casual'],
+    subTerms: ['Pragmatic Casual', 'Sporty Casual', 'Smart Casual', 'Weekend Casual'],
     tiebreakers: []
   },
   'Classic': {
     description: 'Enduring, investment-minded, polished',
-    subTerms: ['Timeless Classic', 'Sophisticated', 'Polished', 'Dressy', 'Chic', 'Tailored', 'Menswear-inspired', 'Nautical', 'Preppy', 'Heritage'],
+    subTerms: ['Polished', 'Dressy', 'Tailored', 'Menswear-inspired', 'Nautical', 'Preppy', 'Heritage'],
     tiebreakers: ['About longevity (vs Minimal\'s reduction)']
   },
   'Minimal': {
     description: 'Restrained, intentional, form-forward',
-    subTerms: ['Modern Minimal', 'Sleek', 'Monochromatic', 'Understated', 'Modern', 'Architectural', 'Elegant', 'Refined'],
+    subTerms: ['Sleek', 'Monochromatic', 'Understated', 'Modern', 'Architectural', 'Quiet Luxury'],
     tiebreakers: ['About reduction (vs Classic\'s longevity)']
   },
   'Maximal': {
     description: 'Bold, expressive, more-is-more',
-    subTerms: ['Daring Maximal', 'Bold', 'Vibrant', 'Tropical', 'Glam', 'Exotic', 'Quirky'],
+    subTerms: ['Bold', 'Vibrant', 'Tropical', 'Glam', 'Quirky', 'Eclectic Maximal', 'Statement'],
     tiebreakers: []
   },
   'Streetwear': {
     description: 'Urban, attitude-forward dressing rooted in street culture, youth culture, and gender-relaxed expression',
-    subTerms: ['Streetwear', 'Urban', 'Edgy', 'Tomboy'],
+    subTerms: ['Urban', 'Edgy', 'Skate', 'Hypebeast', 'Y2K', 'Techwear'],
     tiebreakers: ['Cultural/silhouette-driven (vs Maximal\'s surface/decoration-driven)', 'To do a job (Utility) vs look like someone who does (Streetwear)']
   },
   'Athletic': {
     description: 'Sport as identity and activity',
-    subTerms: ['Street Sport', 'Performance', 'Club Sport', 'Athleisure'],
+    subTerms: ['Street Sport', 'Performance', 'Tennis Club', 'Athleisure', 'Yoga', 'Run Club'],
     tiebreakers: ['Sport identity (court/field/pool/opponent) vs Utility\'s terrain/function']
   },
   'Utility': {
     description: 'Function and terrain as design language',
-    subTerms: ['Utility Workwear', 'Utility Streetwear', 'Workwear', 'Military', 'Western', 'Rugged', 'Outdoorsy', 'Safari'],
+    subTerms: ['Workwear', 'Workwear Streetwear', 'Military', 'Western', 'Rugged', 'Outdoorsy', 'Safari'],
     tiebreakers: ['Terrain/function identity vs Athletic\'s sport identity']
   }
 };

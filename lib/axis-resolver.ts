@@ -95,13 +95,21 @@ function extractSignals(outfit: OutfitInput): ExtractedSignals {
  *
  * Formula: formality = (occasionAlignment / 100) * 5 + 1
  * Adjustments: sum(high keyword weights) - sum(low keyword weights)
+ *
+ * TODO: Remove occasion-score circularity in formality computation
+ * Currently occasionAlignment (0-100) is used as formality base, then occasions
+ * are derived FROM formality. Should eventually compute formality purely from
+ * garment markers (fabric weight, silhouette, details, etc.) to break the loop.
  */
 function resolveFormality(
   outfit: OutfitInput,
   signals: ExtractedSignals
 ): AxisValue<number> {
-  // Base formality from occasionAlignment
-  const baseScore = (outfit.scoreBreakdown.occasionAlignment / 100) * 5 + 1;
+  // Base formality from occasionAlignment with compression to reduce extremes
+  // Compression function: x^1.5 reduces high values (70→58, 85→76) while preserving low/middle
+  const rawAlignment = outfit.scoreBreakdown.occasionAlignment;
+  const compressedAlignment = Math.pow(rawAlignment / 100, 1.5) * 100;
+  const baseScore = (compressedAlignment / 100) * 5 + 1;
 
   let adjustment = 0;
   let matchedSignals: string[] = [];
@@ -150,8 +158,8 @@ function resolveFormality(
   }
 
   const reason = matchedSignals.length > 0
-    ? `Base ${baseScore.toFixed(1)} from occasion score, adjusted by: ${matchedSignals.slice(0, 3).join(', ')}`
-    : `Based on occasion alignment score (${outfit.scoreBreakdown.occasionAlignment}/100)`;
+    ? `Base ${baseScore.toFixed(1)} from compressed occasion score (${compressedAlignment.toFixed(0)}), adjusted by: ${matchedSignals.slice(0, 3).join(', ')}`
+    : `Based on compressed occasion alignment score (raw: ${rawAlignment}, compressed: ${compressedAlignment.toFixed(0)})`;
 
   return {
     value: parseFloat(finalScore.toFixed(1)),
@@ -556,12 +564,47 @@ function detectBoldSignal(signals: ExtractedSignals): boolean {
 }
 
 // ============================================================================
+// EVENT ROLE DETECTION
+// ============================================================================
+
+/**
+ * Detect event role from outfit (for wedding occasions)
+ *
+ * Returns role tag if detected, undefined otherwise.
+ * Used for precise occasion matching (e.g., bridesmaid dress vs wedding guest).
+ */
+function detectEventRole(signals: ExtractedSignals): string | undefined {
+  const text = signals.allText.toLowerCase();
+
+  // Wedding roles (order matters - check most specific first)
+  const rolePatterns: Array<{ role: string; keywords: string[] }> = [
+    { role: 'mother-of-bride', keywords: ['mother of the bride', 'mother of bride', 'mob'] },
+    { role: 'mother-of-groom', keywords: ['mother of the groom', 'mother of groom', 'mog'] },
+    { role: 'bridal', keywords: ['bridal', 'wedding dress', 'bride gown'] },
+    { role: 'bride', keywords: ['bride', 'getting married'] },
+    { role: 'bridesmaid', keywords: ['bridesmaid', 'maid of honor', 'matron of honor'] },
+    { role: 'wedding-guest', keywords: ['wedding guest', 'guest of wedding', 'attending wedding', 'wedding attire'] },
+  ];
+
+  for (const pattern of rolePatterns) {
+    for (const keyword of pattern.keywords) {
+      if (text.includes(keyword)) {
+        return pattern.role;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+// ============================================================================
 // MAIN EXPORT - RESOLVE ALL AXES
 // ============================================================================
 
 export interface ResolveAxesResult {
   axes: ResolvedAxes;
   hasBoldSignal: boolean;
+  eventRole?: string;
 }
 
 /**
@@ -589,6 +632,9 @@ export function resolveAxes(outfit: OutfitInput): ResolveAxesResult {
   // Detect bold signal for occasion derivation
   const hasBoldSignal = detectBoldSignal(signals);
 
+  // Detect event role (for wedding occasions)
+  const eventRole = detectEventRole(signals);
+
   return {
     axes: {
       formality,
@@ -597,5 +643,6 @@ export function resolveAxes(outfit: OutfitInput): ResolveAxesResult {
       socialRegister,
     },
     hasBoldSignal,
+    eventRole,
   };
 }

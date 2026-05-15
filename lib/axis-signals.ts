@@ -16,45 +16,50 @@ import type { ActivityContext, Season, SocialRegister } from './axis-types';
 /**
  * Formality Signals - Keywords that push formality score up or down
  *
- * Base formality comes from outfit.scoreBreakdown.occasionAlignment:
- *   formality = (occasionAlignment / 100) * 5 + 1
+ * Base formality comes from outfit.scoreBreakdown.occasionAlignment with compression:
+ *   compressed = (occasionAlignment/100)^1.5 * 100
+ *   formality = (compressed / 100) * 5 + 1
  *
  * These keywords adjust the base score up or down.
+ *
+ * WEIGHTS REDUCED (v2 Bug Fix): Previous weights were too aggressive, causing
+ * formality scores to hit the ceiling (6.0) for smart-casual outfits. Reduced
+ * by ~50% to allow more nuanced middle-range scores (3.0-5.0).
  */
 export const FORMALITY_SIGNALS = {
-  // Keywords that push formality UP
+  // Keywords that push formality UP (reduced weights)
   high: [
-    { keywords: ['tuxedo', 'tux', 'tailcoat'], weight: 2.0 },
-    { keywords: ['gown', 'ball gown', 'ballgown', 'evening gown'], weight: 1.8 },
-    { keywords: ['cocktail dress'], weight: 1.5 },
-    { keywords: ['blazer', 'sport coat', 'sport jacket', 'suit jacket'], weight: 1.2 },
-    { keywords: ['suit', 'three-piece'], weight: 1.3 },
-    { keywords: ['dress shirt', 'oxford shirt', 'button-down', 'dress blouse'], weight: 1.0 },
-    { keywords: ['trousers', 'dress pants', 'slacks'], weight: 1.0 },
-    { keywords: ['heels', 'pumps', 'stiletto', 'kitten heel', 'high heel'], weight: 1.0 },
-    { keywords: ['loafers', 'oxfords', 'derby', 'brogues', 'dress shoes', 'monk strap'], weight: 0.8 },
-    { keywords: ['midi dress', 'maxi dress', 'sheath dress'], weight: 0.6 },
-    { keywords: ['pencil skirt', 'a-line skirt'], weight: 0.7 },
-    { keywords: ['blouse', 'silk shirt'], weight: 0.5 },
-    { keywords: ['chinos', 'khakis'], weight: 0.3 },
-    { keywords: ['tie', 'bow tie', 'necktie', 'pocket square'], weight: 0.8 },
-    { keywords: ['vest', 'waistcoat'], weight: 0.6 },
+    { keywords: ['tuxedo', 'tux', 'tailcoat'], weight: 1.0 }, // Was 2.0
+    { keywords: ['gown', 'ball gown', 'ballgown', 'evening gown'], weight: 0.9 }, // Was 1.8
+    { keywords: ['cocktail dress'], weight: 0.7 }, // Was 1.5
+    { keywords: ['blazer', 'sport coat', 'sport jacket', 'suit jacket'], weight: 0.6 }, // Was 1.2
+    { keywords: ['suit', 'three-piece'], weight: 0.7 }, // Was 1.3
+    { keywords: ['dress shirt', 'oxford shirt', 'button-down', 'dress blouse'], weight: 0.5 }, // Was 1.0
+    { keywords: ['trousers', 'dress pants', 'slacks'], weight: 0.5 }, // Was 1.0
+    { keywords: ['heels', 'pumps', 'stiletto', 'kitten heel', 'high heel'], weight: 0.5 }, // Was 1.0
+    { keywords: ['loafers', 'oxfords', 'derby', 'brogues', 'dress shoes', 'monk strap'], weight: 0.4 }, // Was 0.8
+    { keywords: ['midi dress', 'maxi dress', 'sheath dress'], weight: 0.3 }, // Was 0.6
+    { keywords: ['pencil skirt', 'a-line skirt'], weight: 0.4 }, // Was 0.7
+    { keywords: ['blouse', 'silk shirt'], weight: 0.3 }, // Was 0.5
+    { keywords: ['chinos', 'khakis'], weight: 0.2 }, // Was 0.3
+    { keywords: ['tie', 'bow tie', 'necktie', 'pocket square'], weight: 0.4 }, // Was 0.8
+    { keywords: ['vest', 'waistcoat'], weight: 0.3 }, // Was 0.6
   ],
 
-  // Keywords that push formality DOWN
+  // Keywords that push formality DOWN (slightly reduced for balance)
   low: [
-    { keywords: ['joggers', 'sweatpants', 'track pants'], weight: 2.0 },
-    { keywords: ['hoodie', 'sweatshirt', 'pullover hoodie'], weight: 1.5 },
-    { keywords: ['sneakers', 'trainers', 'tennis shoes', 'running shoes'], weight: 1.0 },
-    { keywords: ['t-shirt', 'tee', 'graphic tee', 'tank top', 'cami'], weight: 1.0 },
-    { keywords: ['shorts', 'athletic shorts', 'gym shorts'], weight: 0.8 },
-    { keywords: ['sandals', 'flip flops', 'flip-flops', 'slides'], weight: 0.8 },
-    { keywords: ['leggings', 'yoga pants'], weight: 1.2 },
-    { keywords: ['cargo pants', 'cargo shorts', 'cargo'], weight: 0.5 },
-    { keywords: ['jeans', 'denim'], weight: 0.3 }, // Mild - jeans span a wide range
-    { keywords: ['baseball cap', 'beanie', 'snapback'], weight: 0.7 },
-    { keywords: ['athletic', 'sportswear', 'activewear'], weight: 0.9 },
-    { keywords: ['casual', 'relaxed'], weight: 0.2 }, // Very mild indicator
+    { keywords: ['joggers', 'sweatpants', 'track pants'], weight: 1.5 }, // Was 2.0
+    { keywords: ['hoodie', 'sweatshirt', 'pullover hoodie'], weight: 1.2 }, // Was 1.5
+    { keywords: ['sneakers', 'trainers', 'tennis shoes', 'running shoes'], weight: 0.8 }, // Was 1.0
+    { keywords: ['t-shirt', 'tee', 'graphic tee', 'tank top', 'cami'], weight: 0.8 }, // Was 1.0
+    { keywords: ['shorts', 'athletic shorts', 'gym shorts'], weight: 0.6 }, // Was 0.8
+    { keywords: ['sandals', 'flip flops', 'flip-flops', 'slides'], weight: 0.6 }, // Was 0.8
+    { keywords: ['leggings', 'yoga pants'], weight: 1.0 }, // Was 1.2
+    { keywords: ['cargo pants', 'cargo shorts', 'cargo'], weight: 0.4 }, // Was 0.5
+    { keywords: ['jeans', 'denim'], weight: 0.2 }, // Was 0.3 - kept mild since jeans are versatile
+    { keywords: ['baseball cap', 'beanie', 'snapback'], weight: 0.5 }, // Was 0.7
+    { keywords: ['athletic', 'sportswear', 'activewear'], weight: 0.7 }, // Was 0.9
+    { keywords: ['casual', 'relaxed'], weight: 0.1 }, // Was 0.2 - very mild indicator
   ],
 };
 

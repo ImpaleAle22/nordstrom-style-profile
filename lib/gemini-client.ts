@@ -70,22 +70,26 @@ export async function callGemini(
     } catch (error: any) {
       lastError = error;
 
-      // Check if it's a rate limit error
-      const isRateLimit = error.message?.includes('429') ||
+      // Check if it's a retryable error (rate limit or service unavailable)
+      const isRetryable = error.message?.includes('429') ||
+                         error.message?.includes('503') ||
                          error.message?.includes('rate limit') ||
-                         error.message?.includes('quota');
+                         error.message?.includes('quota') ||
+                         error.message?.includes('high demand') ||
+                         error.message?.includes('Service Unavailable');
 
-      if (isRateLimit && attempt < maxRetries - 1) {
-        // Exponential backoff: 1s, 2s, 4s
-        const delayMs = Math.min(1000 * Math.pow(2, attempt), 4000);
+      if (isRetryable && attempt < maxRetries - 1) {
+        // Exponential backoff: 2s, 4s, 8s (longer for 503 since it's capacity issues)
+        const delayMs = Math.min(2000 * Math.pow(2, attempt), 8000);
+        const errorType = error.message?.includes('503') ? '503 Service Unavailable' : 'Rate limit';
         console.log(
-          `⏳ Rate limited, retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`
+          `⏳ ${errorType}, retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`
         );
         await new Promise(resolve => setTimeout(resolve, delayMs));
         continue;
       }
 
-      // Not a rate limit or last attempt, throw the error
+      // Not retryable or last attempt, throw the error
       throw error;
     }
   }
