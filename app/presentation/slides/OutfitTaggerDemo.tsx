@@ -179,15 +179,30 @@ export default function OutfitTaggerDemo() {
       const data = await response.json();
       const attrs = data.attributes;
 
-      // Format results for display
+      // Debug logging to see what we're actually getting
+      console.log('=== DEMO UI RECEIVED ===');
+      console.log('Style Pillar:', attrs.stylePillar);
+      console.log('Sub Style:', attrs.subStyle);
+      console.log('Vibes:', attrs.vibes);
+      console.log('Occasions:', attrs.occasions);
+      console.log('Formality:', attrs.formality);
+      console.log('Confidence:', attrs.confidence);
+      console.log('Needs Review:', attrs.needsReview);
+      console.log('========================');
+
+      // Format results for display - use REAL v2 confidence scores
       setResults({
-        stylePillars: attrs.stylePillar ? [attrs.stylePillar, attrs.subStyle].filter(Boolean) : ['Classic'],
-        vibes: attrs.vibes || ['Versatile'],
-        occasions: attrs.occasions || ['Everyday'],
-        formality: attrs.formality || 5,  // Fixed: was formalityLevel, should be formality
+        stylePillars: attrs.stylePillar ? [attrs.stylePillar, attrs.subStyle].filter(Boolean) : ['Unknown'],
+        vibes: attrs.vibes || [],
+        occasions: attrs.occasions || [],
+        formality: attrs.formality || 0,
         colors: attrs.primaryColors || [],
         season: attrs.season || [],
-        confidence: 0.85,
+        // Use ACTUAL pillar confidence from v2, not hardcoded!
+        confidence: attrs.confidence?.stylePillar || 0,
+        // Show if this needed review
+        needsReview: attrs.needsReview || false,
+        reviewReason: attrs.reviewReason,
       });
     } catch (error) {
       console.error('Tagging error:', error);
@@ -276,11 +291,24 @@ export default function OutfitTaggerDemo() {
 
       {/* Results */}
       {results && (
-        <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 p-6">
+        <div className={`rounded-xl border-2 p-6 ${
+          results.needsReview
+            ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-300'
+            : 'bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200'
+        }`}>
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold">AI Analysis Results</h3>
-            <div className="text-sm text-gray-600">
-              Confidence: {(results.confidence * 100).toFixed(0)}%
+            <h3 className="text-xl font-semibold">
+              AI Analysis Results {results.needsReview && '⚠️'}
+            </h3>
+            <div className="flex flex-col items-end gap-1">
+              <div className="text-sm text-gray-600">
+                Pillar Confidence: {(results.confidence * 100).toFixed(0)}%
+              </div>
+              {results.needsReview && (
+                <div className="text-xs text-orange-600 font-medium">
+                  Needs Review: {results.reviewReason}
+                </div>
+              )}
             </div>
           </div>
 
@@ -304,14 +332,18 @@ export default function OutfitTaggerDemo() {
             <div className="bg-white rounded-lg p-4">
               <h4 className="font-semibold mb-2 text-sm text-gray-600">Vibes</h4>
               <div className="flex flex-wrap gap-2">
-                {results.vibes.map((vibe: string) => (
-                  <span
-                    key={vibe}
-                    className="px-3 py-1 bg-blue-100 text-blue-900 rounded-full text-sm font-medium"
-                  >
-                    {vibe}
-                  </span>
-                ))}
+                {results.vibes && results.vibes.length > 0 ? (
+                  results.vibes.map((vibe: string) => (
+                    <span
+                      key={vibe}
+                      className="px-3 py-1 bg-blue-100 text-blue-900 rounded-full text-sm font-medium"
+                    >
+                      {vibe}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm text-gray-500 italic">No vibes assigned</span>
+                )}
               </div>
             </div>
 
@@ -319,14 +351,18 @@ export default function OutfitTaggerDemo() {
             <div className="bg-white rounded-lg p-4">
               <h4 className="font-semibold mb-2 text-sm text-gray-600">Best For</h4>
               <div className="flex flex-wrap gap-2">
-                {results.occasions.slice(0, 3).map((occasion: string) => (
-                  <span
-                    key={occasion}
-                    className="px-3 py-1 bg-green-100 text-green-900 rounded-full text-sm font-medium"
-                  >
-                    {occasion}
-                  </span>
-                ))}
+                {results.occasions && results.occasions.length > 0 ? (
+                  results.occasions.slice(0, 4).map((occasion: string) => (
+                    <span
+                      key={occasion}
+                      className="px-3 py-1 bg-green-100 text-green-900 rounded-full text-sm font-medium"
+                    >
+                      {occasion}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm text-gray-500 italic">No occasions assigned</span>
+                )}
               </div>
             </div>
 
@@ -337,24 +373,27 @@ export default function OutfitTaggerDemo() {
                 <div className="flex-1 bg-gray-200 rounded-full h-2">
                   <div
                     className="bg-black rounded-full h-2 transition-all"
-                    style={{ width: `${(results.formality / 10) * 100}%` }}
+                    style={{ width: `${(results.formality / 6) * 100}%` }}
                   />
                 </div>
-                <span className="text-sm font-medium">{results.formality}/10</span>
+                <span className="text-sm font-medium">{results.formality.toFixed(1)}/6</span>
               </div>
               <p className="text-xs text-gray-600 mt-2">
-                {results.formality >= 7 ? 'Formal/Professional' : results.formality >= 5 ? 'Smart Casual' : 'Casual'}
+                {results.formality >= 5 ? 'Dressy/Formal' : results.formality >= 3.5 ? 'Smart Casual' : results.formality >= 2 ? 'Casual' : 'Very Casual'}
               </p>
             </div>
           </div>
 
           {/* Explanation */}
           <div className="mt-6 pt-6 border-t border-purple-200">
-            <h4 className="font-semibold mb-2 text-sm">How This Works</h4>
-            <p className="text-sm text-gray-700">
-              The AI analyzes each item's attributes (silhouette, material, color, style) and synthesizes them into
-              outfit-level intelligence: style pillars, vibes, occasions, and formality. This same process runs on all
-              lifestyle images and generated outfits to create a searchable, semantic catalog.
+            <h4 className="font-semibold mb-2 text-sm">How This Works (v2 Four-Station Pipeline)</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              <strong>Station 1:</strong> Axes (formality, context, season, social register) derived from rules + AI refinement.<br />
+              <strong>Station 2:</strong> Style pillar detected using marker-based scoring (materials, silhouettes, details).<br />
+              <strong>Station 3:</strong> Vibes assigned from pillar-coherent candidates only (1-3 vibes).<br />
+              <strong>Station 4:</strong> Occasions derived deterministically from the four axes.<br />
+              <br />
+              Every attribute tracks its confidence. Low-confidence results trigger review or AI escalation.
             </p>
           </div>
         </div>
