@@ -23,6 +23,7 @@ import {
 } from './kitchen-stations';
 import type { CustomerSignals } from '../../../services/outfit-composer/src/types';
 import { recordProductGaps } from '../product-gap-tracking';
+import { CLIP_API_URL } from '../clip-config';
 
 /**
  * Recipe health check - validates recipe before cooking
@@ -101,9 +102,10 @@ export async function cookRecipe(
   try {
     // Step 1: Validate CLIP API connection
     console.log('Step 1: Testing CLIP API connection...');
+    console.log(`Checking CLIP API at: ${CLIP_API_URL}`);
     const clipReady = await testClipConnection();
     if (!clipReady) {
-      throw new Error('CLIP API not available at http://localhost:5002');
+      throw new Error(`CLIP API not available at ${CLIP_API_URL}`);
     }
     console.log('✓ CLIP API ready\n');
 
