@@ -415,11 +415,18 @@ Generate a recipe for this outfit with:
    - No bottoms visible (and no dress)? → MUST suggest bottoms
    - Fewer than 4 total? → Add accessories to complete the outfit
 
+   **CRITICAL OUTERWEAR RULE**:
+   - If you detect outerwear (coat, jacket, blazer) BUT NO top underneath → You MUST infer an appropriate basic top
+   - Look at other items to guide your inference: heels suggest dressy, sneakers suggest casual, pants vs skirt, formality level
+   - Stay BASIC with the top choice: simple blouse, basic tee, button-down shirt, simple sweater
+   - Remember: No one wears a coat without a top underneath. If the coat obscures the top, infer it.
+
    Use same format as slots. Match the Style Pillar (${outfitAnalysis.stylePillar}) and vibe.
 
 CRITICAL OUTFIT BUILDING RULES:
 - **MINIMUM 4 ITEMS REQUIRED** (detected + suggested combined)
 - **SHOES ARE MANDATORY** - if not visible, MUST be in suggestedItems
+- **OUTERWEAR + NO TOP = INFER TOP** - if coat/jacket detected but no top visible, MUST suggest a basic top
 - If you see a dress, use role "dresses" (not tops/bottoms)
 - List EVERYTHING you can SEE in "slots"
 - Add missing items in "suggestedItems" to reach 4-6 total
