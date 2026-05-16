@@ -376,18 +376,6 @@ export default function OutfitTaggerDemo() {
             {generatedOutfits.map((outfit, index) => {
               const itemCount = outfit.items.length;
 
-              // Determine grid layout based on item count
-              let gridClass = '';
-              if (itemCount === 4) {
-                gridClass = 'grid-cols-2 grid-rows-2'; // 2x2
-              } else if (itemCount === 5) {
-                gridClass = 'grid-cols-2 auto-rows-fr'; // 2 columns, auto rows
-              } else if (itemCount === 6) {
-                gridClass = 'grid-cols-2 grid-rows-3'; // 2x3
-              } else {
-                gridClass = 'grid-cols-2'; // fallback for other counts
-              }
-
               return (
                 <button
                   key={outfit.id}
@@ -397,17 +385,14 @@ export default function OutfitTaggerDemo() {
                   }}
                   className="bg-white rounded-2xl border-2 border-gray-200 hover:border-black transition-all p-4 text-left group"
                 >
-                  {/* Product Grid - No text, just images */}
-                  <div className={`grid ${gridClass} gap-3`}>
-                    {outfit.items.map((item, idx) => {
-                      // For 5-item layout, make the 5th item span 2 columns in bottom right
-                      const is5thIn5ItemLayout = itemCount === 5 && idx === 4;
-
-                      return (
+                  {/* Product Grid - Adaptive layouts */}
+                  {itemCount === 4 && (
+                    <div className="grid grid-cols-2 grid-rows-[auto_1.5fr] gap-3">
+                      {outfit.items.map((item, idx) => (
                         <div
                           key={item.product.id}
-                          className={`aspect-square bg-gray-100 rounded-xl overflow-hidden ${
-                            is5thIn5ItemLayout ? 'col-span-2 row-span-1' : ''
+                          className={`bg-gray-100 rounded-xl overflow-hidden ${
+                            idx === 2 ? 'row-span-1' : 'aspect-square'
                           }`}
                         >
                           <img
@@ -417,9 +402,66 @@ export default function OutfitTaggerDemo() {
                             loading="lazy"
                           />
                         </div>
-                      );
-                    })}
-                  </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {itemCount === 5 && (
+                    <div className="grid grid-cols-2 grid-rows-3 gap-3">
+                      {outfit.items.map((item, idx) => (
+                        <div
+                          key={item.product.id}
+                          className={`bg-gray-100 rounded-xl overflow-hidden ${
+                            idx === 2 ? 'row-span-2 aspect-[1/2]' : 'aspect-square'
+                          }`}
+                        >
+                          <img
+                            src={item.product.imageUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {itemCount === 6 && (
+                    <div className="grid grid-cols-2 grid-rows-3 gap-3">
+                      {outfit.items.map((item) => (
+                        <div
+                          key={item.product.id}
+                          className="aspect-square bg-gray-100 rounded-xl overflow-hidden"
+                        >
+                          <img
+                            src={item.product.imageUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Fallback for other counts */}
+                  {itemCount !== 4 && itemCount !== 5 && itemCount !== 6 && (
+                    <div className="grid grid-cols-2 gap-3">
+                      {outfit.items.map((item) => (
+                        <div
+                          key={item.product.id}
+                          className="aspect-square bg-gray-100 rounded-xl overflow-hidden"
+                        >
+                          <img
+                            src={item.product.imageUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </button>
               );
             })}
@@ -460,42 +502,80 @@ export default function OutfitTaggerDemo() {
 
             {/* Product Grid - Same adaptive layout as outfit cards */}
             <div className="max-w-md mx-auto">
-              {(() => {
-                const itemCount = selectedOutfit.items.length;
-                let gridClass = '';
-                if (itemCount === 4) {
-                  gridClass = 'grid-cols-2 grid-rows-2';
-                } else if (itemCount === 5) {
-                  gridClass = 'grid-cols-2 auto-rows-fr';
-                } else if (itemCount === 6) {
-                  gridClass = 'grid-cols-2 grid-rows-3';
-                } else {
-                  gridClass = 'grid-cols-2';
-                }
+              {selectedOutfit.items.length === 4 && (
+                <div className="grid grid-cols-2 grid-rows-[auto_1.5fr] gap-4">
+                  {selectedOutfit.items.map((item, idx) => (
+                    <div
+                      key={item.product.id}
+                      className={`bg-gray-100 rounded-xl overflow-hidden ${
+                        idx === 2 ? 'row-span-1' : 'aspect-square'
+                      }`}
+                    >
+                      <img
+                        src={item.product.imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
 
-                return (
-                  <div className={`grid ${gridClass} gap-4`}>
-                    {selectedOutfit.items.map((item, idx) => {
-                      const is5thIn5ItemLayout = itemCount === 5 && idx === 4;
+              {selectedOutfit.items.length === 5 && (
+                <div className="grid grid-cols-2 grid-rows-3 gap-4">
+                  {selectedOutfit.items.map((item, idx) => (
+                    <div
+                      key={item.product.id}
+                      className={`bg-gray-100 rounded-xl overflow-hidden ${
+                        idx === 2 ? 'row-span-2 aspect-[1/2]' : 'aspect-square'
+                      }`}
+                    >
+                      <img
+                        src={item.product.imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
 
-                      return (
-                        <div
-                          key={item.product.id}
-                          className={`aspect-square bg-gray-100 rounded-xl overflow-hidden ${
-                            is5thIn5ItemLayout ? 'col-span-2 row-span-1' : ''
-                          }`}
-                        >
-                          <img
-                            src={item.product.imageUrl}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })()}
+              {selectedOutfit.items.length === 6 && (
+                <div className="grid grid-cols-2 grid-rows-3 gap-4">
+                  {selectedOutfit.items.map((item) => (
+                    <div
+                      key={item.product.id}
+                      className="aspect-square bg-gray-100 rounded-xl overflow-hidden"
+                    >
+                      <img
+                        src={item.product.imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Fallback for other counts */}
+              {selectedOutfit.items.length !== 4 &&
+               selectedOutfit.items.length !== 5 &&
+               selectedOutfit.items.length !== 6 && (
+                <div className="grid grid-cols-2 gap-4">
+                  {selectedOutfit.items.map((item) => (
+                    <div
+                      key={item.product.id}
+                      className="aspect-square bg-gray-100 rounded-xl overflow-hidden"
+                    >
+                      <img
+                        src={item.product.imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
