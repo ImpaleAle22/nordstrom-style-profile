@@ -38,6 +38,7 @@ export default function OutfitTaggerDemo() {
   const [generatedOutfits, setGeneratedOutfits] = useState<CookedOutfit[]>([]);
   const [selectedOutfit, setSelectedOutfit] = useState<CookedOutfit | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [inspirationImageUrl, setInspirationImageUrl] = useState<string | null>(null);
 
   // Tagging state
   const [tagging, setTagging] = useState(false);
@@ -48,12 +49,23 @@ export default function OutfitTaggerDemo() {
   // Check cooking status on mount
   useEffect(() => {
     const status = sessionStorage.getItem('presentation-cooking-status');
-    const recipe = sessionStorage.getItem('presentation-recipe');
+    const recipeStr = sessionStorage.getItem('presentation-recipe');
 
-    if (!recipe) {
+    if (!recipeStr) {
       // No recipe from Slide 11
       setCookingStatus('no-recipe');
       return;
+    }
+
+    // Extract inspiration image from recipe
+    try {
+      const recipe = JSON.parse(recipeStr);
+      const imageUrl = recipe?.aiMetadata?.sourceImageUrl;
+      if (imageUrl) {
+        setInspirationImageUrl(imageUrl);
+      }
+    } catch (e) {
+      console.error('Failed to parse recipe:', e);
     }
 
     if (status === 'ready') {
@@ -336,6 +348,23 @@ export default function OutfitTaggerDemo() {
       {/* Ready State - Show Generated Outfits */}
       {cookingStatus === 'ready' && !selectedOutfit && (
         <>
+          {/* Inspiration Image Thumbnail */}
+          {inspirationImageUrl && (
+            <div className="mb-6 flex items-center justify-center gap-4">
+              <div className="w-16 h-20 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-300 shadow-sm">
+                <img
+                  src={inspirationImageUrl}
+                  alt="Inspiration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-0.5">Inspired by</p>
+                <p className="text-sm text-gray-700">Lifestyle image from Slide 11</p>
+              </div>
+            </div>
+          )}
+
           <div className="mb-6 text-center">
             <p className="text-gray-700">
               <strong>Select an outfit to tag:</strong> Choose one of the generated outfits below, then click "Tag Outfit" to see the AI analysis
@@ -392,6 +421,23 @@ export default function OutfitTaggerDemo() {
       {/* Selected Outfit - Show Details & Tag Button */}
       {selectedOutfit && !results && (
         <>
+          {/* Inspiration Image Thumbnail */}
+          {inspirationImageUrl && (
+            <div className="mb-4 flex items-center gap-3">
+              <div className="w-12 h-16 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-300 shadow-sm flex-shrink-0">
+                <img
+                  src={inspirationImageUrl}
+                  alt="Inspiration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Inspired by</p>
+                <p className="text-xs text-gray-600">Lifestyle image from Slide 11</p>
+              </div>
+            </div>
+          )}
+
           <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold">Selected Outfit</h3>
@@ -436,15 +482,33 @@ export default function OutfitTaggerDemo() {
 
       {/* Results */}
       {results && (
-        <div className={`rounded-xl border-2 p-6 ${
-          results.needsReview
-            ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-300'
-            : 'bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200'
-        }`}>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold">
-              AI Analysis Results {results.needsReview && '⚠️'}
-            </h3>
+        <>
+          {/* Inspiration Image Thumbnail */}
+          {inspirationImageUrl && (
+            <div className="mb-4 flex items-center gap-3">
+              <div className="w-12 h-16 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-300 shadow-sm flex-shrink-0">
+                <img
+                  src={inspirationImageUrl}
+                  alt="Inspiration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Inspired by</p>
+                <p className="text-xs text-gray-600">Lifestyle image from Slide 11</p>
+              </div>
+            </div>
+          )}
+
+          <div className={`rounded-xl border-2 p-6 ${
+            results.needsReview
+              ? 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-300'
+              : 'bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200'
+          }`}>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold">
+                AI Analysis Results {results.needsReview && '⚠️'}
+              </h3>
             <div className="flex flex-col items-end gap-1">
               <div className="text-sm text-gray-600">
                 Pillar Confidence: {(results.confidence * 100).toFixed(0)}%
@@ -542,6 +606,7 @@ export default function OutfitTaggerDemo() {
             </p>
           </div>
         </div>
+        </>
       )}
 
     </div>
