@@ -2,30 +2,111 @@
 
 /**
  * Outfit Tagging Interactive Demo
- * Pick items to create an outfit, then tag it with AI
+ * Shows outfits generated from Recipe Scout (Slide 11), then tags them with AI
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-interface ProductOption {
+interface CookedOutfit {
   id: string;
-  name: string;
-  emoji?: string;
-  imageUrl?: string;
-  productType?: string;
-  color?: string;
-}
-
-interface OutfitSlot {
-  id: string;
-  label: string;
-  options: ProductOption[];
-  selected: string | null;
+  recipeId: string;
+  recipeTitle: string;
+  department: string;
+  items: Array<{
+    role: string;
+    product: {
+      id: string;
+      title: string;
+      brand: string;
+      imageUrl: string;
+      colors: string[];
+      price: number;
+    };
+  }>;
+  scoreBreakdown: {
+    styleRegisterCoherence: number;
+    colorHarmony: number;
+    silhouetteBalance: number;
+    occasionAlignment: number;
+    seasonFabricWeight: number;
+  };
 }
 
 export default function OutfitTaggerDemo() {
-  // Curated products - handpicked for demo presentation
-  const [slots, setSlots] = useState<OutfitSlot[]>([
+  // Cooking status from Recipe Scout (Slide 11)
+  const [cookingStatus, setCookingStatus] = useState<'idle' | 'cooking' | 'ready' | 'error' | 'no-recipe'>('idle');
+  const [generatedOutfits, setGeneratedOutfits] = useState<CookedOutfit[]>([]);
+  const [selectedOutfit, setSelectedOutfit] = useState<CookedOutfit | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Tagging state
+  const [tagging, setTagging] = useState(false);
+  const [results, setResults] = useState<any>(null);
+
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Check cooking status on mount
+  useEffect(() => {
+    const status = sessionStorage.getItem('presentation-cooking-status');
+    const recipe = sessionStorage.getItem('presentation-recipe');
+
+    if (!recipe) {
+      // No recipe from Slide 11
+      setCookingStatus('no-recipe');
+      return;
+    }
+
+    if (status === 'ready') {
+      // Outfits are ready
+      const outfits = JSON.parse(sessionStorage.getItem('presentation-outfits') || '[]');
+      if (outfits.length > 0) {
+        setGeneratedOutfits(outfits);
+        setCookingStatus('ready');
+      } else {
+        setCookingStatus('error');
+        setError('No outfits were generated');
+      }
+    } else if (status === 'cooking') {
+      // Still cooking - poll for updates
+      setCookingStatus('cooking');
+      pollIntervalRef.current = setInterval(() => {
+        const currentStatus = sessionStorage.getItem('presentation-cooking-status');
+        if (currentStatus === 'ready') {
+          const outfits = JSON.parse(sessionStorage.getItem('presentation-outfits') || '[]');
+          setGeneratedOutfits(outfits);
+          setCookingStatus('ready');
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
+        } else if (currentStatus === 'error') {
+          const errorMsg = sessionStorage.getItem('presentation-cooking-error') || 'Outfit generation failed';
+          setError(errorMsg);
+          setCookingStatus('error');
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
+        }
+      }, 1000);
+    } else if (status === 'error') {
+      // Cooking failed
+      const errorMsg = sessionStorage.getItem('presentation-cooking-error') || 'Outfit generation failed';
+      setError(errorMsg);
+      setCookingStatus('error');
+    }
+
+    // Cleanup poll interval on unmount
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+    };
+  }, []);
+
+  // Fallback products for error state
+  const [fallbackSlots, setFallbackSlots] = useState<any[]>([
     {
       id: 'top',
       label: 'Top',
@@ -128,42 +209,23 @@ export default function OutfitTaggerDemo() {
     },
   ]);
 
-  const [tagging, setTagging] = useState(false);
-  const [results, setResults] = useState<any>(null);
-  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
-
-  const handleImageError = (productId: string) => {
-    setImageErrors(prev => new Set(prev).add(productId));
-  };
-
-  const handleSelectItem = (slotId: string, optionId: string) => {
-    setSlots(
-      slots.map((slot) =>
-        slot.id === slotId ? { ...slot, selected: optionId } : slot
-      )
-    );
-    setResults(null); // Clear previous results
-  };
-
-  const isOutfitComplete = slots.every((slot) => slot.selected !== null);
-
   const handleTag = async () => {
-    if (!isOutfitComplete) return;
+    if (!selectedOutfit) return;
 
     setTagging(true);
+    setResults(null);
 
     try {
-      // Build product array from selections
-      const products = slots.map((slot) => {
-        const selected = slot.options.find((opt) => opt.id === slot.selected);
-        return {
-          id: selected?.id || '',
-          name: selected?.name || '',
-          color: selected?.color || '',
-          imageUrl: selected?.imageUrl || '',
-          role: slot.id,
-        };
-      });
+      // Build product array from selected outfit
+      const products = selectedOutfit.items.map((item) => ({
+        id: item.product.id,
+        name: item.product.title,
+        brand: item.product.brand || 'H&M',
+        color: item.product.colors?.[0] || '',
+        price: item.product.price || 39.99,
+        imageUrl: item.product.imageUrl,
+        role: item.role,
+      }));
 
       // Call real AI tagging API
       const response = await fetch('/api/tag-demo-outfit', {
@@ -223,71 +285,154 @@ export default function OutfitTaggerDemo() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Instructions */}
-      <div className="mb-6 text-center">
-        <p className="text-gray-700">
-          <strong>Build an outfit:</strong> Select one item from each category, then hit "Tag Outfit" to see the AI analysis
-        </p>
-      </div>
+      {/* No Recipe State */}
+      {cookingStatus === 'no-recipe' && (
+        <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-12 text-center">
+          <span className="text-6xl mb-4 block">📸</span>
+          <h3 className="text-2xl font-semibold text-gray-900 mb-4">No Recipe Found</h3>
+          <p className="text-gray-700 mb-6">
+            Go back to <strong>Slide 11</strong> to scan a lifestyle image and generate a recipe first.
+          </p>
+          <p className="text-sm text-gray-600">
+            The outfit tagger works with outfits generated from Recipe Scout.
+          </p>
+        </div>
+      )}
 
-      {/* Outfit Builder */}
-      <>
-      <div className="grid md:grid-cols-4 gap-4 mb-6">
-        {slots.map((slot) => (
-          <div key={slot.id} className="bg-white rounded-xl border-2 border-gray-200 p-4">
-            <h3 className="font-semibold mb-3 text-center">{slot.label}</h3>
-            <div className="space-y-2">
-              {slot.options.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => handleSelectItem(slot.id, option.id)}
-                    className={`w-full p-2 rounded-lg border-2 transition-all text-left ${
-                      slot.selected === option.id
-                        ? 'border-black bg-gray-50'
-                        : 'border-gray-200 hover:border-gray-400'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      {option.imageUrl && !imageErrors.has(option.id) ? (
-                        <div className="w-16 h-24 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                          <img
-                            src={option.imageUrl}
-                            alt={option.name}
-                            className="w-full h-full object-cover"
-                            onError={() => handleImageError(option.id)}
-                            loading="lazy"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-16 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded flex-shrink-0 flex items-center justify-center">
-                          <span className="text-2xl">👕</span>
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{option.name}</p>
-                        {option.color && (
-                          <p className="text-xs text-gray-500 truncate">{option.color}</p>
-                        )}
-                      </div>
+      {/* Cooking State */}
+      {cookingStatus === 'cooking' && (
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-12 text-center">
+          <div className="animate-spin w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-6"></div>
+          <h3 className="text-2xl font-semibold text-gray-900 mb-4">Generating Outfits...</h3>
+          <p className="text-gray-700 mb-2">
+            Creating outfits from your recipe using CLIP-powered visual compatibility
+          </p>
+          <p className="text-sm text-gray-600">
+            This usually takes 10-30 seconds. The outfits will appear automatically when ready.
+          </p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {cookingStatus === 'error' && (
+        <div className="bg-red-50 border-2 border-red-200 rounded-xl p-12 text-center">
+          <span className="text-6xl mb-4 block">⚠️</span>
+          <h3 className="text-2xl font-semibold text-gray-900 mb-4">Outfit Generation Failed</h3>
+          <p className="text-gray-700 mb-2">
+            {error || 'Something went wrong generating outfits from your recipe.'}
+          </p>
+          <p className="text-sm text-gray-600 mb-6">
+            This could be due to CLIP API availability or product matching issues.
+          </p>
+          <button
+            onClick={() => window.location.href = '/presentation/11'}
+            className="px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-colors"
+          >
+            Go Back to Recipe Scout
+          </button>
+        </div>
+      )}
+
+      {/* Ready State - Show Generated Outfits */}
+      {cookingStatus === 'ready' && !selectedOutfit && (
+        <>
+          <div className="mb-6 text-center">
+            <p className="text-gray-700">
+              <strong>Select an outfit to tag:</strong> Choose one of the generated outfits below, then click "Tag Outfit" to see the AI analysis
+            </p>
+          </div>
+
+          {/* Outfit Cards Grid */}
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {generatedOutfits.map((outfit, index) => (
+              <button
+                key={outfit.id}
+                onClick={() => {
+                  setSelectedOutfit(outfit);
+                  setResults(null);
+                }}
+                className="bg-white rounded-xl border-2 border-gray-200 hover:border-black transition-all p-4 text-left group"
+              >
+                <div className="mb-4">
+                  <h3 className="font-semibold text-gray-900 mb-1">Outfit {index + 1}</h3>
+                  <p className="text-xs text-gray-500">{outfit.items.length} items</p>
+                </div>
+
+                {/* Product Grid */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {outfit.items.slice(0, 4).map((item) => (
+                    <div key={item.product.id} className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                      <img
+                        src={item.product.imageUrl}
+                        alt={item.product.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
                     </div>
-                  </button>
-                ))
-              }
+                  ))}
+                </div>
+
+                {/* Quality Score */}
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-600">Quality Score</span>
+                  <span className="font-medium text-gray-900">
+                    {Math.round((
+                      outfit.scoreBreakdown.styleRegisterCoherence +
+                      outfit.scoreBreakdown.colorHarmony +
+                      outfit.scoreBreakdown.silhouetteBalance
+                    ) / 3)}%
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Selected Outfit - Show Details & Tag Button */}
+      {selectedOutfit && !results && (
+        <>
+          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold">Selected Outfit</h3>
+              <button
+                onClick={() => setSelectedOutfit(null)}
+                className="text-sm px-3 py-1 bg-white border border-purple-300 rounded-full hover:bg-purple-100 transition-colors"
+              >
+                Choose Different
+              </button>
+            </div>
+
+            {/* Product List */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {selectedOutfit.items.map((item) => (
+                <div key={item.product.id} className="bg-white rounded-lg p-3">
+                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                    <img
+                      src={item.product.imageUrl}
+                      alt={item.product.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="text-xs font-medium text-gray-900 truncate">{item.product.title}</p>
+                  <p className="text-xs text-gray-500">{item.role}</p>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Tag Button */}
-      <div className="text-center mb-6">
-        <button
-          onClick={handleTag}
-          disabled={!isOutfitComplete || tagging}
-          className="px-8 py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-900 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-lg"
-        >
-          {tagging ? 'Analyzing Outfit...' : isOutfitComplete ? 'Tag Outfit with AI' : 'Select All Items First'}
-        </button>
-      </div>
+          {/* Tag Button */}
+          <div className="text-center mb-6">
+            <button
+              onClick={handleTag}
+              disabled={tagging}
+              className="px-8 py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-900 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-lg"
+            >
+              {tagging ? 'Analyzing Outfit...' : 'Tag Outfit with AI'}
+            </button>
+          </div>
+        </>
+      )}
 
       {/* Results */}
       {results && (
@@ -398,7 +543,6 @@ export default function OutfitTaggerDemo() {
           </div>
         </div>
       )}
-      </>
 
     </div>
   );
