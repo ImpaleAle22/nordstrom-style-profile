@@ -136,7 +136,15 @@ export default function RecipeScoutDemo() {
       console.log('Recipe generation response:', recipeData);
 
       if (!recipeData.success) {
-        throw new Error(recipeData.error || 'Recipe generation failed');
+        const errorMsg = recipeData.error || 'Recipe generation failed';
+        // Provide helpful guidance based on error type
+        if (errorMsg.includes('Insufficient items')) {
+          throw new Error(
+            'Could not detect enough items in this image (need 4+ garments). ' +
+            'Try an image where you can clearly see: top + bottom + shoes + accessories, or a full outfit with shoes.'
+          );
+        }
+        throw new Error(errorMsg);
       }
 
       if (!recipeData.recipes || recipeData.recipes.length === 0) {
@@ -145,7 +153,10 @@ export default function RecipeScoutDemo() {
           throw new Error('This image has already been analyzed. Try a different image.');
         }
         // Otherwise, likely insufficient items detected
-        throw new Error('Could not detect enough garments to create a recipe. Try an image with a more complete outfit (tops, bottoms, shoes).');
+        throw new Error(
+          'Recipe generation failed - not enough garments detected. ' +
+          'Make sure the image shows a complete outfit with at least 4 visible items (top, bottom, shoes, accessories).'
+        );
       }
 
       const recipe = recipeData.recipes[0];

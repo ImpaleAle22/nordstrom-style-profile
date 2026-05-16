@@ -287,6 +287,20 @@ async function generateRecipeFromImage(
   console.log(`   Detected items: ${detectedItems.length}`);
   console.log(`   Suggested items: ${suggestedItems.length}`);
 
+  // CRITICAL: Validate we have at least 4 items total BEFORE processing
+  const totalItems = detectedItems.length + suggestedItems.length;
+  if (totalItems < 4) {
+    console.error(`❌ Insufficient items for recipe: detected=${detectedItems.length}, suggested=${suggestedItems.length}, total=${totalItems}`);
+    console.error(`   AI must detect or suggest at least 4 items. This image may be:`);
+    console.error(`   - Not showing a complete outfit (missing visible items)`);
+    console.error(`   - Not a fashion/outfit photo (wrong context)`);
+    console.error(`   - Poor quality/lighting (items not visible)`);
+    throw new Error(
+      `Insufficient items detected (${detectedItems.length} visible, ${suggestedItems.length} suggested). ` +
+      `Need 4+ items for a complete outfit. Try a different image with a more complete outfit visible.`
+    );
+  }
+
   // Use vision-to-recipe library for proper slot transformation
   // This handles: role mapping, productType inference, material extraction,
   // auto-filling missing slots, and validation
@@ -376,29 +390,44 @@ Generate a recipe for this outfit with:
    - Examples: "Dreamy Romantic Wedding Guest Look", "Confident Minimal Office Outfit", "Effortless Bohemian Brunch Style"
 
 2. INGREDIENT SLOTS:
-   For each VISIBLE item in the image:
+   **CRITICAL**: You MUST identify ALL visible garments and accessories in the image.
+
+   For each VISIBLE item (scan the ENTIRE outfit carefully):
    - role: "tops" | "bottoms" | "dresses" | "shoes" | "outerwear" | "accessories" | "jewelry"
    - query: Search query to find similar products (e.g., "white chiffon maxi dress", "leather ankle boots")
    - color: Primary color (e.g., "white", "navy", "camel")
    - material: Fabric/material if identifiable (e.g., "chiffon", "leather", "cotton", "denim")
    - description: Brief description of the item
 
-3. SUGGESTED ITEMS (if outfit is incomplete):
-   If the outfit has FEWER than 4 items visible, suggest items to complete it:
-   - Missing shoes? Suggest appropriate footwear
-   - Missing top? Suggest a complementary top
-   - Missing bottoms? Suggest appropriate bottoms
-   - Use same format as slots
+   **SCAN CHECKLIST** (look for each category):
+   - Outerwear (coats, jackets, blazers)
+   - Tops (shirts, blouses, sweaters, tees) OR Dresses
+   - Bottoms (pants, skirts, shorts) [skip if dress]
+   - Shoes (boots, heels, sneakers, flats) - REQUIRED
+   - Accessories (bags, jewelry, hats, scarves, sunglasses, belts)
+
+3. SUGGESTED ITEMS:
+   **MANDATORY**: If you detected FEWER than 4 items in "slots", you MUST provide suggestions to reach 4-6 total items.
+
+   Auto-fill missing items:
+   - No shoes visible? → MUST suggest shoes in suggestedItems
+   - No top visible (and no dress)? → MUST suggest a top
+   - No bottoms visible (and no dress)? → MUST suggest bottoms
+   - Fewer than 4 total? → Add accessories to complete the outfit
+
+   Use same format as slots. Match the Style Pillar (${outfitAnalysis.stylePillar}) and vibe.
 
 CRITICAL OUTFIT BUILDING RULES:
-- **COMPLETE OUTFITS NEED 4-6 ITEMS**
-- **SHOES ARE REQUIRED** - if no shoes visible, suggest in suggestedItems
+- **MINIMUM 4 ITEMS REQUIRED** (detected + suggested combined)
+- **SHOES ARE MANDATORY** - if not visible, MUST be in suggestedItems
 - If you see a dress, use role "dresses" (not tops/bottoms)
-- Only list items you can ACTUALLY SEE in "slots"
-- Use "suggestedItems" for items needed to complete the outfit
+- List EVERYTHING you can SEE in "slots"
+- Add missing items in "suggestedItems" to reach 4-6 total
 - Maintain the Style Pillar aesthetic (${outfitAnalysis.stylePillar})
 - Reflect the vibes (${outfitAnalysis.vibes.join(', ')})
 - Keep formality level around ${outfitAnalysis.formalityLevel}/10
+
+**FAILURE TO DETECT 4+ TOTAL ITEMS WILL RESULT IN RECIPE REJECTION**
 
 Return ONLY this JSON:
 {
