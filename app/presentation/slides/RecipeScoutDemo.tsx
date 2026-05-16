@@ -490,43 +490,12 @@ export default function RecipeScoutDemo() {
         </div>
       )}
 
-      {/* Save Status Banner */}
-      {saveStatus && (
-        <div className={`rounded-xl border-2 p-4 mb-6 ${
-          saveStatus === 'saved'
-            ? 'bg-green-50 border-green-200'
-            : 'bg-blue-50 border-blue-200'
-        }`}>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">
-              {saveStatus === 'saved' ? '✅' : 'ℹ️'}
-            </span>
-            <div>
-              <p className={`font-medium ${
-                saveStatus === 'saved' ? 'text-green-900' : 'text-blue-900'
-              }`}>
-                {saveStatus === 'saved'
-                  ? 'Recipe saved to database!'
-                  : 'Recipe already exists'}
-              </p>
-              <p className={`text-sm ${
-                saveStatus === 'saved' ? 'text-green-700' : 'text-blue-700'
-              }`}>
-                {saveStatus === 'saved'
-                  ? 'This recipe has been added to the recipe pool for future use.'
-                  : 'This image has already been analyzed. Showing existing recipe.'}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Results */}
       {results && !loading && (
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Image Preview */}
-          <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
-            <h3 className="font-semibold mb-4">Lifestyle Image</h3>
+        <div className="grid grid-cols-3 gap-6">
+          {/* Image Preview - 1/3 width */}
+          <div className="col-span-1 bg-white rounded-xl border-2 border-gray-200 p-4">
+            <h3 className="font-semibold text-sm mb-3">Lifestyle Image</h3>
             {imageUrl ? (
               <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden shadow-sm">
                 <img
@@ -537,13 +506,13 @@ export default function RecipeScoutDemo() {
               </div>
             ) : (
               <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500 text-sm">[Image Preview]</p>
+                <p className="text-gray-500 text-xs">[Image Preview]</p>
               </div>
             )}
           </div>
 
-          {/* Recipe Template */}
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 p-6">
+          {/* Recipe Template + Status - 2/3 width */}
+          <div className="col-span-2 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Detected Recipe Template</h3>
               <button
@@ -564,8 +533,70 @@ export default function RecipeScoutDemo() {
               </button>
             </div>
 
+            {/* Save Status - Inline */}
+            {saveStatus && (
+              <div className={`rounded-lg p-3 mb-4 flex items-start gap-2 ${
+                saveStatus === 'saved'
+                  ? 'bg-green-100 border border-green-300'
+                  : 'bg-blue-100 border border-blue-300'
+              }`}>
+                <span className="text-lg flex-shrink-0">
+                  {saveStatus === 'saved' ? '✅' : 'ℹ️'}
+                </span>
+                <div>
+                  <p className={`text-sm font-medium ${
+                    saveStatus === 'saved' ? 'text-green-900' : 'text-blue-900'
+                  }`}>
+                    {saveStatus === 'saved'
+                      ? 'Recipe saved to database'
+                      : 'Recipe already exists'}
+                  </p>
+                  <p className={`text-xs mt-0.5 ${
+                    saveStatus === 'saved' ? 'text-green-700' : 'text-blue-700'
+                  }`}>
+                    {saveStatus === 'saved'
+                      ? 'Added to recipe pool for future use'
+                      : 'Showing existing recipe'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Cooking Status - Inline */}
+            {cookingStatus !== 'idle' && (
+              <div className="mb-4">
+                {cookingStatus === 'cooking' && (
+                  <div className="bg-blue-100 border border-blue-300 rounded-lg p-3 flex items-start gap-2">
+                    <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full flex-shrink-0 mt-0.5"></div>
+                    <div>
+                      <p className="text-sm font-medium text-blue-900">Generating outfits...</p>
+                      <p className="text-xs text-blue-700 mt-0.5">Will be ready for Slide 16</p>
+                    </div>
+                  </div>
+                )}
+                {cookingStatus === 'ready' && (
+                  <div className="bg-green-100 border border-green-300 rounded-lg p-3 flex items-start gap-2">
+                    <span className="text-lg flex-shrink-0">✅</span>
+                    <div>
+                      <p className="text-sm font-medium text-green-900">Outfits ready!</p>
+                      <p className="text-xs text-green-700 mt-0.5">Continue to Slide 16 to see them</p>
+                    </div>
+                  </div>
+                )}
+                {cookingStatus === 'error' && (
+                  <div className="bg-amber-100 border border-amber-300 rounded-lg p-3 flex items-start gap-2">
+                    <span className="text-lg flex-shrink-0">⚠️</span>
+                    <div>
+                      <p className="text-sm font-medium text-amber-900">Outfit generation issue</p>
+                      <p className="text-xs text-amber-700 mt-0.5">Slide 16 will use fallback products</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Slots */}
-            <div className="space-y-3 mb-6">
+            <div className="space-y-2">
               {results.slots.map((slot: any, index: number) => (
                 <div key={`${slot.id}-${index}`} className={`rounded-lg p-3 border shadow-sm ${
                   slot.id === 'error' || slot.id === 'notice'
@@ -573,7 +604,7 @@ export default function RecipeScoutDemo() {
                     : 'bg-white border-gray-200'
                 }`}>
                   <div className="flex items-start justify-between mb-1">
-                    <span className={`text-sm font-medium ${
+                    <span className={`text-xs font-medium uppercase tracking-wide ${
                       slot.id === 'error' || slot.id === 'notice'
                         ? 'text-red-700'
                         : 'text-gray-600'
@@ -587,48 +618,7 @@ export default function RecipeScoutDemo() {
                 </div>
               ))}
             </div>
-
-            {/* Metadata - Hidden until Slide 12 (tagging) */}
           </div>
-        </div>
-      )}
-
-      {/* Cooking Status Indicator */}
-      {results && cookingStatus !== 'idle' && (
-        <div className="mt-6">
-          {cookingStatus === 'cooking' && (
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="animate-spin w-5 h-5 border-3 border-blue-500 border-t-transparent rounded-full"></div>
-                <div>
-                  <p className="font-medium text-blue-900">Generating outfits in background...</p>
-                  <p className="text-sm text-blue-700">These will be ready for tagging on Slide 16</p>
-                </div>
-              </div>
-            </div>
-          )}
-          {cookingStatus === 'ready' && (
-            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">✅</span>
-                <div>
-                  <p className="font-medium text-green-900">Outfits ready!</p>
-                  <p className="text-sm text-green-700">Continue to Slide 16 to see and tag them</p>
-                </div>
-              </div>
-            </div>
-          )}
-          {cookingStatus === 'error' && (
-            <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">⚠️</span>
-                <div>
-                  <p className="font-medium text-amber-900">Outfit generation had issues</p>
-                  <p className="text-sm text-amber-700">Slide 16 will use fallback products instead</p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       )}
 
