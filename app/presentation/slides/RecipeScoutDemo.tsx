@@ -512,112 +512,108 @@ export default function RecipeScoutDemo() {
           </div>
 
           {/* Recipe Template + Status - 2/3 width */}
-          <div className="col-span-2 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Detected Recipe Template</h3>
-              <button
-                onClick={() => {
-                  setResults(null);
-                  setImageUrl('');
-                  setSaveStatus(null);
-                  setCookingStatus('idle');
-                  // Clear session storage
-                  sessionStorage.removeItem('presentation-recipe');
-                  sessionStorage.removeItem('presentation-cooking-status');
-                  sessionStorage.removeItem('presentation-outfits');
-                  sessionStorage.removeItem('presentation-cooking-error');
-                }}
-                className="text-xs px-3 py-1 bg-white border border-purple-200 rounded-full hover:bg-purple-100 transition-colors"
-              >
-                Try Another
-              </button>
+          <div className="col-span-2 space-y-4">
+            {/* Recipe Template Card */}
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold">Detected Recipe Template</h3>
+                <button
+                  onClick={() => {
+                    setResults(null);
+                    setImageUrl('');
+                    setSaveStatus(null);
+                    setCookingStatus('idle');
+                    // Clear session storage
+                    sessionStorage.removeItem('presentation-recipe');
+                    sessionStorage.removeItem('presentation-cooking-status');
+                    sessionStorage.removeItem('presentation-outfits');
+                    sessionStorage.removeItem('presentation-cooking-error');
+                  }}
+                  className="text-xs px-3 py-1 bg-white border border-purple-200 rounded-full hover:bg-purple-100 transition-colors"
+                >
+                  Try Another
+                </button>
+              </div>
+
+              {/* Save Status - Inline at top of recipe */}
+              {saveStatus && (
+                <div className={`rounded-lg p-2.5 mb-4 flex items-start gap-2 ${
+                  saveStatus === 'saved'
+                    ? 'bg-green-100 border border-green-300'
+                    : 'bg-blue-100 border border-blue-300'
+                }`}>
+                  <span className="text-base flex-shrink-0">
+                    {saveStatus === 'saved' ? '✅' : 'ℹ️'}
+                  </span>
+                  <div>
+                    <p className={`text-xs font-medium ${
+                      saveStatus === 'saved' ? 'text-green-900' : 'text-blue-900'
+                    }`}>
+                      {saveStatus === 'saved'
+                        ? 'Recipe saved to database'
+                        : 'Recipe already exists'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Recipe Slots - Two Column Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {results.slots.map((slot: any, index: number) => (
+                  <div key={`${slot.id}-${index}`} className={`rounded-lg p-3 border shadow-sm ${
+                    slot.id === 'error' || slot.id === 'notice'
+                      ? 'bg-red-50 border-red-200 col-span-2'
+                      : 'bg-white border-gray-200'
+                  }`}>
+                    <div className="mb-1">
+                      <span className={`text-xs font-semibold uppercase tracking-wide ${
+                        slot.id === 'error' || slot.id === 'notice'
+                          ? 'text-red-700'
+                          : 'text-purple-700'
+                      }`}>{slot.label}</span>
+                    </div>
+                    <p className={`text-sm leading-snug ${
+                      slot.id === 'error' || slot.id === 'notice'
+                        ? 'text-red-900'
+                        : 'text-gray-900'
+                    }`}>{slot.detected}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Save Status - Inline */}
-            {saveStatus && (
-              <div className={`rounded-lg p-3 mb-4 flex items-start gap-2 ${
-                saveStatus === 'saved'
-                  ? 'bg-green-100 border border-green-300'
-                  : 'bg-blue-100 border border-blue-300'
-              }`}>
-                <span className="text-lg flex-shrink-0">
-                  {saveStatus === 'saved' ? '✅' : 'ℹ️'}
-                </span>
-                <div>
-                  <p className={`text-sm font-medium ${
-                    saveStatus === 'saved' ? 'text-green-900' : 'text-blue-900'
-                  }`}>
-                    {saveStatus === 'saved'
-                      ? 'Recipe saved to database'
-                      : 'Recipe already exists'}
-                  </p>
-                  <p className={`text-xs mt-0.5 ${
-                    saveStatus === 'saved' ? 'text-green-700' : 'text-blue-700'
-                  }`}>
-                    {saveStatus === 'saved'
-                      ? 'Added to recipe pool for future use'
-                      : 'Showing existing recipe'}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Cooking Status - Inline */}
+            {/* Cooking Status - Separate Card Below */}
             {cookingStatus !== 'idle' && (
-              <div className="mb-4">
+              <div>
                 {cookingStatus === 'cooking' && (
-                  <div className="bg-blue-100 border border-blue-300 rounded-lg p-3 flex items-start gap-2">
-                    <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full flex-shrink-0 mt-0.5"></div>
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                    <div className="animate-spin w-5 h-5 border-3 border-blue-500 border-t-transparent rounded-full flex-shrink-0 mt-0.5"></div>
                     <div>
-                      <p className="text-sm font-medium text-blue-900">Generating outfits...</p>
-                      <p className="text-xs text-blue-700 mt-0.5">Will be ready for Slide 16</p>
+                      <p className="text-sm font-semibold text-blue-900">Generating outfits in background...</p>
+                      <p className="text-xs text-blue-700 mt-1">These will be ready for tagging on Slide 16</p>
                     </div>
                   </div>
                 )}
                 {cookingStatus === 'ready' && (
-                  <div className="bg-green-100 border border-green-300 rounded-lg p-3 flex items-start gap-2">
-                    <span className="text-lg flex-shrink-0">✅</span>
+                  <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 flex items-start gap-3">
+                    <span className="text-xl flex-shrink-0">✅</span>
                     <div>
-                      <p className="text-sm font-medium text-green-900">Outfits ready!</p>
-                      <p className="text-xs text-green-700 mt-0.5">Continue to Slide 16 to see them</p>
+                      <p className="text-sm font-semibold text-green-900">Outfits ready!</p>
+                      <p className="text-xs text-green-700 mt-1">Continue to Slide 16 to see and tag them</p>
                     </div>
                   </div>
                 )}
                 {cookingStatus === 'error' && (
-                  <div className="bg-amber-100 border border-amber-300 rounded-lg p-3 flex items-start gap-2">
-                    <span className="text-lg flex-shrink-0">⚠️</span>
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                    <span className="text-xl flex-shrink-0">⚠️</span>
                     <div>
-                      <p className="text-sm font-medium text-amber-900">Outfit generation issue</p>
-                      <p className="text-xs text-amber-700 mt-0.5">Slide 16 will use fallback products</p>
+                      <p className="text-sm font-semibold text-amber-900">Outfit generation had issues</p>
+                      <p className="text-xs text-amber-700 mt-1">Slide 16 will use fallback products instead</p>
                     </div>
                   </div>
                 )}
               </div>
             )}
-
-            {/* Slots */}
-            <div className="space-y-2">
-              {results.slots.map((slot: any, index: number) => (
-                <div key={`${slot.id}-${index}`} className={`rounded-lg p-3 border shadow-sm ${
-                  slot.id === 'error' || slot.id === 'notice'
-                    ? 'bg-red-50 border-red-200'
-                    : 'bg-white border-gray-200'
-                }`}>
-                  <div className="flex items-start justify-between mb-1">
-                    <span className={`text-xs font-medium uppercase tracking-wide ${
-                      slot.id === 'error' || slot.id === 'notice'
-                        ? 'text-red-700'
-                        : 'text-gray-600'
-                    }`}>{slot.label}</span>
-                  </div>
-                  <p className={`text-sm ${
-                    slot.id === 'error' || slot.id === 'notice'
-                      ? 'text-red-900'
-                      : 'text-gray-900'
-                  }`}>{slot.detected}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       )}
