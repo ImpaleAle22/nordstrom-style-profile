@@ -174,14 +174,6 @@ export default function RecipeScoutDemo() {
       sessionStorage.setItem('presentation-cooking-status', 'cooking');
       setCookingStatus('cooking');
 
-      // DEMO MODE: Skip actual cooking for presentation (CLIP API may be sleeping)
-      // Slide 16 will show recipe slots instead of full outfits
-      console.log('[RECIPE SCOUT] Demo mode - skipping outfit cooking');
-      sessionStorage.setItem('presentation-cooking-status', 'skipped');
-      setCookingStatus('idle');
-
-      // Original cooking code (disabled for demo):
-      /*
       // Start cooking in background (non-blocking)
       fetch('/api/cook-recipe', {
         method: 'POST',
@@ -237,7 +229,6 @@ export default function RecipeScoutDemo() {
           sessionStorage.setItem('presentation-cooking-error', error.message || 'Outfit generation failed');
           setCookingStatus('error');
         });
-      */
 
       // Transform recipe slots into display format
       // Note: Style pillar is an OUTFIT-level attribute, not item-level
