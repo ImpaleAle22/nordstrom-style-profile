@@ -43,3 +43,11 @@ next-env.d.ts
 # local symlinks
 /public/product-images
 API-KEY-INFO.md
+
+# Large data files (products, embeddings)
+scripts/products-*.json
+scripts/*-products.json
+scripts/embeddings-*.json
+*.jsonl
+data/
+backups/
