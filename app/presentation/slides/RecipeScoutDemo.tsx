@@ -15,6 +15,7 @@ export default function RecipeScoutDemo() {
   const [results, setResults] = useState<any>(null);
   const [dragActive, setDragActive] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'duplicate' | null>(null);
+  const [cookingStatus, setCookingStatus] = useState<'idle' | 'cooking' | 'ready' | 'error'>('idle');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -88,6 +89,7 @@ export default function RecipeScoutDemo() {
     setLoading(true);
     setResults(null);
     setSaveStatus(null);
+    setCookingStatus('idle');  // Reset cooking status
     if (url) setImageUrl(url);
 
     try {
@@ -154,6 +156,47 @@ export default function RecipeScoutDemo() {
       } else if (recipeData.savedToDatabase > 0) {
         setSaveStatus('saved');
       }
+
+      // Store recipe for Slide 16 and trigger background outfit cooking
+      console.log('[RECIPE SCOUT] Storing recipe and starting outfit cooking...');
+      sessionStorage.setItem('presentation-recipe', JSON.stringify(recipe));
+      sessionStorage.setItem('presentation-cooking-status', 'cooking');
+      setCookingStatus('cooking');
+
+      // Start cooking in background (non-blocking)
+      fetch('/api/cook-recipe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipe,
+          options: {
+            strategy: 'gemini-flash-lite',  // Fast strategy
+            targetCount: 3,  // Just 3 outfits for demo
+            productsPerIngredient: 10,  // Smaller pool = faster
+            minQuality: 50,  // Accept decent quality
+            saveToSanity: false,  // Don't save to database
+          },
+        }),
+      })
+        .then(res => res.json())
+        .then(result => {
+          console.log('[RECIPE SCOUT] Cooking complete:', result);
+          if (result.outfits && result.outfits.length > 0) {
+            // Store top 3 outfits for Slide 16
+            sessionStorage.setItem('presentation-outfits', JSON.stringify(result.outfits.slice(0, 3)));
+            sessionStorage.setItem('presentation-cooking-status', 'ready');
+            setCookingStatus('ready');
+            console.log('[RECIPE SCOUT] Stored', result.outfits.length, 'outfits for Slide 16');
+          } else {
+            throw new Error('No outfits generated');
+          }
+        })
+        .catch(error => {
+          console.error('[RECIPE SCOUT] Cooking failed:', error);
+          sessionStorage.setItem('presentation-cooking-status', 'error');
+          sessionStorage.setItem('presentation-cooking-error', error.message || 'Outfit generation failed');
+          setCookingStatus('error');
+        });
 
       // Transform recipe slots into display format
       // Note: Style pillar is an OUTFIT-level attribute, not item-level
@@ -476,6 +519,12 @@ export default function RecipeScoutDemo() {
                   setResults(null);
                   setImageUrl('');
                   setSaveStatus(null);
+                  setCookingStatus('idle');
+                  // Clear session storage
+                  sessionStorage.removeItem('presentation-recipe');
+                  sessionStorage.removeItem('presentation-cooking-status');
+                  sessionStorage.removeItem('presentation-outfits');
+                  sessionStorage.removeItem('presentation-cooking-error');
                 }}
                 className="text-xs px-3 py-1 bg-white border border-purple-200 rounded-full hover:bg-purple-100 transition-colors"
               >
@@ -509,6 +558,45 @@ export default function RecipeScoutDemo() {
 
             {/* Metadata - Hidden until Slide 12 (tagging) */}
           </div>
+        </div>
+      )}
+
+      {/* Cooking Status Indicator */}
+      {results && cookingStatus !== 'idle' && (
+        <div className="mt-6">
+          {cookingStatus === 'cooking' && (
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="animate-spin w-5 h-5 border-3 border-blue-500 border-t-transparent rounded-full"></div>
+                <div>
+                  <p className="font-medium text-blue-900">Generating outfits in background...</p>
+                  <p className="text-sm text-blue-700">These will be ready for tagging on Slide 16</p>
+                </div>
+              </div>
+            </div>
+          )}
+          {cookingStatus === 'ready' && (
+            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">✅</span>
+                <div>
+                  <p className="font-medium text-green-900">Outfits ready!</p>
+                  <p className="text-sm text-green-700">Continue to Slide 16 to see and tag them</p>
+                </div>
+              </div>
+            </div>
+          )}
+          {cookingStatus === 'error' && (
+            <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⚠️</span>
+                <div>
+                  <p className="font-medium text-amber-900">Outfit generation had issues</p>
+                  <p className="text-sm text-amber-700">Slide 16 will use fallback products instead</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
