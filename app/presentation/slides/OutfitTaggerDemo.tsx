@@ -373,47 +373,56 @@ export default function OutfitTaggerDemo() {
 
           {/* Outfit Cards Grid */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {generatedOutfits.map((outfit, index) => (
-              <button
-                key={outfit.id}
-                onClick={() => {
-                  setSelectedOutfit(outfit);
-                  setResults(null);
-                }}
-                className="bg-white rounded-xl border-2 border-gray-200 hover:border-black transition-all p-4 text-left group"
-              >
-                <div className="mb-4">
-                  <h3 className="font-semibold text-gray-900 mb-1">Outfit {index + 1}</h3>
-                  <p className="text-xs text-gray-500">{outfit.items.length} items</p>
-                </div>
+            {generatedOutfits.map((outfit, index) => {
+              const itemCount = outfit.items.length;
 
-                {/* Product Grid */}
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {outfit.items.slice(0, 4).map((item) => (
-                    <div key={item.product.id} className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                      <img
-                        src={item.product.imageUrl}
-                        alt={item.product.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                  ))}
-                </div>
+              // Determine grid layout based on item count
+              let gridClass = '';
+              if (itemCount === 4) {
+                gridClass = 'grid-cols-2 grid-rows-2'; // 2x2
+              } else if (itemCount === 5) {
+                gridClass = 'grid-cols-2 auto-rows-fr'; // 2 columns, auto rows
+              } else if (itemCount === 6) {
+                gridClass = 'grid-cols-2 grid-rows-3'; // 2x3
+              } else {
+                gridClass = 'grid-cols-2'; // fallback for other counts
+              }
 
-                {/* Quality Score */}
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-600">Quality Score</span>
-                  <span className="font-medium text-gray-900">
-                    {Math.round((
-                      outfit.scoreBreakdown.styleRegisterCoherence +
-                      outfit.scoreBreakdown.colorHarmony +
-                      outfit.scoreBreakdown.silhouetteBalance
-                    ) / 3)}%
-                  </span>
-                </div>
-              </button>
-            ))}
+              return (
+                <button
+                  key={outfit.id}
+                  onClick={() => {
+                    setSelectedOutfit(outfit);
+                    setResults(null);
+                  }}
+                  className="bg-white rounded-2xl border-2 border-gray-200 hover:border-black transition-all p-4 text-left group"
+                >
+                  {/* Product Grid - No text, just images */}
+                  <div className={`grid ${gridClass} gap-3`}>
+                    {outfit.items.map((item, idx) => {
+                      // For 5-item layout, make the 5th item span 2 columns in bottom right
+                      const is5thIn5ItemLayout = itemCount === 5 && idx === 4;
+
+                      return (
+                        <div
+                          key={item.product.id}
+                          className={`aspect-square bg-gray-100 rounded-xl overflow-hidden ${
+                            is5thIn5ItemLayout ? 'col-span-2 row-span-1' : ''
+                          }`}
+                        >
+                          <img
+                            src={item.product.imageUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </>
       )}
@@ -438,7 +447,7 @@ export default function OutfitTaggerDemo() {
             </div>
           )}
 
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200 p-6 mb-6">
+          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl border-2 border-purple-200 p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-semibold">Selected Outfit</h3>
               <button
@@ -449,21 +458,44 @@ export default function OutfitTaggerDemo() {
               </button>
             </div>
 
-            {/* Product List */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {selectedOutfit.items.map((item) => (
-                <div key={item.product.id} className="bg-white rounded-lg p-3">
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
-                    <img
-                      src={item.product.imageUrl}
-                      alt={item.product.title}
-                      className="w-full h-full object-cover"
-                    />
+            {/* Product Grid - Same adaptive layout as outfit cards */}
+            <div className="max-w-md mx-auto">
+              {(() => {
+                const itemCount = selectedOutfit.items.length;
+                let gridClass = '';
+                if (itemCount === 4) {
+                  gridClass = 'grid-cols-2 grid-rows-2';
+                } else if (itemCount === 5) {
+                  gridClass = 'grid-cols-2 auto-rows-fr';
+                } else if (itemCount === 6) {
+                  gridClass = 'grid-cols-2 grid-rows-3';
+                } else {
+                  gridClass = 'grid-cols-2';
+                }
+
+                return (
+                  <div className={`grid ${gridClass} gap-4`}>
+                    {selectedOutfit.items.map((item, idx) => {
+                      const is5thIn5ItemLayout = itemCount === 5 && idx === 4;
+
+                      return (
+                        <div
+                          key={item.product.id}
+                          className={`aspect-square bg-gray-100 rounded-xl overflow-hidden ${
+                            is5thIn5ItemLayout ? 'col-span-2 row-span-1' : ''
+                          }`}
+                        >
+                          <img
+                            src={item.product.imageUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
-                  <p className="text-xs font-medium text-gray-900 truncate">{item.product.title}</p>
-                  <p className="text-xs text-gray-500">{item.role}</p>
-                </div>
-              ))}
+                );
+              })()}
             </div>
           </div>
 
