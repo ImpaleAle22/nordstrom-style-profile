@@ -130,18 +130,19 @@ export const hardRulesStation: KitchenStation = {
         return;
       }
 
-      // 3. Check for duplicate accessory sub-types (e.g., two belts, two necklaces)
-      // Accessories should be diversified (bag + jewelry is good, belt + belt is bad)
+      // 3. Check for duplicate accessory sub-types (e.g., two belts, two bags)
+      // Accessories should be diversified, but allow multiple jewelry items
+      // (necklace + bracelet is fine, bag + bag is not)
       const accessoryItems = combo.items.filter((item) => item.role === 'accessories');
       if (accessoryItems.length > 1) {
         const accessoryTypes = accessoryItems
           .map((item) => item.product.productType2)
-          .filter((type) => type); // Filter out undefined
+          .filter((type) => type && type !== 'Jewelry'); // Filter out undefined and Jewelry (allow multiple jewelry)
 
         const uniqueAccessoryTypes = new Set(accessoryTypes);
 
         if (accessoryTypes.length > uniqueAccessoryTypes.size) {
-          // Found duplicate accessory sub-types
+          // Found duplicate NON-JEWELRY accessory sub-types
           filtered++;
           if (examples.length < 3) {
             const duplicateType = accessoryTypes.find(
