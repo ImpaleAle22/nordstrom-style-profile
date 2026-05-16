@@ -32,8 +32,8 @@ export default function RecipeScoutDemo() {
 
     // Define progress ranges and timing for each step
     const stepConfig = {
-      1: { start: 0, target: 45, duration: 4000 },   // Step 1: 0% -> 45% over 4 seconds
-      2: { start: 50, target: 95, duration: 5000 },  // Step 2: 50% -> 95% over 5 seconds
+      1: { start: 0, target: 45, duration: 8000 },   // Step 1: 0% -> 45% over 8 seconds
+      2: { start: 50, target: 95, duration: 10000 }, // Step 2: 50% -> 95% over 10 seconds
     };
 
     const config = stepConfig[loadingStep.step as 1 | 2];
@@ -183,23 +183,44 @@ export default function RecipeScoutDemo() {
           options: {
             strategy: 'gemini-flash-lite',  // Fast strategy
             targetCount: 3,  // Just 3 outfits for demo
-            productsPerIngredient: 10,  // Smaller pool = faster
-            minQuality: 50,  // Accept decent quality
+            productsPerIngredient: 20,  // Increase pool for better results
+            minQuality: 40,  // Lower threshold to get more results
             saveToSanity: false,  // Don't save to database
           },
         }),
       })
-        .then(res => res.json())
-        .then(result => {
-          console.log('[RECIPE SCOUT] Cooking complete:', result);
+        .then(async res => {
+          const result = await res.json();
+          console.log('[RECIPE SCOUT] Cooking response:', {
+            status: res.status,
+            hasOutfits: !!result.outfits,
+            outfitsCount: result.outfits?.length || 0,
+            hasError: !!result.error,
+            stats: result.stats,
+          });
+
+          // Handle error response
+          if (!res.ok || result.error) {
+            throw new Error(result.error || `Cook failed with status ${res.status}`);
+          }
+
+          // Handle successful response
           if (result.outfits && result.outfits.length > 0) {
             // Store top 3 outfits for Slide 16
             sessionStorage.setItem('presentation-outfits', JSON.stringify(result.outfits.slice(0, 3)));
             sessionStorage.setItem('presentation-cooking-status', 'ready');
             setCookingStatus('ready');
-            console.log('[RECIPE SCOUT] Stored', result.outfits.length, 'outfits for Slide 16');
+            console.log('[RECIPE SCOUT] ✓ Stored', result.outfits.length, 'outfits for Slide 16');
           } else {
-            throw new Error('No outfits generated');
+            // Log diagnostic info for debugging
+            console.error('[RECIPE SCOUT] No outfits generated. Diagnostics:', {
+              totalGenerated: result.stats?.totalGenerated,
+              totalScored: result.stats?.totalScored,
+              totalSaved: result.stats?.totalSaved,
+              errors: result.errors,
+              diagnostics: result.diagnostics,
+            });
+            throw new Error('No outfits generated - cooking succeeded but returned empty results');
           }
         })
         .catch(error => {
